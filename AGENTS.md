@@ -27,6 +27,10 @@ Compact guidance for AI assistants working in this repository.
 - **Dates in documents**: Use Holocene Era / Human Era year format (e.g., `12026-06-07`).
 - **Dependency policy**: `minimumReleaseAge` cooldown (default ≥1440 minutes) via pnpm settings. Commit `.npmrc` or `pnpm-workspace.yaml` with this policy once dependencies exist.
 
+## Commits
+
+- **DCO sign-off required**: Every commit must include a `Signed-off-by:` line. Use `git commit -s` (or `git commit --signoff`) for all commits.
+
 ## CI / Security
 
 - Reusable workflows from `windlasstech/.github`:
