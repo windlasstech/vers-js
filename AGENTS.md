@@ -48,6 +48,7 @@ Compact guidance for AI assistants working in this repository.
 
 - PRs must follow the template defined in `windlasstech/.github`:
   - <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/.github/PULL_REQUEST_TEMPLATE.md>
+- **Always fetch the template content** and write the PR body to match it. Do not rely on `gh pr create` to auto-populate the template; if it does not, manually compose the body using the fetched template structure.
 
 ## What Does Not Exist Yet (Agent Traps)
 
