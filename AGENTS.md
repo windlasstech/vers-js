@@ -4,7 +4,7 @@ Compact guidance for AI assistants working in this repository.
 
 ## Project Identity
 
-- **vers-js** — TypeScript library for parsing and validating VERS (Versioned External Reference Syntax) declarations.
+- **vers-js** — TypeScript library for parsing and validating VERS (VErsion Range Specifier) declarations.
 - Early-stage / greenfield: no source code yet; only architectural decision records (ADRs) exist.
 - Apache 2.0 licensed, owned by Windlass.
 
