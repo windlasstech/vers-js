@@ -1,0 +1,19 @@
+name: OSV Scanner Full
+
+on:
+  schedule:
+    - cron: "30 12 * * 1"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: windlasstech/.github/.github/workflows/osv-scanner-full-reusable.yml@main
