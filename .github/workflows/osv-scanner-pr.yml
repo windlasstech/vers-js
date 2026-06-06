@@ -1,0 +1,16 @@
+name: OSV Scanner PR
+
+on:
+  pull_request:
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: windlasstech/.github/.github/workflows/osv-scanner-pr-reusable.yml@main
