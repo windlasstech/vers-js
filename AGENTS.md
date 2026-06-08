@@ -10,16 +10,35 @@ Compact guidance for AI assistants working in this repository.
 
 ## Development Baseline
 
-- **Runtime**: Node.js LTS for development only. The published library must remain runtime-agnostic (Node.js, Deno, Bun).
+- **Runtime**: Node.js 22 LTS for development only. The published library must remain runtime-agnostic (Node.js, Deno, Bun).
 - **Package manager**: pnpm (will be pinned via `packageManager` in `package.json` once created).
-- **Language**: TypeScript.
+- **Language**: TypeScript (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI).
+- **Toolchain** (decided, see ADR-0036 through ADR-0040):
+  - **Build**: `tsc` only — no bundler. Build script: `tsc -p tsconfig.build.json`.
+  - **Typecheck**: `tsc --noEmit` (authoritative; Oxlint does not replace this).
+  - **Test**: Vitest. Run: `vitest run`. Watch: `vitest`.
+  - **Lint**: Oxlint with type-aware linting. Run: `oxlint --type-aware`.
+  - **Format**: Oxfmt. Run: `oxfmt --check`.
 
 ## Critical Constraints
 
 - **Runtime-agnostic core**: Library code must avoid runtime-specific globals (`process`, `Buffer`, `Deno`, `Bun`).
 - **Public API boundary**: Expose stable data-oriented functions (e.g., `parseVers()`, `validateVers()`, `canonicalizeVers()`) with explicit success/failure results and machine-readable error codes. Do not leak parser internals.
 - **Scope discipline**: First release covers canonical VERS syntax validation and parsed declaration metadata only. Do not implement comparison, containment, native range translation, resolver behavior, or vulnerability interpretation unless a new ADR explicitly expands scope.
+
+## Architecture Invariants
+
+These invariants are defined in `docs/architecture/scope-and-invariants.md` and `docs/architecture/public-api.md`. Agents must not violate them when proposing code changes:
+
+1. **Public API is fixed**: Only `parseVers()`, `validateVers()`, and `canonicalizeVers()` are public. Each accepts exactly one `string` argument. Non-string input must throw `TypeError`. Malformed input returns `Result` failures, never repaired output.
+2. **No parser internals in public results**: Public results must not expose tokens, scanner state, parser nodes, mutable state, or runtime-specific objects.
+3. **ESM-only, root-only**: Package consumers import only from `"vers-js"`. No subpath imports (`vers-js/parser`, `vers-js/errors`). No CommonJS artifact.
+4. **Strict canonical validation**: All public functions validate canonical VERS syntax. They do not trim whitespace, change casing, rewrite separators, reorder constraints, deduplicate, or repair percent escapes.
+5. **Type validation is syntax-only**: The parser validates `type` characters and lowercase casing. It must not reject unknown types (e.g., `support.unknown_type` is reserved, not active).
+6. **Constraint order preserved**: The parser preserves input constraint order. It does not sort, simplify, or normalize for containment.
+7. **Error-only, no warnings**: Public functions do not accept warning, advisory, loose, repair, recovery, or coercion modes. Successful results carry no warnings.
+8. **Issue codes are machine-readable**: `VersIssue.code` uses the core issue-code union. Human-readable `message` fields are convenience text, not the stable contract.
 
 ## Repo Conventions
 
