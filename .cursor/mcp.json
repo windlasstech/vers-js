@@ -3,12 +3,7 @@
     "codegraph": {
       "type": "stdio",
       "command": "codegraph",
-      "args": [
-        "serve",
-        "--mcp",
-        "--path",
-        "/Users/yunseo/Documents/GitHub/vers-js"
-      ]
+      "args": ["serve", "--mcp", "--path", "/Users/yunseo/Documents/GitHub/vers-js"]
     }
   }
 }
