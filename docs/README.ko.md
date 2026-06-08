@@ -1,5 +1,11 @@
 # 문서
 
+<div align="center">
+
+[English](README.md) | 한국어
+
+</div>
+
 이 디렉터리는 `vers-js`의 설계 문서와 아키텍처 사양을 담고 있습니다.
 
 ## 구조
