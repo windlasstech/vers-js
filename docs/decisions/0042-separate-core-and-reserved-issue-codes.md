@@ -73,9 +73,7 @@ export type VersCoreIssueCode =
   | VersCanonicalIssueCode
   | VersResourceIssueCode;
 
-export type VersReservedIssueCode =
-  | VersReservedCanonicalIssueCode
-  | VersSupportIssueCode;
+export type VersReservedIssueCode = VersReservedCanonicalIssueCode | VersSupportIssueCode;
 ```
 
 `VersReservedIssueCode` is exported as name-reserved vocabulary, but it is not part
@@ -90,9 +88,7 @@ export type VersReservedCanonicalIssueCode =
   | "canonical.non_canonical_order"
   | "canonical.invalid_comparator_sequence";
 
-export type VersSupportIssueCode =
-  | "support.unknown_type"
-  | "support.unsupported_semantic";
+export type VersSupportIssueCode = "support.unknown_type" | "support.unsupported_semantic";
 ```
 
 The active v0.1.0 canonical issue set contains only the canonical diagnostics that
