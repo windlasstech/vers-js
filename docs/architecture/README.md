@@ -1,5 +1,11 @@
 # Architecture Specifications
 
+<div align="center">
+
+English | [한국어](README.ko.md)
+
+</div>
+
 This directory contains the implementation specifications for `vers-js` v0.1.0. These documents translate the accepted ADRs in `../decisions/` into concrete contracts that implementation and tests must follow.
 
 ## Development Flow
