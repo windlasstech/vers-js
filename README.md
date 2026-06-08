@@ -39,9 +39,9 @@ import { parseVers, validateVers, canonicalizeVers } from "vers-js";
 const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
 
 if (result.ok) {
-  console.log(result.value.type);        // "npm"
+  console.log(result.value.type); // "npm"
   console.log(result.value.constraints); // parsed constraints
-  console.log(result.value.canonical);   // canonical VERS string
+  console.log(result.value.canonical); // canonical VERS string
 } else {
   console.log(result.issues); // structured diagnostics
 }
@@ -62,6 +62,7 @@ const canonical = canonicalizeVers("vers:npm/>=1.0.0|<2.0.0");
 Parses a VERS declaration and returns parsed syntax metadata.
 
 **Success:**
+
 ```typescript
 {
   ok: true,
@@ -102,8 +103,8 @@ type VersResult<T> =
 Non-string inputs throw `TypeError`:
 
 ```typescript
-parseVers(null);      // throws TypeError
-validateVers(123);    // throws TypeError
+parseVers(null); // throws TypeError
+validateVers(123); // throws TypeError
 ```
 
 ## Scope

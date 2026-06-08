@@ -25,8 +25,8 @@ Compact guidance for AI assistants working in this repository.
 
 This project follows SDD methodology. Do not implement before reading the specs.
 
-1. **ADRs first** (`docs/decisions/`): understand *why* architecture was chosen
-2. **Specs second** (`docs/architecture/`): define *exact observable behavior*
+1. **ADRs first** (`docs/decisions/`): understand _why_ architecture was chosen
+2. **Specs second** (`docs/architecture/`): define _exact observable behavior_
 3. **Implementation third**: build against the specifications
 
 ### Specification writing order
@@ -80,15 +80,15 @@ Independent checks may be reordered for CI speed, but release readiness requires
 
 ## Test Architecture
 
-| Layer | Purpose |
-|-------|---------|
-| Unit | Small parser helpers with internal contracts |
-| Parser success | Successful `parseVers`, `validateVers`, `canonicalizeVers` behavior |
-| Official fixtures | Pinned upstream `vers_canonical_parse_test.json` through local disposition table |
-| Project diagnostic fixtures | Active issue codes, severity, spans, fatality, ordering, metadata |
-| Resource boundary | Input length (`1024`/`1025` UTF-16 code-unit boundary), issue cap (`16`), truncation metadata |
-| Package boundary | Root exports, declaration metadata, default export, blocked subpaths |
-| Runtime smoke | Built package under Node.js, Deno, Bun |
+| Layer                       | Purpose                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| Unit                        | Small parser helpers with internal contracts                                                  |
+| Parser success              | Successful `parseVers`, `validateVers`, `canonicalizeVers` behavior                           |
+| Official fixtures           | Pinned upstream `vers_canonical_parse_test.json` through local disposition table              |
+| Project diagnostic fixtures | Active issue codes, severity, spans, fatality, ordering, metadata                             |
+| Resource boundary           | Input length (`1024`/`1025` UTF-16 code-unit boundary), issue cap (`16`), truncation metadata |
+| Package boundary            | Root exports, declaration metadata, default export, blocked subpaths                          |
+| Runtime smoke               | Built package under Node.js, Deno, Bun                                                        |
 
 Tests must not assert exact human-readable diagnostic message strings. They may assert that messages are non-empty strings.
 
