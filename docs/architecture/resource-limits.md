@@ -78,7 +78,7 @@ version strings, canonical output length, or JSON-serialized fixture length.
 Before any normal parser phase runs, every public entry point checks:
 
 ```ts
-input.length > MAX_INPUT_LENGTH
+input.length > MAX_INPUT_LENGTH;
 ```
 
 If this condition is true, parsing stops immediately. The implementation must not
@@ -177,10 +177,10 @@ source-level VERS problem and is not counted as an ordinary issue.
 `resource.input_too_long` and `metadata.diagnostics.truncated` are separate
 signals:
 
-| Signal | Kind | Condition | Counts against `MAX_ISSUES` |
-| --- | --- | --- | --- |
-| `resource.input_too_long` | Ordinary issue | `input.length > 1024` before normal parser phases. | Yes |
-| `metadata.diagnostics.truncated` | Failure metadata | More than `16` ordinary issues would have been emitted for input at or below the length limit. | No |
+| Signal                           | Kind             | Condition                                                                                      | Counts against `MAX_ISSUES` |
+| -------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `resource.input_too_long`        | Ordinary issue   | `input.length > 1024` before normal parser phases.                                             | Yes                         |
+| `metadata.diagnostics.truncated` | Failure metadata | More than `16` ordinary issues would have been emitted for input at or below the length limit. | No                          |
 
 Diagnostic cap exhaustion must not add a sentinel issue such as
 `resource.max_issues_exceeded`. It must not use `resource.input_too_long` or any
@@ -237,13 +237,13 @@ effective limits appear in failure metadata before it becomes public.
 Resource fixture coverage is defined by `fixtures.md`; implementation tests must
 include at least these cases:
 
-| Case | Required behavior |
-| --- | --- |
-| Exactly at input length limit | An input with `.length === 1024` is not rejected solely for length and proceeds to normal parsing. |
-| Above input length limit | An input with `.length === 1025` returns only `resource.input_too_long`, normally without `span`, before normal parser phases. |
-| Below issue cap | An invalid input that produces fewer than `16` ordinary issues omits `metadata.diagnostics`. |
-| At issue cap without omitted issues | An invalid input that produces exactly `16` ordinary issues omits `metadata.diagnostics` when no additional issue would have been emitted. |
-| Above issue cap | An invalid input at or below `1024` code units that would produce more than `16` ordinary issues returns exactly `16` ordinary issues and `metadata.diagnostics: { truncated: true, maxIssues: 16 }`. |
+| Case                                | Required behavior                                                                                                                                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Exactly at input length limit       | An input with `.length === 1024` is not rejected solely for length and proceeds to normal parsing.                                                                                                    |
+| Above input length limit            | An input with `.length === 1025` returns only `resource.input_too_long`, normally without `span`, before normal parser phases.                                                                        |
+| Below issue cap                     | An invalid input that produces fewer than `16` ordinary issues omits `metadata.diagnostics`.                                                                                                          |
+| At issue cap without omitted issues | An invalid input that produces exactly `16` ordinary issues omits `metadata.diagnostics` when no additional issue would have been emitted.                                                            |
+| Above issue cap                     | An invalid input at or below `1024` code units that would produce more than `16` ordinary issues returns exactly `16` ordinary issues and `metadata.diagnostics: { truncated: true, maxIssues: 16 }`. |
 
 Fixture generators and fixture assertions must measure input length with
 JavaScript string `.length`, not UTF-8 byte length.

@@ -34,14 +34,14 @@ expectations for that input.
 
 The v0.1.0 official baseline is the snapshot selected by ADR-0041:
 
-| Field | Value |
-| --- | --- |
-| Upstream repository | `https://github.com/package-url/vers-spec` |
-| Upstream commit | `cd8a9c98ec1a50918b4d0e1cb4f4a3b3743bf17f` |
-| Upstream commit date | `12026-05-19` |
+| Field                   | Value                                                |
+| ----------------------- | ---------------------------------------------------- |
+| Upstream repository     | `https://github.com/package-url/vers-spec`           |
+| Upstream commit         | `cd8a9c98ec1a50918b4d0e1cb4f4a3b3743bf17f`           |
+| Upstream commit date    | `12026-05-19`                                        |
 | Upstream commit subject | `fix: typo in npm_range_containment_test.json (#70)` |
-| Adopted for | `vers-js` v0.1.0 |
-| Adopted on | `12026-06-08` |
+| Adopted for             | `vers-js` v0.1.0                                     |
+| Adopted on              | `12026-06-08`                                        |
 
 Any copied, generated, or cached official fixture artifact must record enough
 metadata to trace back to this snapshot.
@@ -50,13 +50,13 @@ metadata to trace back to this snapshot.
 
 The selected upstream source set and checksums are:
 
-| Upstream path | SHA-256 |
-| --- | --- |
-| `docs/standard/specification.md` | `b31ebb053395f610aefcb5291d5f6f21bd2c4569598b88e7abd683b3e02f0a4c` |
-| `docs/how-to-parse.md` | `dbe40d2d70a4f36754599f2324dcc24e8403893f0fe0b2788e9bf00d880b3396` |
-| `docs/tests.md` | `7d676b76b028187b36b33fa41b52bc5d43b9fbc25b16660828c664b3eed03a0b` |
-| `schemas/vers-test.schema-0.1.json` | `d6073515f47eb0b8a3dcf248e76a0b8938f4475a3b1b04e8caafe7e4c750ca30` |
-| `schemas/vers-test.schema-0.2.json` | `09300a2031d37314a6fbdde95be50492f058802ba810f907b17db2dcb4c3ac8f` |
+| Upstream path                          | SHA-256                                                            |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| `docs/standard/specification.md`       | `b31ebb053395f610aefcb5291d5f6f21bd2c4569598b88e7abd683b3e02f0a4c` |
+| `docs/how-to-parse.md`                 | `dbe40d2d70a4f36754599f2324dcc24e8403893f0fe0b2788e9bf00d880b3396` |
+| `docs/tests.md`                        | `7d676b76b028187b36b33fa41b52bc5d43b9fbc25b16660828c664b3eed03a0b` |
+| `schemas/vers-test.schema-0.1.json`    | `d6073515f47eb0b8a3dcf248e76a0b8938f4475a3b1b04e8caafe7e4c750ca30` |
+| `schemas/vers-test.schema-0.2.json`    | `09300a2031d37314a6fbdde95be50492f058802ba810f907b17db2dcb4c3ac8f` |
 | `tests/vers_canonical_parse_test.json` | `ab22ccf0518f08e34bfe17dd141fadb8a166ab0c0b7e399e54462ffc3ac6d83b` |
 
 Blocking v0.1.0 official conformance is limited to
@@ -70,11 +70,11 @@ not fetch upstream `main` during blocking local or CI validation.
 
 Every selected official fixture case must have one local disposition:
 
-| Disposition | Meaning |
-| --- | --- |
-| `blocking-core` | The official case is in v0.1.0 core scope. It blocks release when the matching public operation fails the expected success or failure boundary. |
-| `known-divergence` | The official case is intentionally not enforced because a `vers-js` ADR chooses different v0.1.0 core behavior. |
-| `future-semantic` | The official case depends on comparison, containment, ordering, simplification, support policy, native range translation, or another behavior outside v0.1.0 core. |
+| Disposition        | Meaning                                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `blocking-core`    | The official case is in v0.1.0 core scope. It blocks release when the matching public operation fails the expected success or failure boundary.                    |
+| `known-divergence` | The official case is intentionally not enforced because a `vers-js` ADR chooses different v0.1.0 core behavior.                                                    |
+| `future-semantic`  | The official case depends on comparison, containment, ordering, simplification, support policy, native range translation, or another behavior outside v0.1.0 core. |
 
 `known-divergence` and `future-semantic` cases must cite the ADR or architecture
 specification section that explains why they do not block v0.1.0.
@@ -83,14 +83,14 @@ specification section that explains why they do not block v0.1.0.
 
 The pinned `vers_canonical_parse_test.json` file contains these cases:
 
-| Case | Input | Upstream expectation | v0.1.0 disposition | Local assertion |
-| --- | --- | --- | --- | --- |
-| Canonical normalized range | `vers:npm/>=1.0.0|<2.0.0` | Parse success with decoded constraints. | `blocking-core` | `parseVers()` succeeds with `scheme: "vers"`, `type: "npm"`, constraints `>= 1.0.0` then `< 2.0.0`, and canonical output equal to the input. `validateVers()` and `canonicalizeVers()` share the same success boundary. |
-| ASCII whitespace | `vers:npm/>=1.0.0| <2.0.0` | Parse failure. | `blocking-core` | Public functions fail. The official reason string is context only; project diagnostic fixtures own exact `lexical.ascii_whitespace` expectations. |
-| Leading pipe | `vers:npm/|>=1.0.0|<2.0.0` | Parse failure. | `blocking-core` | Public functions fail. Project diagnostic fixtures own exact `constraint.leading_pipe` expectations. |
-| Trailing pipe | `vers:npm/>=1.0.0|<2.0.0|` | Parse failure. | `blocking-core` | Public functions fail. Project diagnostic fixtures own exact `constraint.trailing_pipe` expectations. |
-| Consecutive pipes | `vers:npm/>=1.0.0||<2.0.0` | Parse failure. | `blocking-core` | Public functions fail. Project diagnostic fixtures own exact `constraint.consecutive_pipe` and any related empty-segment expectations. |
-| Non-canonical semantic order | `vers:npm/>=2.0.0|<1.0.0` | Parse failure for constraints not sorted by version. | `known-divergence` | Public functions may succeed under v0.1.0 syntax-only scope, preserving input order. The core must not emit `canonical.non_canonical_order` because ADR-0021 defers semantic ordering and ADR-0042 reserves that code. |
+| Case                         | Input             | Upstream expectation | v0.1.0 disposition                                   | Local assertion    |
+| ---------------------------- | ----------------- | -------------------- | ---------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Canonical normalized range   | `vers:npm/>=1.0.0 | <2.0.0`              | Parse success with decoded constraints.              | `blocking-core`    | `parseVers()` succeeds with `scheme: "vers"`, `type: "npm"`, constraints `>= 1.0.0` then `< 2.0.0`, and canonical output equal to the input. `validateVers()` and `canonicalizeVers()` share the same success boundary. |
+| ASCII whitespace             | `vers:npm/>=1.0.0 | <2.0.0`              | Parse failure.                                       | `blocking-core`    | Public functions fail. The official reason string is context only; project diagnostic fixtures own exact `lexical.ascii_whitespace` expectations.                                                                       |
+| Leading pipe                 | `vers:npm/        | >=1.0.0              | <2.0.0`                                              | Parse failure.     | `blocking-core`                                                                                                                                                                                                         | Public functions fail. Project diagnostic fixtures own exact `constraint.leading_pipe` expectations.                                   |
+| Trailing pipe                | `vers:npm/>=1.0.0 | <2.0.0               | `                                                    | Parse failure.     | `blocking-core`                                                                                                                                                                                                         | Public functions fail. Project diagnostic fixtures own exact `constraint.trailing_pipe` expectations.                                  |
+| Consecutive pipes            | `vers:npm/>=1.0.0 |                      | <2.0.0`                                              | Parse failure.     | `blocking-core`                                                                                                                                                                                                         | Public functions fail. Project diagnostic fixtures own exact `constraint.consecutive_pipe` and any related empty-segment expectations. |
+| Non-canonical semantic order | `vers:npm/>=2.0.0 | <1.0.0`              | Parse failure for constraints not sorted by version. | `known-divergence` | Public functions may succeed under v0.1.0 syntax-only scope, preserving input order. The core must not emit `canonical.non_canonical_order` because ADR-0021 defers semantic ordering and ADR-0042 reserves that code.  |
 
 The upstream success fixture names the expected output field `scheme: "npm"` for
 the package ecosystem component. `vers-js` public metadata uses `scheme: "vers"`
@@ -235,27 +235,27 @@ core, including `canonical.non_canonical_order`,
 Project diagnostic fixtures must cover every active issue code from
 `diagnostics.md` before implementation is considered ready:
 
-| Code | Required representative input | Required assertion focus |
-| --- | --- | --- |
-| `resource.input_too_long` | A `vers:` string with `1025` UTF-16 code units. | One ordinary resource issue, omitted `span`, no normal parser-phase issues. |
-| `lexical.ascii_whitespace` | `vers:npm/>=1.0.0| <2.0.0` | Whitespace span, whole-input fatality. |
-| `lexical.invalid_character` | `vers:generic/1/2` | Raw non-unreserved version character span, per-constraint fatality. |
-| `syntax.missing_scheme_separator` | `vers-npm/1.0.0` | Missing separator failure without guessed constraint diagnostics. |
-| `syntax.invalid_scheme` | `VERS:npm/1.0.0` | Scheme span, whole-input fatality. |
-| `syntax.missing_type` | `vers:/1.0.0` | Missing type point span when reliable. |
-| `syntax.invalid_type_case` | `vers:NPM/1.0.0` | Uppercase type span. |
-| `syntax.missing_constraint_separator` | `vers:npm` | Missing `/` separator and no guessed constraints. |
-| `constraint.missing_constraints` | `vers:npm/` | Empty constraint-list point span when reliable. |
-| `constraint.leading_pipe` | `vers:npm/|1.0.0` | Leading pipe span, constraint-list fatality. |
-| `constraint.trailing_pipe` | `vers:npm/1.0.0|` | Trailing pipe span, constraint-list fatality. |
-| `constraint.consecutive_pipe` | `vers:npm/1.0.0||2.0.0` | Pipe-run or second-pipe span, constraint-list fatality. |
-| `constraint.empty_constraint` | `vers:npm/1.0.0||2.0.0` | Empty segment expectation when emitted by the chosen splitter behavior. |
-| `constraint.empty_version` | `vers:npm/>=` | Point span after comparator when reliable. |
-| `constraint.invalid_comparator` | `vers:npm/=>1.0.0` | Invalid comparator prefix span. |
-| `constraint.invalid_star_constraint` | `vers:npm/>=*` | Smallest reliable offending `*` or segment span. |
-| `constraint.invalid_percent_encoding` | `vers:generic/%G0` | Malformed escape span and no UTF-8 diagnostic for that segment. |
-| `constraint.invalid_utf8` | `vers:generic/%C3%28` | Invalid UTF-8 byte-sequence span when reliable. |
-| `canonical.duplicate_version` | `vers:npm/1.0.0|=1.0.0` | Later duplicate version span and canonical fatality. |
+| Code                                  | Required representative input                   | Required assertion focus                                                    |
+| ------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| `resource.input_too_long`             | A `vers:` string with `1025` UTF-16 code units. | One ordinary resource issue, omitted `span`, no normal parser-phase issues. |
+| `lexical.ascii_whitespace`            | `vers:npm/>=1.0.0                               | <2.0.0`                                                                     | Whitespace span, whole-input fatality.               |
+| `lexical.invalid_character`           | `vers:generic/1/2`                              | Raw non-unreserved version character span, per-constraint fatality.         |
+| `syntax.missing_scheme_separator`     | `vers-npm/1.0.0`                                | Missing separator failure without guessed constraint diagnostics.           |
+| `syntax.invalid_scheme`               | `VERS:npm/1.0.0`                                | Scheme span, whole-input fatality.                                          |
+| `syntax.missing_type`                 | `vers:/1.0.0`                                   | Missing type point span when reliable.                                      |
+| `syntax.invalid_type_case`            | `vers:NPM/1.0.0`                                | Uppercase type span.                                                        |
+| `syntax.missing_constraint_separator` | `vers:npm`                                      | Missing `/` separator and no guessed constraints.                           |
+| `constraint.missing_constraints`      | `vers:npm/`                                     | Empty constraint-list point span when reliable.                             |
+| `constraint.leading_pipe`             | `vers:npm/                                      | 1.0.0`                                                                      | Leading pipe span, constraint-list fatality.         |
+| `constraint.trailing_pipe`            | `vers:npm/1.0.0                                 | `                                                                           | Trailing pipe span, constraint-list fatality.        |
+| `constraint.consecutive_pipe`         | `vers:npm/1.0.0                                 |                                                                             | 2.0.0`                                               | Pipe-run or second-pipe span, constraint-list fatality.                 |
+| `constraint.empty_constraint`         | `vers:npm/1.0.0                                 |                                                                             | 2.0.0`                                               | Empty segment expectation when emitted by the chosen splitter behavior. |
+| `constraint.empty_version`            | `vers:npm/>=`                                   | Point span after comparator when reliable.                                  |
+| `constraint.invalid_comparator`       | `vers:npm/=>1.0.0`                              | Invalid comparator prefix span.                                             |
+| `constraint.invalid_star_constraint`  | `vers:npm/>=*`                                  | Smallest reliable offending `*` or segment span.                            |
+| `constraint.invalid_percent_encoding` | `vers:generic/%G0`                              | Malformed escape span and no UTF-8 diagnostic for that segment.             |
+| `constraint.invalid_utf8`             | `vers:generic/%C3%28`                           | Invalid UTF-8 byte-sequence span when reliable.                             |
+| `canonical.duplicate_version`         | `vers:npm/1.0.0                                 | =1.0.0`                                                                     | Later duplicate version span and canonical fatality. |
 
 The `constraint.empty_constraint` fixture may share the same input as
 `constraint.consecutive_pipe` when the implementation emits both issues under the
