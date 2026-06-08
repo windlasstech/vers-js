@@ -2,8 +2,8 @@
   "scripts": {
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-	"fmt": "oxfmt",
-	"fmt:check": "oxfmt --check"
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
     "oxfmt": "^0.53.0",
