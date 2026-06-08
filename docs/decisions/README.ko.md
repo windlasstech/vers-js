@@ -1,5 +1,11 @@
 # 아키텍처 결정 기록
 
+<div align="center">
+
+[English](README.md) | 한국어
+
+</div>
+
 이 디렉터리에는 [MADR 4.0.0](https://adr.github.io/madr/) 형식으로 작성한 `vers-js` 아키텍처 의사결정 기록(ADR)들이 있습니다.
 
 ## 아키텍처 의사결정 기록(ADR)이란?

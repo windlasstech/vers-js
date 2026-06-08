@@ -1,5 +1,11 @@
 # Architectural Decision Records
 
+<div align="center">
+
+English | [한국어](README.ko.md)
+
+</div>
+
 This directory contains the Architectural Decision Records (ADRs) for `vers-js`, following the [MADR 4.0.0](https://adr.github.io/madr/) format.
 
 ## What is an ADR?
