@@ -1,12 +1,27 @@
 {
   "scripts": {
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"**/*.mdx\" \"**/*.mdc\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"**/*.mdx\" \"**/*.mdc\"",
+    "lint:ts": "oxlint --no-error-on-unmatched-pattern",
+    "lint:ts:fix": "oxlint --fix --no-error-on-unmatched-pattern",
+    "lint:ts:github": "oxlint --no-error-on-unmatched-pattern --format=github",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
+    "markdownlint-cli2": "^0.22.1",
     "oxfmt": "^0.53.0",
-    "oxlint": "^1.68.0"
+    "oxlint": "^1.68.0",
+    "oxlint-tsgolint": "^0.23.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.5.2",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
