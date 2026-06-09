@@ -1,0 +1,90 @@
+version: 2
+
+updates:
+  # npm ecosystem for the root pnpm-managed TypeScript package.
+  # Dependabot's npm ecosystem updates package.json and pnpm-lock.yaml.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 10
+    groups:
+      # Group low-risk runtime dependency updates separately from dev tooling.
+      # Major runtime updates remain individual PRs for focused review.
+      production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group low-risk development-tooling updates separately from runtime deps.
+      development-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore(dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "js/ts"
+    versioning-strategy: "auto"
+    # Windlass supply-chain policy: scheduled version updates use cooldown;
+    # security updates bypass cooldown and are opened immediately.
+    cooldown:
+      default-days: 7
+      semver-major-days: 21
+      semver-minor-days: 7
+      semver-patch-days: 3
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "actions/*"
+        update-types:
+          - "minor"
+          - "patch"
+      step-security-actions:
+        patterns:
+          - "step-security/*"
+        update-types:
+          - "minor"
+          - "patch"
+      openssf-actions:
+        patterns:
+          - "ossf/*"
+          - "ossf-scorecard/*"
+        update-types:
+          - "minor"
+          - "patch"
+      slsa-actions:
+        patterns:
+          - "slsa-framework/*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    # GitHub Actions supports default cooldown only, not SemVer cooldown keys.
+    cooldown:
+      default-days: 3
