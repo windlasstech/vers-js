@@ -9,6 +9,7 @@
     "fmt:check": "oxfmt --check"
   },
   "devDependencies": {
+    "lefthook": "^2.1.9",
     "markdownlint-cli2": "^0.22.1",
     "oxfmt": "^0.53.0",
     "oxlint": "^1.68.0",

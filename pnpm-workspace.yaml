@@ -54,3 +54,6 @@ lockfile: true
 # headless (frozen) install that skips dependency resolution.
 # Combined with CI frozen-lockfile installs, this prevents drift.
 preferFrozenLockfile: true
+
+allowBuilds:
+  lefthook: true
