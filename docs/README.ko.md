@@ -10,7 +10,7 @@
 
 ## 구조
 
-```
+```text
 docs/
 ├── architecture/    # 구현 사양
 ├── decisions/       # 아키텍처 의사결정 기록(ADR)

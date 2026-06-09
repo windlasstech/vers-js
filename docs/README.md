@@ -10,7 +10,7 @@ This directory contains the design documentation and architecture specifications
 
 ## Structure
 
-```
+```text
 docs/
 ├── architecture/    # Implementation specifications
 ├── decisions/       # Architectural Decision Records (ADRs)
