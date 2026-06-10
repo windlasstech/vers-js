@@ -130,6 +130,7 @@ Tests must not assert exact human-readable diagnostic message strings. They may 
 - **ADRs**: Use MADR 4.0.0 format. Store in `docs/decisions/` with sequential numbering (`0001-title.md`).
 - **ADR immutability**: Existing accepted ADRs are immutable. Never edit the body of an accepted ADR after the fact. The only permitted post-acceptance change is updating the `status` field (e.g., to `superseded`, `deprecated`). If a decision changes, write a new ADR rather than rewriting history.
 - **Dates in documents**: Use Holocene Era / Human Era year format (e.g., `12026-06-07`).
+- **Bilingual README updates**: When editing any `README.md`, update the corresponding `README.ko.md` in the same directory as part of the same change.
 - **Dependency policy**: `minimumReleaseAge` cooldown configured in `pnpm-workspace.yaml` (4320 minutes / 3 days). Security updates bypass cooldown per Dependabot config.
 - **CodeGraph MCP**: `opencode.jsonc` configures a local CodeGraph MCP server. Other AI tool configs (`.cursor/`, `.claude/`, `.kiro/`, `.gemini/`) also reference CodeGraph.
 
