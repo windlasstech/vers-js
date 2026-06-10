@@ -48,3 +48,12 @@ jobs:
 
       - name: Check formatting
         run: pnpm run fmt:check
+
+      - name: Type-check package
+        run: pnpm run typecheck
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Build package
+        run: pnpm run build
