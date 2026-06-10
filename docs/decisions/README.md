@@ -97,6 +97,8 @@ Each ADR follows the MADR 4.0.0 template:
 | [0045](0045-use-v0-1-0-resource-limit-values.md)                              | Use v0.1.0 resource limit values                              | accepted |
 | [0046](0046-separate-official-conformance-and-project-diagnostic-fixtures.md) | Separate official conformance and project diagnostic fixtures | accepted |
 | [0047](0047-use-vitest-v8-coverage-and-codecov-reporting.md)                  | Use Vitest V8 coverage and Codecov reporting                  | accepted |
+| [0048](0048-use-separated-vitest-test-files.md)                               | Use separated Vitest test files                               | accepted |
+| [0049](0049-use-devengines-package-manager-for-pnpm-pinning.md)               | Use devEngines.packageManager for pnpm pinning                | accepted |
 
 ## Adding a New ADR
 
