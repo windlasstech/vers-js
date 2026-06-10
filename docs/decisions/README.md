@@ -86,7 +86,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | Use Oxfmt for v1 formatting                                 | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Use Node 22 LTS and Oxc-aligned TypeScript baselines        | accepted |
 
-### Finalization (ADR-0041–0047)
+### Finalization (ADR-0041–0049)
 
 | ADR                                                                           | Title                                                         | Status   |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------- | -------- |
