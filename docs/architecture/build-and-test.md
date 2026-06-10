@@ -23,7 +23,7 @@ The v0.1.0 development baseline is:
 | --------------------------- | --------------------------------------------------------------------- |
 | Implementation language     | TypeScript.                                                           |
 | Primary development runtime | Node.js 22 LTS and newer.                                             |
-| Package manager             | pnpm, pinned through `packageManager` in `package.json`.              |
+| Package manager             | pnpm, pinned through `devEngines.packageManager` in `package.json`.   |
 | Lockfile                    | Commit `pnpm-lock.yaml` once dependencies exist.                      |
 | Build authority             | TypeScript compiler (`tsc`).                                          |
 | Primary test runner         | Vitest under the Node.js development baseline.                        |
@@ -40,7 +40,8 @@ Node.js and pnpm. Core source must avoid runtime-specific globals and APIs such 
 When implementation begins, the repository should add package scaffolding that
 preserves the architecture contracts:
 
-- `package.json` for package metadata and scripts;
+- `package.json` for package metadata, scripts, and the pnpm
+  `devEngines.packageManager` pin;
 - `pnpm-lock.yaml` once dependencies exist;
 - `.npmrc` or `pnpm-workspace.yaml` for dependency cooldown policy;
 - TypeScript configuration for development type-checking;
@@ -280,7 +281,7 @@ a future implementation decision explicitly includes them.
 Dependency installation and CI must preserve Windlass supply-chain requirements:
 
 - use pnpm for dependency installation and scripts;
-- pin pnpm through `packageManager`;
+- pin pnpm through `devEngines.packageManager`;
 - commit `pnpm-lock.yaml` once dependencies exist;
 - use frozen lockfile installs in CI;
 - configure pnpm `minimumReleaseAge` with a default of at least `1440` minutes once

@@ -11,7 +11,7 @@ Compact guidance for AI assistants working in this repository.
 ## Development Baseline
 
 - **Runtime**: Node.js 22 LTS for development only. The published library must remain runtime-agnostic (Node.js, Deno, Bun).
-- **Package manager**: pnpm, pinned via `packageManager` in `package.json`.
+- **Package manager**: pnpm, pinned via `devEngines.packageManager` in `package.json`.
 - **Language**: TypeScript (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI via `pnpm ci`).
 - **Toolchain** (decided, see ADR-0036 through ADR-0040):
@@ -158,9 +158,10 @@ Tests must not assert exact human-readable diagnostic message strings. They may 
 
 ## What Does Not Exist Yet (Agent Traps)
 
-- No `tsconfig.json`, `tsconfig.build.json`, or source files yet.
-- No test runner, tests, or test configuration yet.
-- No npm/publish scripts beyond linting and formatting.
+- Only initial TypeScript scaffolding exists; parser implementation files are not yet present.
+- Only initial Vitest smoke-test scaffolding exists; parser, fixture, diagnostic,
+  resource, package-boundary, and runtime smoke suites are not yet present.
+- No npm publish or release scripts yet.
 - If adding these, align with the decisions in `docs/decisions/` (TypeScript, Node.js LTS, pnpm) and the contracts in `docs/architecture/build-and-test.md`.
 
 ## Useful References
