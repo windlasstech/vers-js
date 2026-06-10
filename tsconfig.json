@@ -22,6 +22,7 @@
     // and npm install -D @types/node
 
     "noEmit": true,
+    "rewriteRelativeImportExtensions": true,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -36,7 +37,6 @@
     "noPropertyAccessFromIndexSignature": true,
 
     // Recommended Options
-    "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,

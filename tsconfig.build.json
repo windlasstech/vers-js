@@ -4,6 +4,8 @@
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,
+    "isolatedDeclarations": true,
+    "noEmitOnError": true,
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src"
