@@ -144,20 +144,21 @@ validateVers(123); // throws TypeError
 
 ```bash
 # Type checking
-pnpm typecheck        # tsc --noEmit
+pnpm run typecheck    # tsc --noEmit
 
 # Building
-pnpm build            # tsc -p tsconfig.build.json
+pnpm run build        # tsc -p tsconfig.build.json
 
 # Testing
-pnpm test             # vitest run
-pnpm test:watch       # vitest
+pnpm run test         # vitest run
+pnpm run test:watch   # vitest
+pnpm run test:coverage # vitest run --coverage
 
 # Linting and formatting
-pnpm lint             # oxlint --type-aware
-pnpm lint:fix         # oxlint --type-aware --fix
-pnpm format           # oxfmt
-pnpm format:check     # oxfmt --check
+pnpm run lint:md      # markdownlint-cli2
+pnpm run lint:ts      # oxlint
+pnpm run fmt          # oxfmt
+pnpm run fmt:check    # oxfmt --check
 ```
 
 ## License

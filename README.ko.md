@@ -146,20 +146,21 @@ validateVers(123); // TypeError 발생
 
 ```bash
 # 타입 검사
-pnpm typecheck        # tsc --noEmit
+pnpm run typecheck    # tsc --noEmit
 
 # 빌드
-pnpm build            # tsc -p tsconfig.build.json
+pnpm run build        # tsc -p tsconfig.build.json
 
 # 테스트
-pnpm test             # vitest run
-pnpm test:watch       # vitest
+pnpm run test         # vitest run
+pnpm run test:watch   # vitest
+pnpm run test:coverage # vitest run --coverage
 
 # 린팅 및 포맷팅
-pnpm lint             # oxlint --type-aware
-pnpm lint:fix         # oxlint --type-aware --fix
-pnpm format           # oxfmt
-pnpm format:check     # oxfmt --check
+pnpm run lint:md      # markdownlint-cli2
+pnpm run lint:ts      # oxlint
+pnpm run fmt          # oxfmt
+pnpm run fmt:check    # oxfmt --check
 ```
 
 ## 라이선스
