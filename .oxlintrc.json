@@ -1,0 +1,96 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "warn",
+    "restriction": "warn"
+  },
+  "rules": {
+    "import/exports-last": "error",
+    "import/first": "error",
+    "import/group-exports": "error",
+    "import/no-cycle": [
+      "error",
+      {
+        "maxDepth": 3
+      }
+    ],
+    "import/no-named-export": "off",
+    "import/no-namespace": "error",
+    "import/no-nodejs-modules": "error",
+    "import/no-relative-parent-imports": "off",
+    "import/prefer-default-export": "off",
+    "unicorn/no-null": [
+      "warn",
+      {
+        "checkStrictEquality": false
+      }
+    ],
+    "unicorn/prefer-ternary": ["warn", "only-single-line"],
+    "oxc/no-async-await": "off",
+    "oxc/no-optional-chaining": "off",
+    "oxc/no-rest-spread-properties": "off",
+    "typescript/explicit-function-return-type": "error",
+    "typescript/explicit-module-boundary-types": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/no-unsafe-type-assertion": "error",
+    "complexity": "error",
+    "func-style": [
+      "error",
+      "declaration",
+      {
+        "allowArrowFunctions": true
+      }
+    ],
+    "max-params": "error",
+    "max-statements": "error",
+    "no-console": "error",
+    "no-implicit-coercion": "error",
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignoreArrayIndexes": true
+      }
+    ],
+    "no-restricted-globals": [
+      "error",
+      {
+        "restrictedGlobals": {
+          "Buffer": "Runtime-agnostic library must not use Node.js-specific Buffer. Use Uint8Array or TextEncoder/TextDecoder instead.",
+          "process": "Runtime-agnostic library must not use Node.js-specific process. Pass configuration via function parameters instead.",
+          "Deno": "Runtime-agnostic library must not use Deno-specific globals.",
+          "Bun": "Runtime-agnostic library must not use Bun-specific globals."
+        }
+      }
+    ],
+    "no-ternary": "off",
+    "no-use-before-define": "error",
+    "sort-imports": "off"
+  },
+  "overrides": [
+    {
+      "files": ["vitest.config.ts"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": ["src/index.ts"],
+      "rules": {
+        "import/unambiguous": "off",
+        "unicorn/no-empty-file": "off"
+      }
+    }
+  ],
+  "options": {
+    "typeAware": true,
+    "typeCheck": false
+  },
+  "env": {
+    "es2023": true
+  }
+}

@@ -41,9 +41,9 @@ import { parseVers, validateVers, canonicalizeVers } from "vers-js";
 const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
 
 if (result.ok) {
-  console.log(result.value.type);        // "npm"
+  console.log(result.value.type); // "npm"
   console.log(result.value.constraints); // 파싱된 제약 조건
-  console.log(result.value.canonical);   // 정규화한 VERS 문자열
+  console.log(result.value.canonical); // 정규화한 VERS 문자열
 } else {
   console.log(result.issues); // 구조화한 진단 정보
 }
@@ -64,6 +64,7 @@ const canonical = canonicalizeVers("vers:npm/>=1.0.0|<2.0.0");
 VERS 선언문을 파싱하고 파싱한 구문 메타데이터를 반환합니다.
 
 **성공 시:**
+
 ```typescript
 {
   ok: true,
@@ -104,8 +105,8 @@ type VersResult<T> =
 문자열이 아닌 입력은 `TypeError`를 발생시킵니다:
 
 ```typescript
-parseVers(null);      // TypeError 발생
-validateVers(123);    // TypeError 발생
+parseVers(null); // TypeError 발생
+validateVers(123); // TypeError 발생
 ```
 
 ## 지원 범위
@@ -145,20 +146,21 @@ validateVers(123);    // TypeError 발생
 
 ```bash
 # 타입 검사
-pnpm typecheck        # tsc --noEmit
+pnpm run typecheck    # tsc --noEmit
 
 # 빌드
-pnpm build            # tsc -p tsconfig.build.json
+pnpm run build        # tsc -p tsconfig.build.json
 
 # 테스트
-pnpm test             # vitest run
-pnpm test:watch       # vitest
+pnpm run test         # vitest run
+pnpm run test:watch   # vitest
+pnpm run test:coverage # vitest run --coverage
 
 # 린팅 및 포맷팅
-pnpm lint             # oxlint --type-aware
-pnpm lint:fix         # oxlint --type-aware --fix
-pnpm format           # oxfmt
-pnpm format:check     # oxfmt --check
+pnpm run lint:md      # markdownlint-cli2
+pnpm run lint:ts      # oxlint
+pnpm run fmt          # oxfmt
+pnpm run fmt:check    # oxfmt --check
 ```
 
 ## 라이선스

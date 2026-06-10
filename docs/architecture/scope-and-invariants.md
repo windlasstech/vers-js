@@ -259,7 +259,7 @@ document for v0.1.0 must preserve these invariants:
    but type-specific semantic duplicate equality remains out of scope.
 9. Known-type registry membership is not a core syntax validity rule.
 10. Official fixture conformance is pinned, provenance-preserving, and limited to
-   in-scope parse/canonical behavior.
+    in-scope parse/canonical behavior.
 11. Project diagnostic fixtures define `vers-js` issue-code, span, fatality, and
     metadata expectations without asserting exact human-readable messages.
 12. Reserved semantic or support issue codes must not become active v0.1.0 core

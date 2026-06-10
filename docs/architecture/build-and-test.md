@@ -19,16 +19,16 @@ ADR-0040.
 
 The v0.1.0 development baseline is:
 
-| Concern | Contract |
-| --- | --- |
-| Implementation language | TypeScript. |
-| Primary development runtime | Node.js 22 LTS and newer. |
-| Package manager | pnpm, pinned through `packageManager` in `package.json`. |
-| Lockfile | Commit `pnpm-lock.yaml` once dependencies exist. |
-| Build authority | TypeScript compiler (`tsc`). |
-| Primary test runner | Vitest under the Node.js development baseline. |
-| Linter | Oxlint with type-aware linting. |
-| Formatter | Oxfmt. |
+| Concern                     | Contract                                                              |
+| --------------------------- | --------------------------------------------------------------------- |
+| Implementation language     | TypeScript.                                                           |
+| Primary development runtime | Node.js 22 LTS and newer.                                             |
+| Package manager             | pnpm, pinned through `devEngines.packageManager` in `package.json`.   |
+| Lockfile                    | Commit `pnpm-lock.yaml` once dependencies exist.                      |
+| Build authority             | TypeScript compiler (`tsc`).                                          |
+| Primary test runner         | Vitest under the Node.js development baseline.                        |
+| Linter                      | Oxlint with type-aware linting.                                       |
+| Formatter                   | Oxfmt.                                                                |
 | Compatibility smoke targets | Node.js 22 LTS or newer, current stable Deno, and current stable Bun. |
 
 The published library must remain runtime-agnostic even though development uses
@@ -40,7 +40,8 @@ Node.js and pnpm. Core source must avoid runtime-specific globals and APIs such 
 When implementation begins, the repository should add package scaffolding that
 preserves the architecture contracts:
 
-- `package.json` for package metadata and scripts;
+- `package.json` for package metadata, scripts, and the pnpm
+  `devEngines.packageManager` pin;
 - `pnpm-lock.yaml` once dependencies exist;
 - `.npmrc` or `pnpm-workspace.yaml` for dependency cooldown policy;
 - TypeScript configuration for development type-checking;
@@ -190,15 +191,15 @@ helpers.
 
 The test layers are:
 
-| Layer | Purpose |
-| --- | --- |
-| Unit tests | Verify small parser helpers when those helpers have meaningful internal contracts. |
-| Parser success tests | Verify successful `parseVers()`, `validateVers()`, and `canonicalizeVers()` behavior. |
-| Official fixture tests | Run pinned upstream `vers_canonical_parse_test.json` cases through the local disposition table from `fixtures.md`. |
-| Project diagnostic fixtures | Assert active issue codes, severity, spans, test-only fatality expectations, ordering, and metadata. |
-| Resource boundary tests | Cover `1024` and `1025` UTF-16 code-unit input length boundaries, `16` issue cap behavior, and truncation metadata. |
-| Package boundary tests | Validate root export metadata, declaration metadata, default export, named exports, and blocked subpaths. |
-| Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun. |
+| Layer                             | Purpose                                                                                                             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Unit tests                        | Verify small parser helpers when those helpers have meaningful internal contracts.                                  |
+| Parser success tests              | Verify successful `parseVers()`, `validateVers()`, and `canonicalizeVers()` behavior.                               |
+| Official fixture tests            | Run pinned upstream `vers_canonical_parse_test.json` cases through the local disposition table from `fixtures.md`.  |
+| Project diagnostic fixtures       | Assert active issue codes, severity, spans, test-only fatality expectations, ordering, and metadata.                |
+| Resource boundary tests           | Cover `1024` and `1025` UTF-16 code-unit input length boundaries, `16` issue cap behavior, and truncation metadata. |
+| Package boundary tests            | Validate root export metadata, declaration metadata, default export, named exports, and blocked subpaths.           |
+| Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun.                                            |
 
 Tests must not assert exact human-readable diagnostic message strings. They may
 assert that messages are non-empty strings.
@@ -280,7 +281,7 @@ a future implementation decision explicitly includes them.
 Dependency installation and CI must preserve Windlass supply-chain requirements:
 
 - use pnpm for dependency installation and scripts;
-- pin pnpm through `packageManager`;
+- pin pnpm through `devEngines.packageManager`;
 - commit `pnpm-lock.yaml` once dependencies exist;
 - use frozen lockfile installs in CI;
 - configure pnpm `minimumReleaseAge` with a default of at least `1440` minutes once

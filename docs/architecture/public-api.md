@@ -149,9 +149,7 @@ export interface VersRange {
   canonical: string;
 }
 
-export type VersConstraint =
-  | VersStarConstraint
-  | VersVersionConstraint;
+export type VersConstraint = VersStarConstraint | VersVersionConstraint;
 
 export interface VersStarConstraint {
   comparator: "*";
@@ -223,9 +221,7 @@ export type VersCoreIssueCode =
   | VersCanonicalIssueCode
   | VersResourceIssueCode;
 
-export type VersReservedIssueCode =
-  | VersReservedCanonicalIssueCode
-  | VersSupportIssueCode;
+export type VersReservedIssueCode = VersReservedCanonicalIssueCode | VersSupportIssueCode;
 ```
 
 `VersReservedIssueCode` is exported as reserved vocabulary but is not part of the
@@ -291,11 +287,7 @@ parsing.
 Public examples must import from the package root:
 
 ```ts
-import vers, {
-  canonicalizeVers,
-  parseVers,
-  validateVers,
-} from "vers-js";
+import vers, { canonicalizeVers, parseVers, validateVers } from "vers-js";
 ```
 
 The package must not support public subpath imports such as:

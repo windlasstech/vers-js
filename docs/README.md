@@ -10,7 +10,7 @@ This directory contains the design documentation and architecture specifications
 
 ## Structure
 
-```
+```text
 docs/
 ├── architecture/    # Implementation specifications
 ├── decisions/       # Architectural Decision Records (ADRs)
@@ -50,6 +50,6 @@ This project follows **SDD (Spec-Driven Development)** methodology.
 
 The intended documentation workflow is:
 
-1. **Decisions first**: Use ADRs to understand *why* architecture was chosen
-2. **Specs second**: Use architecture specifications to define *exact observable behavior*
+1. **Decisions first**: Use ADRs to understand _why_ architecture was chosen
+2. **Specs second**: Use architecture specifications to define _exact observable behavior_
 3. **Implementation third**: Build library and tests against the specifications

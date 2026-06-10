@@ -25,9 +25,7 @@ export interface VersRange {
   canonical: string;
 }
 
-export type VersConstraint =
-  | VersStarConstraint
-  | VersVersionConstraint;
+export type VersConstraint = VersStarConstraint | VersVersionConstraint;
 
 export interface VersStarConstraint {
   comparator: "*";
@@ -116,7 +114,7 @@ version, simplify, merge, or otherwise make the range containment-ready.
 For example:
 
 ```ts
-parseVers("vers:npm/<2.0.0|>=1.0.0")
+parseVers("vers:npm/<2.0.0|>=1.0.0");
 ```
 
 If accepted by v0.1.0 syntax validation, this input preserves the constraint

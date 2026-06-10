@@ -1,0 +1,12 @@
+[*]
+# Non-configurable Oxfmt behaviors
+charset = utf-8
+# Caveat: Oxfmt won’t trim trailing whitespace inside template strings, but your editor might.
+trim_trailing_whitespace = true
+
+# Configurable Oxfmt behaviors
+insert_final_newline = true
+end_of_line = lf
+indent_style = space
+indent_size = 2
+max_line_length = 100

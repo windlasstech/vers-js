@@ -66,13 +66,13 @@ conformance. The selected upstream file set for the v0.1.0 snapshot is:
 The selected upstream file checksums at commit
 `cd8a9c98ec1a50918b4d0e1cb4f4a3b3743bf17f` are:
 
-| Upstream path | SHA-256 |
-| --- | --- |
-| `docs/standard/specification.md` | `b31ebb053395f610aefcb5291d5f6f21bd2c4569598b88e7abd683b3e02f0a4c` |
-| `docs/how-to-parse.md` | `dbe40d2d70a4f36754599f2324dcc24e8403893f0fe0b2788e9bf00d880b3396` |
-| `docs/tests.md` | `7d676b76b028187b36b33fa41b52bc5d43b9fbc25b16660828c664b3eed03a0b` |
-| `schemas/vers-test.schema-0.1.json` | `d6073515f47eb0b8a3dcf248e76a0b8938f4475a3b1b04e8caafe7e4c750ca30` |
-| `schemas/vers-test.schema-0.2.json` | `09300a2031d37314a6fbdde95be50492f058802ba810f907b17db2dcb4c3ac8f` |
+| Upstream path                          | SHA-256                                                            |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| `docs/standard/specification.md`       | `b31ebb053395f610aefcb5291d5f6f21bd2c4569598b88e7abd683b3e02f0a4c` |
+| `docs/how-to-parse.md`                 | `dbe40d2d70a4f36754599f2324dcc24e8403893f0fe0b2788e9bf00d880b3396` |
+| `docs/tests.md`                        | `7d676b76b028187b36b33fa41b52bc5d43b9fbc25b16660828c664b3eed03a0b` |
+| `schemas/vers-test.schema-0.1.json`    | `d6073515f47eb0b8a3dcf248e76a0b8938f4475a3b1b04e8caafe7e4c750ca30` |
+| `schemas/vers-test.schema-0.2.json`    | `09300a2031d37314a6fbdde95be50492f058802ba810f907b17db2dcb4c3ac8f` |
 | `tests/vers_canonical_parse_test.json` | `ab22ccf0518f08e34bfe17dd141fadb8a166ab0c0b7e399e54462ffc3ac6d83b` |
 
 The v0.1.0 implementation may copy or generate local fixture files from this

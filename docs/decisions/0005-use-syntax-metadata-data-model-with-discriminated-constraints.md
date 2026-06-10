@@ -137,7 +137,7 @@ object such as `{ comparator: VersComparator; version?: string }`.
 - Good, because it is simple and compact.
 - Good, because it still avoids semantic version interpretation.
 - Bad, because it can represent invalid states such as `{ comparator: "*",
-  version: "1.0.0" }` or `{ comparator: ">=", version: undefined }`.
+version: "1.0.0" }` or `{ comparator: ">=", version: undefined }`.
 - Bad, because callers need extra checks that TypeScript could otherwise enforce.
 
 ### Semantic typed range model

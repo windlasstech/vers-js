@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: false
+  commands:
+    lint-md-fix:
+      run: pnpm run lint:md:fix
+      stage_fixed: true
+    lint-ts-fix:
+      run: pnpm run lint:ts:fix
+      stage_fixed: true
+    format:
+      run: pnpm run fmt
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    dco-signoff:
+      run: 'grep -Eq "^Signed-off-by: .+ <[^<>]+>$" "{1}" || (printf "%s\n" "Missing DCO Signed-off-by line. Commit with git commit -s or add a Signed-off-by trailer." >&2; exit 1)'

@@ -77,9 +77,7 @@ type VersIssueCode =
   | VersCanonicalIssueCode
   | VersSupportIssueCode;
 
-type VersLexicalIssueCode =
-  | "lexical.ascii_whitespace"
-  | "lexical.invalid_character";
+type VersLexicalIssueCode = "lexical.ascii_whitespace" | "lexical.invalid_character";
 
 type VersSyntaxIssueCode =
   | "syntax.missing_scheme_separator"
@@ -104,9 +102,7 @@ type VersCanonicalIssueCode =
   | "canonical.duplicate_version"
   | "canonical.invalid_comparator_sequence";
 
-type VersSupportIssueCode =
-  | "support.unknown_type"
-  | "support.unsupported_semantic";
+type VersSupportIssueCode = "support.unknown_type" | "support.unsupported_semantic";
 ```
 
 Namespace-specific unions are part of the design. Callers that need category

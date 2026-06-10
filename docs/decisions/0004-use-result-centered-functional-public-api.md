@@ -69,9 +69,7 @@ The exact exported type names may be refined during implementation, but the
 primary result contract must be a discriminated union equivalent to:
 
 ```ts
-type VersResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; issues: VersIssue[] };
+type VersResult<T> = { ok: true; value: T } | { ok: false; issues: VersIssue[] };
 ```
 
 `parseVers()` returns parsed VERS syntax metadata when the input is valid and
