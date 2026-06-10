@@ -71,7 +71,21 @@
     "no-use-before-define": "error",
     "sort-imports": "off"
   },
-  "overrides": [],
+  "overrides": [
+    {
+      "files": ["vitest.config.ts"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": ["src/index.ts"],
+      "rules": {
+        "import/unambiguous": "off",
+        "unicorn/no-empty-file": "off"
+      }
+    }
+  ],
   "options": {
     "typeAware": true,
     "typeCheck": false
