@@ -86,7 +86,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | Use Oxfmt for v1 formatting                                 | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Use Node 22 LTS and Oxc-aligned TypeScript baselines        | accepted |
 
-### Finalization (ADR-0041–0046)
+### Finalization (ADR-0041–0047)
 
 | ADR                                                                           | Title                                                         | Status   |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------- | -------- |
@@ -96,6 +96,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0044](0044-use-presence-based-diagnostic-truncation-metadata.md)             | Use presence-based diagnostic truncation metadata             | accepted |
 | [0045](0045-use-v0-1-0-resource-limit-values.md)                              | Use v0.1.0 resource limit values                              | accepted |
 | [0046](0046-separate-official-conformance-and-project-diagnostic-fixtures.md) | Separate official conformance and project diagnostic fixtures | accepted |
+| [0047](0047-use-vitest-v8-coverage-and-codecov-reporting.md)                  | Use Vitest V8 coverage and Codecov reporting                  | accepted |
 
 ## Adding a New ADR
 
