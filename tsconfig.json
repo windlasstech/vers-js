@@ -16,6 +16,7 @@
     "target": "ES2023",
     "types": [],
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
