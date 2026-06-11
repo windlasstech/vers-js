@@ -20,8 +20,10 @@ const ASCII_CARRIAGE_RETURN = 13;
 const ASCII_SPACE = 32;
 const ASCII_PERCENT = 37;
 const LOWERCASE_A = 97;
+const LOWERCASE_F = 102;
 const LOWERCASE_Z = 122;
 const UPPERCASE_A = 65;
+const UPPERCASE_F = 70;
 const UPPERCASE_Z = 90;
 const DIGIT_ZERO = 48;
 const DIGIT_NINE = 57;
@@ -632,8 +634,8 @@ class Parser {
   private static isHex(codeUnit: number): boolean {
     return (
       Parser.isDigit(codeUnit) ||
-      (codeUnit >= UPPERCASE_A && codeUnit <= 70) ||
-      (codeUnit >= LOWERCASE_A && codeUnit <= 102)
+      (codeUnit >= UPPERCASE_A && codeUnit <= UPPERCASE_F) ||
+      (codeUnit >= LOWERCASE_A && codeUnit <= LOWERCASE_F)
     );
   }
 
