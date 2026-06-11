@@ -51,10 +51,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:package": "pnpm run build && node tests/runtime-smoke/package-artifacts.mjs",
+    "typecheck:package": "pnpm run build && tsc -p tests/types/tsconfig.package.json",
+    "typecheck:package:blocked": "pnpm run build && node tests/runtime-smoke/blocked-subpath-typecheck.mjs",
     "smoke:runtime:node": "node tests/runtime-smoke/built-package.mjs",
     "smoke:runtime:deno": "deno run tests/runtime-smoke/built-package.mjs",
     "smoke:runtime:bun": "bun tests/runtime-smoke/built-package.mjs",
+    "smoke:package": "pnpm run build && node tests/runtime-smoke/package-name.mjs",
     "smoke:runtime": "pnpm run smoke:runtime:node && pnpm run smoke:runtime:deno && pnpm run smoke:runtime:bun",
+    "verify:package": "pnpm run test:package && pnpm run typecheck:package && pnpm run typecheck:package:blocked && pnpm run smoke:package",
     "verify:runtime": "pnpm run build && pnpm run smoke:runtime"
   },
   "devDependencies": {

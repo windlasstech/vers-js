@@ -87,6 +87,18 @@
       "rules": {
         "import/no-default-export": "off"
       }
+    },
+    {
+      "files": ["tests/runtime-smoke/*.mjs"],
+      "rules": {
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      "files": ["tests/types/*.ts"],
+      "rules": {
+        "no-duplicate-imports": "off"
+      }
     }
   ],
   "options": {
