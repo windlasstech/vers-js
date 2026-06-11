@@ -16,6 +16,7 @@
 
 - **런타임 독립적**: Node.js, Deno, Bun에서 모두 동작
 - **ESM 전용**: 최신 ECMAScript 모듈, CommonJS 미지원
+- **named export 전용**: JavaScript default export 없이 명시적 루트 export 제공
 - **TypeScript 우선**: TypeScript로 작성되며 완전한 타입 선언 제공
 - **엄격한 정규 검증**: 자동 수정, 강제 변환, 경고 모드 없음
 - **기계가 읽을 수 있는 진단 정보**: 하위 도구를 위한 구조화한 오류 코드

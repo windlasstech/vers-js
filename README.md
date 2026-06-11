@@ -16,6 +16,7 @@ A runtime-agnostic TypeScript library for parsing and validating [VERS](https://
 
 - **Runtime-agnostic**: Works in Node.js, Deno, and Bun
 - **ESM-only**: Modern ECMAScript Modules, no CommonJS
+- **Named exports only**: Explicit root exports with no JavaScript default export
 - **TypeScript-first**: Written in TypeScript with full type declarations
 - **Strict canonical validation**: No repair, coercion, or warning modes
 - **Machine-readable diagnostics**: Structured error codes for downstream tooling
