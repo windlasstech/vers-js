@@ -1,0 +1,291 @@
+[
+  {
+    "id": "resource-input-too-long",
+    "inputKind": "over-max-length",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "resource.input_too_long",
+          "severity": "error",
+          "fatality": "resource"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lexical-ascii-whitespace",
+    "input": "vers:npm/>=1.0.0 |<2.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "lexical.ascii_whitespace",
+          "severity": "error",
+          "span": { "start": 16, "end": 17 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lexical-invalid-character",
+    "input": "vers:generic/1/2",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "lexical.invalid_character",
+          "severity": "error",
+          "span": { "start": 14, "end": 15 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "syntax-missing-scheme-separator",
+    "input": "vers-npm/1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "syntax.missing_scheme_separator",
+          "severity": "error",
+          "span": { "start": 4, "end": 4 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "syntax-invalid-scheme",
+    "input": "VERS:npm/1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "syntax.invalid_scheme",
+          "severity": "error",
+          "span": { "start": 0, "end": 4 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "syntax-missing-type",
+    "input": "vers:/1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "syntax.missing_type",
+          "severity": "error",
+          "span": { "start": 5, "end": 5 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "syntax-invalid-type-case",
+    "input": "vers:NPM/1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "syntax.invalid_type_case",
+          "severity": "error",
+          "span": { "start": 5, "end": 6 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "syntax-missing-constraint-separator",
+    "input": "vers:npm",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "syntax.missing_constraint_separator",
+          "severity": "error",
+          "span": { "start": 8, "end": 8 },
+          "fatality": "whole-input"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-missing-constraints",
+    "input": "vers:npm/",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.missing_constraints",
+          "severity": "error",
+          "span": { "start": 9, "end": 9 },
+          "fatality": "constraint-list"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-leading-pipe",
+    "input": "vers:npm/|1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.leading_pipe",
+          "severity": "error",
+          "span": { "start": 9, "end": 10 },
+          "fatality": "constraint-list"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-trailing-pipe",
+    "input": "vers:npm/1.0.0|",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.trailing_pipe",
+          "severity": "error",
+          "span": { "start": 14, "end": 15 },
+          "fatality": "constraint-list"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-consecutive-pipe-and-empty-constraint",
+    "input": "vers:npm/1.0.0||2.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.consecutive_pipe",
+          "severity": "error",
+          "span": { "start": 15, "end": 16 },
+          "fatality": "constraint-list"
+        },
+        {
+          "code": "constraint.empty_constraint",
+          "severity": "error",
+          "span": { "start": 15, "end": 15 },
+          "fatality": "constraint-list"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-empty-version",
+    "input": "vers:npm/<=",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.empty_version",
+          "severity": "error",
+          "span": { "start": 11, "end": 11 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-invalid-comparator",
+    "input": "vers:npm/=>1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.invalid_comparator",
+          "severity": "error",
+          "span": { "start": 9, "end": 11 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-invalid-star-constraint",
+    "input": "vers:npm/>=*",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.invalid_star_constraint",
+          "severity": "error",
+          "span": { "start": 11, "end": 12 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-invalid-percent-encoding",
+    "input": "vers:generic/%G0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.invalid_percent_encoding",
+          "severity": "error",
+          "span": { "start": 13, "end": 16 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "constraint-invalid-utf8",
+    "input": "vers:generic/%C3%28",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "constraint.invalid_utf8",
+          "severity": "error",
+          "span": { "start": 13, "end": 19 },
+          "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "canonical-duplicate-version",
+    "input": "vers:npm/1.0.0|=1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "canonical.duplicate_version",
+          "severity": "error",
+          "span": { "start": 16, "end": 21 },
+          "fatality": "canonical"
+        }
+      ]
+    }
+  },
+  {
+    "id": "diagnostic-truncation-metadata",
+    "inputKind": "too-many-pipes",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issueCount": 16,
+      "metadata": {
+        "diagnostics": {
+          "truncated": true,
+          "maxIssues": 16
+        }
+      }
+    }
+  }
+]

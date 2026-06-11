@@ -1,131 +1,170 @@
 import { describe, expect, it } from "vitest";
 
-import { parseVers } from "../src/index.ts";
-import type { VersFailure, VersIssueCode, VersSpan } from "../src/types.ts";
+import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
+import type {
+  VersCanonicalizeResult,
+  VersFailure,
+  VersIssue,
+  VersParseResult,
+  VersValidationResult,
+} from "../src/types.ts";
+import diagnosticFixture from "./fixtures/project-diagnostics.json" with { type: "json" };
 
-const NON_EMPTY_LENGTH = 0;
+const MAX_INPUT_LENGTH = 1024;
+const OVER_MAX_INPUT_LENGTH = 1025;
+const ISSUE_CAP_EXCEEDING_PIPE_COUNT = 18;
+const EMPTY_LENGTH = 0;
+
+type PublicResult = VersCanonicalizeResult | VersParseResult | VersValidationResult;
 
 interface ExpectedIssue {
-  code: VersIssueCode;
-  span?: VersSpan;
+  code: string;
+  fatality?: string;
+  severity: string;
+  span?: { end: number; start: number };
 }
 
-type DiagnosticCase = readonly [string, string, ExpectedIssue[]];
+interface PublicIssueExpectation {
+  code: string;
+  severity: string;
+  span?: { end: number; start: number };
+}
 
-const diagnosticCases = [
-  [
-    "ascii whitespace",
-    "vers:npm/>=1.0.0 |<2.0.0",
-    [{ code: "lexical.ascii_whitespace", span: { end: 17, start: 16 } }],
-  ],
-  [
-    "raw invalid version character",
-    "vers:generic/1/2",
-    [{ code: "lexical.invalid_character", span: { end: 15, start: 14 } }],
-  ],
-  [
-    "missing scheme separator",
-    "vers-npm/1.0.0",
-    [{ code: "syntax.missing_scheme_separator", span: { end: 4, start: 4 } }],
-  ],
-  [
-    "invalid scheme",
-    "VERS:npm/1.0.0",
-    [{ code: "syntax.invalid_scheme", span: { end: 4, start: 0 } }],
-  ],
-  ["missing type", "vers:/1.0.0", [{ code: "syntax.missing_type", span: { end: 5, start: 5 } }]],
-  [
-    "invalid type case",
-    "vers:NPM/1.0.0",
-    [{ code: "syntax.invalid_type_case", span: { end: 6, start: 5 } }],
-  ],
-  [
-    "missing constraint separator",
-    "vers:npm",
-    [{ code: "syntax.missing_constraint_separator", span: { end: 8, start: 8 } }],
-  ],
-  [
-    "missing constraints",
-    "vers:npm/",
-    [{ code: "constraint.missing_constraints", span: { end: 9, start: 9 } }],
-  ],
-  [
-    "leading pipe",
-    "vers:npm/|1.0.0",
-    [{ code: "constraint.leading_pipe", span: { end: 10, start: 9 } }],
-  ],
-  [
-    "trailing pipe",
-    "vers:npm/1.0.0|",
-    [{ code: "constraint.trailing_pipe", span: { end: 15, start: 14 } }],
-  ],
-  [
-    "consecutive pipes",
-    "vers:npm/1.0.0||2.0.0",
-    [
-      { code: "constraint.consecutive_pipe", span: { end: 16, start: 15 } },
-      { code: "constraint.empty_constraint", span: { end: 15, start: 15 } },
-    ],
-  ],
-  [
-    "empty version",
-    "vers:npm/<=",
-    [{ code: "constraint.empty_version", span: { end: 11, start: 11 } }],
-  ],
-  [
-    "invalid comparator",
-    "vers:npm/=>1.0.0",
-    [{ code: "constraint.invalid_comparator", span: { end: 11, start: 9 } }],
-  ],
-  [
-    "invalid star",
-    "vers:npm/>=*",
-    [{ code: "constraint.invalid_star_constraint", span: { end: 12, start: 11 } }],
-  ],
-  [
-    "invalid percent",
-    "vers:generic/%G0",
-    [{ code: "constraint.invalid_percent_encoding", span: { end: 16, start: 13 } }],
-  ],
-  [
-    "invalid utf8",
-    "vers:generic/%C3%28",
-    [{ code: "constraint.invalid_utf8", span: { end: 19, start: 13 } }],
-  ],
-  [
-    "duplicate decoded version",
-    "vers:npm/1.0.0|=1.0.0",
-    [{ code: "canonical.duplicate_version", span: { end: 21, start: 16 } }],
-  ],
-] satisfies DiagnosticCase[];
+interface ExpectedFailure {
+  issueCount?: number;
+  issues?: ExpectedIssue[];
+  metadata?: {
+    diagnostics: {
+      maxIssues: number;
+      truncated: boolean;
+    };
+  };
+}
 
-function expectFailure(result: ReturnType<typeof parseVers>): asserts result is VersFailure {
+const fixtures = diagnosticFixture;
+
+function inputFor(fixture: (typeof fixtures)[number]): string {
+  if (fixture.input !== undefined) {
+    return fixture.input;
+  }
+
+  if (fixture.inputKind === "over-max-length") {
+    const prefix = "vers:generic/";
+    return `${prefix}${"a".repeat(OVER_MAX_INPUT_LENGTH - prefix.length)}`;
+  }
+
+  return `vers:npm/${"|".repeat(ISSUE_CAP_EXCEEDING_PIPE_COUNT)}`;
+}
+
+function runOperation(operation: string, input: string): PublicResult {
+  if (operation === "validateVers") {
+    return validateVers(input);
+  }
+
+  if (operation === "canonicalizeVers") {
+    return canonicalizeVers(input);
+  }
+
+  return parseVers(input);
+}
+
+function expectFailure(result: PublicResult): asserts result is VersFailure {
   expect(result.ok).toBe(false);
 }
 
-function selectIssue(issue: { code: VersIssueCode; span?: VersSpan }): ExpectedIssue {
+function publicIssue(issue: VersIssue): PublicIssueExpectation {
+  expect("fatality" in issue).toBe(false);
+  expect(issue.message.length).toBeGreaterThan(EMPTY_LENGTH);
+
   if (issue.span === undefined) {
-    return { code: issue.code };
+    return { code: issue.code, severity: issue.severity };
   }
 
-  return { code: issue.code, span: issue.span };
+  return { code: issue.code, severity: issue.severity, span: issue.span };
 }
 
-describe("diagnostics", (): void => {
-  it.each(diagnosticCases)(
-    "reports %s",
-    (_name: string, input: string, expectedIssues: ExpectedIssue[]): void => {
-      const result = parseVers(input);
+function expectedPublicIssue(issue: ExpectedIssue): PublicIssueExpectation {
+  if (issue.span === undefined) {
+    return { code: issue.code, severity: issue.severity };
+  }
 
-      expectFailure(result);
-      expect(result.issues.map(selectIssue)).toEqual(expectedIssues);
+  return { code: issue.code, severity: issue.severity, span: issue.span };
+}
 
-      for (const issue of result.issues) {
-        expect(issue.severity).toBe("error");
-        expect(issue.message.length).toBeGreaterThan(NON_EMPTY_LENGTH);
-      }
-    },
-  );
+function assertExpectedFailure(
+  result: PublicResult,
+  expected: ExpectedFailure,
+): asserts result is VersFailure {
+  expectFailure(result);
+
+  if (expected.issueCount !== undefined) {
+    expect(result.issues).toHaveLength(expected.issueCount);
+  }
+
+  if (expected.issues !== undefined) {
+    expect(result.issues.map(publicIssue)).toEqual(expected.issues.map(expectedPublicIssue));
+  }
+
+  expect(result.metadata).toEqual(expected.metadata);
+}
+
+describe("project diagnostic fixtures", (): void => {
+  it("covers every active issue code", (): void => {
+    const coveredCodes = new Set(
+      fixtures.flatMap(
+        (fixture): string[] => fixture.expected.issues?.map((issue): string => issue.code) ?? [],
+      ),
+    );
+
+    expect([...coveredCodes].toSorted()).toEqual([
+      "canonical.duplicate_version",
+      "constraint.consecutive_pipe",
+      "constraint.empty_constraint",
+      "constraint.empty_version",
+      "constraint.invalid_comparator",
+      "constraint.invalid_percent_encoding",
+      "constraint.invalid_star_constraint",
+      "constraint.invalid_utf8",
+      "constraint.leading_pipe",
+      "constraint.missing_constraints",
+      "constraint.trailing_pipe",
+      "lexical.ascii_whitespace",
+      "lexical.invalid_character",
+      "resource.input_too_long",
+      "syntax.invalid_scheme",
+      "syntax.invalid_type_case",
+      "syntax.missing_constraint_separator",
+      "syntax.missing_scheme_separator",
+      "syntax.missing_type",
+    ]);
+  });
+
+  it("does not reject inputs at exactly 1024 UTF-16 code units solely for length", (): void => {
+    const prefix = "vers:generic/";
+    const input = `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
+
+    expect(input.length).toBe(MAX_INPUT_LENGTH);
+    expect(parseVers(input).ok).toBe(true);
+  });
+
+  it.each(fixtures)("applies $id to each declared public operation", (fixture): void => {
+    const input = inputFor(fixture);
+    const failures = fixture.operations.map((operation): VersFailure => {
+      const result = runOperation(operation, input);
+      assertExpectedFailure(result, fixture.expected);
+      return result;
+    });
+    const [firstFailure] = failures;
+
+    expect(firstFailure).toBeDefined();
+
+    if (firstFailure !== undefined) {
+      expect(failures.every((failure: VersFailure): boolean => failure === firstFailure)).toBe(
+        false,
+      );
+      expect(failures).toEqual(failures.map((): VersFailure => firstFailure));
+    }
+  });
 
   it("does not emit reserved semantic ordering diagnostics", (): void => {
     const result = parseVers("vers:npm/>=2.0.0|<1.0.0");
