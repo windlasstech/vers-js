@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { parseVers } from "../src/index.ts";
-import type { VersFailure, VersIssueCode, VersSpan } from "../src/index.ts";
+import type { VersFailure, VersIssueCode, VersSpan } from "../src/types.ts";
+
+const NON_EMPTY_LENGTH = 0;
 
 interface ExpectedIssue {
   code: VersIssueCode;
@@ -120,7 +122,7 @@ describe("diagnostics", (): void => {
 
       for (const issue of result.issues) {
         expect(issue.severity).toBe("error");
-        expect(issue.message.length).toBeGreaterThan(0);
+        expect(issue.message.length).toBeGreaterThan(NON_EMPTY_LENGTH);
       }
     },
   );
