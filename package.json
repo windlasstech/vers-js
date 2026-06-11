@@ -1,5 +1,43 @@
 {
+  "name": "vers-js",
+  "version": "0.1.0",
+  "description": "A runtime-agnostic TypeScript library for parsing and validating VErsion Range Specifier (VERS) expressions.",
+  "keywords": [
+    "dependencies",
+    "package",
+    "parser",
+    "parsing",
+    "validation-library",
+    "validator",
+    "vers",
+    "version",
+    "versioning"
+  ],
+  "homepage": "https://github.com/windlasstech/vers-js#readme",
+  "bugs": {
+    "url": "https://github.com/windlasstech/vers-js/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "Yunseo Kim <yunseokim@windlasstech.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windlasstech/vers-js.git"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "README.ko.md"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
