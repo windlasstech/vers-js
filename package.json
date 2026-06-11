@@ -50,7 +50,12 @@
     "fmt:check": "oxfmt --check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "smoke:runtime:node": "node tests/runtime-smoke/built-package.mjs",
+    "smoke:runtime:deno": "deno run tests/runtime-smoke/built-package.mjs",
+    "smoke:runtime:bun": "bun tests/runtime-smoke/built-package.mjs",
+    "smoke:runtime": "pnpm run smoke:runtime:node && pnpm run smoke:runtime:deno && pnpm run smoke:runtime:bun",
+    "verify:runtime": "pnpm run build && pnpm run smoke:runtime"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
