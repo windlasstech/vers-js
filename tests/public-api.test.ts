@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
 
+const NON_STRING_NUMBER_INPUT = 123;
+
 describe("public VERS API", (): void => {
   it("parses comparator ranges as syntax metadata", (): void => {
     const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
@@ -90,7 +92,7 @@ describe("public VERS API", (): void => {
   });
 
   it("throws TypeError for non-string runtime input", (): void => {
-    const values = [null, undefined, 123, {}, [], new Uint8Array()];
+    const values = [null, undefined, NON_STRING_NUMBER_INPUT, {}, [], new Uint8Array()];
 
     for (const value of values) {
       expect(() => Reflect.apply(parseVers, null, [value])).toThrow(TypeError);

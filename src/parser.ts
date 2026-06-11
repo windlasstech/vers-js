@@ -35,6 +35,9 @@ const HEX_RADIX = 16;
 const HEX_ESCAPE_WIDTH = 2;
 const ESCAPE_WIDTH = 3;
 const FIRST_INDEX = 0;
+const NOT_FOUND = -1;
+const FIRST_ESCAPE_HEX_INDEX = 1;
+const SECOND_ESCAPE_HEX_INDEX = 2;
 
 interface ParseSuccess {
   ok: true;
@@ -256,7 +259,7 @@ class Parser {
   #constraintSeparatorIndex(): number | undefined {
     const slashIndex = this.#input.indexOf("/", SCHEME_PREFIX.length);
 
-    if (slashIndex === -1) {
+    if (slashIndex === NOT_FOUND) {
       return undefined;
     }
 
@@ -276,7 +279,7 @@ class Parser {
   #schemeSeparatorIndex(): number | undefined {
     const colonIndex = this.#input.indexOf(":");
 
-    if (colonIndex !== -1) {
+    if (colonIndex !== NOT_FOUND) {
       return colonIndex;
     }
 
@@ -618,8 +621,8 @@ class Parser {
 
     if (
       escapeText.length === ESCAPE_WIDTH &&
-      Parser.isHex(escapeText.charCodeAt(1)) &&
-      Parser.isHex(escapeText.charCodeAt(2))
+      Parser.isHex(escapeText.charCodeAt(FIRST_ESCAPE_HEX_INDEX)) &&
+      Parser.isHex(escapeText.charCodeAt(SECOND_ESCAPE_HEX_INDEX))
     ) {
       return true;
     }
