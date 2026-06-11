@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { parseVers } from '../src/index.ts';
-import type { VersFailure, VersIssueCode, VersSpan } from '../src/index.ts';
+import { parseVers } from "../src/index.ts";
+import type { VersFailure, VersIssueCode, VersSpan } from "../src/index.ts";
 
 interface ExpectedIssue {
   code: VersIssueCode;
