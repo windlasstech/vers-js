@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import vers, { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
+import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
 
 describe("public VERS API", (): void => {
   it("parses comparator ranges as syntax metadata", (): void => {
@@ -79,10 +79,13 @@ describe("public VERS API", (): void => {
     });
   });
 
-  it("supports the universal default export object", (): void => {
+  it("supports namespace-style access through the module namespace object", async (): Promise<void> => {
+    const vers = await import("../src/index.ts");
+
     expect(vers.parseVers).toBe(parseVers);
     expect(vers.validateVers).toBe(validateVers);
     expect(vers.canonicalizeVers).toBe(canonicalizeVers);
+    expect("default" in vers).toBe(false);
     expect(Object.keys(vers).toSorted()).toEqual(["canonicalizeVers", "parseVers", "validateVers"]);
   });
 

@@ -32,16 +32,6 @@ function canonicalizeVers(input: string): VersCanonicalizeResult {
   return { ok: true, value: result.value.canonical };
 }
 
-const vers: {
-  canonicalizeVers: typeof canonicalizeVers;
-  parseVers: typeof parseVers;
-  validateVers: typeof validateVers;
-} = {
-  canonicalizeVers,
-  parseVers,
-  validateVers,
-};
-
 export type {
   VersCanonicalIssueCode,
   VersCanonicalizeResult,
@@ -70,4 +60,4 @@ export type {
   VersVersionConstraint,
 } from "./types.ts";
 
-export { canonicalizeVers, parseVers, validateVers, vers as default };
+export { canonicalizeVers, parseVers, validateVers };

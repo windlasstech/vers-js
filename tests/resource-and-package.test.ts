@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import vers, { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
+import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
 
 describe("resource limits", (): void => {
   it("does not reject inputs at exactly 1024 UTF-16 code units solely for length", (): void => {
@@ -41,10 +41,13 @@ describe("resource limits", (): void => {
 });
 
 describe("package boundary", (): void => {
-  it("exports the three runtime functions at the root", (): void => {
+  it("exports only the three runtime functions at the root", async (): Promise<void> => {
+    const vers = await import("../src/index.ts");
+
     expect(parseVers).toBeTypeOf("function");
     expect(validateVers).toBeTypeOf("function");
     expect(canonicalizeVers).toBeTypeOf("function");
-    expect(vers).toEqual({ canonicalizeVers, parseVers, validateVers });
+    expect("default" in vers).toBe(false);
+    expect(Object.keys(vers).toSorted()).toEqual(["canonicalizeVers", "parseVers", "validateVers"]);
   });
 });
