@@ -101,3 +101,58 @@ describe("public VERS API", (): void => {
     }
   });
 });
+
+describe("positive project VERS fixtures", (): void => {
+  it("parses standalone star constraints", (): void => {
+    expect(parseVers("vers:npm/*")).toEqual({
+      ok: true,
+      value: {
+        canonical: "vers:npm/*",
+        constraints: [{ comparator: "*", version: null }],
+        scheme: "vers",
+        type: "npm",
+      },
+    });
+  });
+
+  it("accepts unknown lowercase type names as syntax-only metadata", (): void => {
+    expect(parseVers("vers:support.unknown-type/1.0.0")).toEqual({
+      ok: true,
+      value: {
+        canonical: "vers:support.unknown-type/1.0.0",
+        constraints: [{ comparator: "=", version: "1.0.0" }],
+        scheme: "vers",
+        type: "support.unknown-type",
+      },
+    });
+  });
+
+  it("parses every valid version comparator", (): void => {
+    expect(parseVers("vers:npm/1.0.0|!=1.0.1|<2.0.0|<=2.0.1|>0.9.0|>=1.0.2")).toEqual({
+      ok: true,
+      value: {
+        canonical: "vers:npm/1.0.0|!=1.0.1|<2.0.0|<=2.0.1|>0.9.0|>=1.0.2",
+        constraints: [
+          { comparator: "=", version: "1.0.0" },
+          { comparator: "!=", version: "1.0.1" },
+          { comparator: "<", version: "2.0.0" },
+          { comparator: "<=", version: "2.0.1" },
+          { comparator: ">", version: "0.9.0" },
+          { comparator: ">=", version: "1.0.2" },
+        ],
+        scheme: "vers",
+        type: "npm",
+      },
+    });
+  });
+
+  it("rejects duplicate decoded versions across raw and percent-encoded spelling", (): void => {
+    const result = parseVers("vers:generic/%C3%A9|=%c3%a9");
+
+    expect(result.ok).toBe(false);
+
+    if (!result.ok) {
+      expect(result.issues.map((issue) => issue.code)).toEqual(["canonical.duplicate_version"]);
+    }
+  });
+});
