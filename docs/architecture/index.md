@@ -100,10 +100,10 @@ Include:
 - failure result shape and presence-based metadata;
 - non-string runtime input behavior with `TypeError`;
 - exported public types and reserved/non-exported internals;
-- named export, default export, root-only export, and ESM-only expectations.
+- named export, no-default-export, root-only export, and ESM-only expectations.
 
 Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013,
-ADR-0014, ADR-0031, ADR-0032, ADR-0044.
+ADR-0014, ADR-0031, ADR-0032, ADR-0044, ADR-0050.
 
 ### `data-model-and-canonical-output.md`
 
@@ -238,7 +238,7 @@ Include:
 - TypeScript compiler-first build without bundling;
 - ESM-only package output;
 - root-only package exports and root type declarations;
-- default export and named export behavior;
+- named-export-only behavior;
 - Vitest test layers: unit, parser, official fixture, project diagnostic fixture,
   resource boundary, and package boundary tests;
 - oxlint and oxfmt roles;
@@ -246,7 +246,7 @@ Include:
 - runtime-agnostic implementation constraints.
 
 Primary ADR inputs: ADR-0002, ADR-0003, ADR-0011, ADR-0012, ADR-0013,
-ADR-0014, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040.
+ADR-0014, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050.
 
 ## Optional top-level docs
 
