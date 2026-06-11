@@ -12,7 +12,7 @@ runtime input behavior, and package import boundary that implementation and test
 must preserve.
 
 Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013,
-ADR-0014, ADR-0031, ADR-0032, and ADR-0044.
+ADR-0014, ADR-0031, ADR-0032, ADR-0044, and ADR-0050.
 
 ## Public entry points
 
@@ -287,7 +287,7 @@ parsing.
 Public examples must import from the package root:
 
 ```ts
-import vers, { canonicalizeVers, parseVers, validateVers } from "vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "vers-js";
 ```
 
 The package must not support public subpath imports such as:
@@ -324,30 +324,28 @@ same declaration entry point. The `"types"` condition must appear before runtime
 conditions in the root export object.
 
 The exact output directory may be refined in `build-and-test.md`, but the v0.1.0
-package must preserve the ESM-only, root-only, universal default export shape.
+package must preserve the ESM-only, root-only, universal runtime entry shape.
 
-## Default export
+## Named exports only
 
-The package root must also provide a default export for runtime import
-compatibility. The default export is an object containing the three public core
-functions:
+The package root must provide the three public core functions as named runtime
+exports:
 
 ```ts
-declare const vers: {
-  parseVers: typeof parseVers;
-  validateVers: typeof validateVers;
-  canonicalizeVers: typeof canonicalizeVers;
-};
-
-export default vers;
+export { canonicalizeVers, parseVers, validateVers };
 ```
 
-The default export must not include parser internals, issue-code registries,
-fixture helpers, package metadata, or runtime-specific adapters.
+The package root must not provide a JavaScript default export. Users that want a
+namespace-style runtime value can use the standard ESM namespace import form:
 
-Named exports remain the preferred API for tree-shakable TypeScript use. The
-default export exists so runtime imports in Node.js, Deno, Bun, browser-oriented
-tooling, and dynamic import contexts can access one universal package value.
+```ts
+import * as vers from "vers-js";
+```
+
+Named exports keep public symbols stable for TypeScript, editor tooling, static
+analysis, and tree-shaking. The package export map may still use the
+`"exports"["."].default` condition for universal runtime entry resolution; that
+package metadata condition does not imply a JavaScript default export.
 
 ## Exported public types
 
@@ -397,3 +395,5 @@ Implementation, tests, and examples must preserve these invariants:
 9. Package consumers import runtime values and public types from `"vers-js"`
    only.
 10. The package remains ESM-only, root-only, and runtime-agnostic in v0.1.0.
+11. The package root provides named runtime exports only and no JavaScript default
+    export.

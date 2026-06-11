@@ -12,8 +12,8 @@ linting, formatting, runtime, package-boundary, and supply-chain decisions into 
 implementation contract.
 
 Primary ADR inputs: ADR-0001, ADR-0002, ADR-0003, ADR-0011, ADR-0012,
-ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, and
-ADR-0040.
+ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, and
+ADR-0050.
 
 ## Development baseline
 
@@ -143,7 +143,7 @@ Package boundary tests must verify the package root exports:
 - `parseVers`;
 - `validateVers`;
 - `canonicalizeVers`;
-- the default export object containing exactly those three runtime functions;
+- no JavaScript default export;
 - public Result, metadata, data-model, span, and issue-code types through the root
   declaration file.
 
@@ -151,8 +151,8 @@ Package boundary tests must also verify that non-string runtime inputs such as
 `null`, `undefined`, arrays, objects, and byte arrays throw `TypeError` before
 input length checks or parsing.
 
-The default export must not include parser internals, issue-code registries,
-fixture helpers, package metadata, or runtime-specific adapters.
+The package root must not export parser internals, issue-code registries, fixture
+helpers, package metadata, or runtime-specific adapters.
 
 Package boundary tests must reject unsupported subpath imports such as:
 
@@ -198,7 +198,7 @@ The test layers are:
 | Official fixture tests            | Run pinned upstream `vers_canonical_parse_test.json` cases through the local disposition table from `fixtures.md`.  |
 | Project diagnostic fixtures       | Assert active issue codes, severity, spans, test-only fatality expectations, ordering, and metadata.                |
 | Resource boundary tests           | Cover `1024` and `1025` UTF-16 code-unit input length boundaries, `16` issue cap behavior, and truncation metadata. |
-| Package boundary tests            | Validate root export metadata, declaration metadata, default export, named exports, and blocked subpaths.           |
+| Package boundary tests            | Validate root export metadata, declaration metadata, named exports only, and blocked subpaths.                      |
 | Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun.                                            |
 
 Tests must not assert exact human-readable diagnostic message strings. They may
@@ -234,7 +234,7 @@ under:
 Each smoke test must import the same built package root and exercise at least:
 
 1. named runtime exports;
-2. the default export object;
+2. absence of a JavaScript default export;
 3. one successful parse or canonicalization path;
 4. one normal failure Result path.
 
@@ -340,8 +340,8 @@ Implementation, tests, and CI must preserve these invariants:
    runtime entry.
 7. Root declaration metadata appears in both root `"types"` and
    `"exports"["."].types`.
-8. The default export object contains the three public runtime functions and no
-   internals.
+8. The package root exposes the three public runtime functions as named exports
+   only and does not provide a JavaScript default export.
 9. Vitest is the primary test runner under Node.js.
 10. Cross-runtime compatibility is proven by built-package smoke tests in Node.js,
     Deno, and Bun.
