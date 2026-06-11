@@ -18,17 +18,13 @@
         "maxDepth": 3
       }
     ],
+    "import/no-default-export": "error",
     "import/no-named-export": "off",
     "import/no-namespace": "error",
     "import/no-nodejs-modules": "error",
     "import/no-relative-parent-imports": "off",
     "import/prefer-default-export": "off",
-    "unicorn/no-null": [
-      "warn",
-      {
-        "checkStrictEquality": false
-      }
-    ],
+    "unicorn/no-null": "off",
     "unicorn/prefer-ternary": ["warn", "only-single-line"],
     "oxc/no-async-await": "off",
     "oxc/no-optional-chaining": "off",
@@ -49,6 +45,7 @@
     "max-params": "error",
     "max-statements": "error",
     "no-console": "error",
+    "no-duplicate-imports": "error",
     "no-implicit-coercion": "error",
     "no-magic-numbers": [
       "warn",
@@ -68,10 +65,23 @@
       }
     ],
     "no-ternary": "off",
+    "no-undefined": "off",
     "no-use-before-define": "error",
     "sort-imports": "off"
   },
   "overrides": [
+    {
+      "files": ["src/parser.ts"],
+      "rules": {
+        "no-magic-numbers": [
+          "warn",
+          {
+            "ignore": [0, 1],
+            "ignoreArrayIndexes": true
+          }
+        ]
+      }
+    },
     {
       "files": ["vitest.config.ts"],
       "rules": {
