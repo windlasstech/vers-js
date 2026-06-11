@@ -157,6 +157,10 @@ pnpm run test         # vitest run
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
+# 런타임 스모크 테스트
+pnpm run smoke:runtime # Node.js, Deno, Bun에서 빌드 산출물 스모크 테스트 실행
+pnpm run verify:runtime # 빌드 후 모든 런타임 스모크 테스트 실행
+
 # 린팅 및 포맷팅
 pnpm run lint:md      # markdownlint-cli2
 pnpm run lint:ts      # oxlint

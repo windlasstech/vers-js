@@ -170,6 +170,11 @@ typecheck:    tsc --noEmit
 build:        tsc -p tsconfig.build.json
 test:         vitest run
 test:watch:   vitest
+smoke:runtime:node: node tests/runtime-smoke/built-package.mjs
+smoke:runtime:deno: deno run tests/runtime-smoke/built-package.mjs
+smoke:runtime:bun:  bun tests/runtime-smoke/built-package.mjs
+smoke:runtime:      run all runtime smoke scripts against existing build output
+verify:runtime:     build package, then run all runtime smoke scripts
 lint:         oxlint --type-aware
 lint:fix:     oxlint --type-aware --fix
 format:       oxfmt
@@ -214,6 +219,12 @@ rules from `fixtures.md`. Blocking official cases assert only the success or
 failure boundary and local success metadata mapping. Project diagnostic fixtures
 own exact diagnostic expectations.
 
+The v0.1.0 official fixture implementation stores copied upstream artifacts under
+`tests/fixtures/upstream/`, local parse-fixture dispositions in
+`tests/fixtures/vers-canonical-disposition.json`, and the Vitest adapter in
+`tests/official-fixtures.test.ts`. `fixtures.md` is the source of truth for the
+fixture file layout and disposition vocabulary.
+
 Project diagnostic fixture tests must cover every active v0.1.0 issue code from
 `diagnostics.md`, including `resource.input_too_long` and diagnostic truncation
 metadata. They must also verify that reserved codes are not emitted by v0.1.0 core
@@ -237,6 +248,12 @@ Each smoke test must import the same built package root and exercise at least:
 2. absence of a JavaScript default export;
 3. one successful parse or canonicalization path;
 4. one normal failure Result path.
+
+The runtime smoke suite uses one shared built-package driver,
+`tests/runtime-smoke/built-package.mjs`. Runtime-specific package scripts for
+Node.js, Deno, and Bun all execute that same driver against `dist/index.js`. The
+driver must not import TypeScript source files, fixture helpers, test-only entry
+points, or runtime-specific package branches.
 
 Cross-runtime smoke tests must use built package output, not TypeScript source
 files or test-only entry points. They must not rely on runtime-specific package
@@ -307,6 +324,11 @@ New GitHub Actions workflows must follow Windlass workflow hardening guidance:
 
 Production release builds must run on hosted CI rather than a developer
 workstation when release provenance or attestations are claimed.
+
+Build/test CI must run `pnpm run build` before `pnpm run smoke:runtime`. Hosted CI
+may install Deno and Bun through SHA-pinned setup actions before dependency
+installation and verification, but runtime compatibility must remain tied to the
+emitted package artifact rather than development TypeScript source.
 
 ## Verification sequence
 

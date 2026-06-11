@@ -155,6 +155,10 @@ pnpm run test         # vitest run
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
+# Runtime smoke testing
+pnpm run smoke:runtime # run built-package smoke tests under Node.js, Deno, and Bun
+pnpm run verify:runtime # build, then run all runtime smoke tests
+
 # Linting and formatting
 pnpm run lint:md      # markdownlint-cli2
 pnpm run lint:ts      # oxlint
