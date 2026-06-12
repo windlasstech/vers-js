@@ -2,6 +2,29 @@
 
 # vers-js
 
+[![GitHub License](https://img.shields.io/github/license/windlasstech/vers-js)](LICENSE)
+[![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
+[![NPM Version](https://img.shields.io/npm/v/vers-js)](https://www.npmjs.com/package/vers-js)
+[![NPM Last Update](https://img.shields.io/npm/last-update/vers-js)](https://www.npmjs.com/package/vers-js)
+[![Node Current](https://img.shields.io/node/v/vers-js)](package.json)
+![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/vers-js)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-3.0-4baaaa.svg)](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)
+[![GitHub issues](https://img.shields.io/badge/issue_tracking-GitHub-blue.svg)](https://github.com/windlasstech/vers-js/issues)
+
+![TypeScript dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/typescript)
+![Vitest dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/vitest)
+![markdownlint-cli2 dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/markdownlint-cli2)
+![Oxlint dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxlint)
+![Oxfmt dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxfmt)
+![Lefthook dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/lefthook)
+
+[![Quality Gates](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml)
+[![CodeQL](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql)
+[![OSV Scanner Full](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml)
+[![Dependency Review](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
+[![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
+
 [English](README.md) | 한국어
 
 </div>
@@ -14,7 +37,8 @@
 
 **주요 특징:**
 
-- **런타임 독립적**: Node.js, Deno, Bun에서 모두 동작
+- **런타임 독립적**: Node.js(>=22), Deno, Bun에서 모두 동작
+- **외부 의존성 없음**: 런타임 의존성 없음
 - **ESM 전용**: 최신 ECMAScript 모듈, CommonJS 미지원
 - **named export 전용**: JavaScript default export 없이 명시적 루트 export 제공
 - **TypeScript 우선**: TypeScript로 작성되며 완전한 타입 선언 제공

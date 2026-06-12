@@ -4,17 +4,17 @@ Compact guidance for AI assistants working in this repository.
 
 ## Project Identity
 
-- **vers-js** — TypeScript library for parsing and validating VERS (VErsion Range Specifier) declarations.
-- Early-stage / greenfield: no source code or tests yet; only architectural decision records (ADRs), architecture specifications, and repo scaffolding exist.
+- **vers-js** — Runtime-agnostic TypeScript library for parsing and validating VERS (VErsion Range Specifier) declarations.
+- Current scope is v0.1.0: canonical syntax validation, parsed declaration metadata, and canonical string projection. It is a conforming parser, not a full semantic engine.
 - Apache 2.0 licensed, owned by Windlass.
 
 ## Development Baseline
 
 - **Runtime**: Node.js 22 LTS for development only. The published library must remain runtime-agnostic (Node.js, Deno, Bun).
-- **Package manager**: pnpm, pinned via `devEngines.packageManager` in `package.json`.
+- **Package manager**: pnpm 11.5.2, pinned via `devEngines.packageManager` in `package.json`.
 - **Language**: TypeScript (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI via `pnpm ci`).
-- **Toolchain** (decided, see ADR-0036 through ADR-0040):
+- **Toolchain** (decided, see ADR-0036 through ADR-0040 and ADR-0049):
   - **Build**: `tsc` only — no bundler. Build script: `tsc -p tsconfig.build.json`.
   - **Typecheck**: `tsc --noEmit` (authoritative; Oxlint does not replace this).
   - **Test**: Vitest. Run: `vitest run`. Watch: `vitest`.
@@ -29,19 +29,38 @@ Use the `package.json` scripts rather than bare CLI invocations. The scripts inc
 ```bash
 # Linting and formatting
 pnpm run lint:md          # markdownlint-cli2
+pnpm run lint:md:fix      # markdownlint-cli2 --fix (also run by lefthook)
 pnpm run lint:ts          # oxlint (reads .oxlintrc.json)
+pnpm run lint:ts:fix      # oxlint --fix (also run by lefthook)
 pnpm run lint:ts:github   # oxlint with GitHub Actions format
-pnpm run fmt              # oxfmt
+pnpm run fmt              # oxfmt (also run by lefthook)
 pnpm run fmt:check        # oxfmt --check
 
-# Type checking and build (once tsconfig files exist)
+# Type checking and build
 pnpm run typecheck        # tsc --noEmit
 pnpm run build            # tsc -p tsconfig.build.json
 
-# Testing (once configured)
+# Testing
 pnpm run test             # vitest run
 pnpm run test:watch       # vitest
+pnpm run test:coverage    # vitest run --coverage
+
+# Package verification (requires build first; scripts run it for you)
+pnpm run test:package              # verify dist/ artifacts and package.json exports
+pnpm run typecheck:package         # type-check a package consumer
+pnpm run typecheck:package:blocked # verify subpath imports are blocked
+pnpm run smoke:package             # runtime smoke test using the package name
+pnpm run verify:package            # all of the above in order
+
+# Runtime smoke testing (requires build first)
+pnpm run smoke:runtime:node        # built package smoke under Node.js
+pnpm run smoke:runtime:deno        # built package smoke under Deno
+pnpm run smoke:runtime:bun         # built package smoke under Bun
+pnpm run smoke:runtime             # all three runtimes
+pnpm run verify:runtime            # build then run all runtime smoke tests
 ```
+
+CI uses `pnpm ci` for reproducible installs. For local development, `pnpm install` is fine.
 
 ### Pre-commit hooks
 
@@ -61,6 +80,8 @@ This project follows SDD methodology. Do not implement before reading the specs.
 2. **Specs second** (`docs/architecture/`): define _exact observable behavior_
 3. **Implementation third**: build against the specifications
 
+Start with `docs/architecture/index.md` when returning to the project.
+
 ### Specification writing order
 
 When drafting or reviewing architecture specs, follow this sequence:
@@ -76,19 +97,13 @@ When drafting or reviewing architecture specs, follow this sequence:
 9. `build-and-test.md` — scaffolding and verification
 10. Add new documents as needed.
 
-## Critical Constraints
-
-- **Runtime-agnostic core**: Library code must avoid runtime-specific globals (`process`, `Buffer`, `Deno`, `Bun`). Oxlint enforces this via `no-restricted-globals`.
-- **Public API boundary**: Expose stable data-oriented functions (`parseVers()`, `validateVers()`, `canonicalizeVers()`) with explicit success/failure results and machine-readable error codes. Do not leak parser internals.
-- **Scope discipline**: First release covers canonical VERS syntax validation and parsed declaration metadata only. Do not implement comparison, containment, native range translation, resolver behavior, or vulnerability interpretation unless a new ADR explicitly expands scope.
-
 ## Architecture Invariants
 
 These invariants are defined in `docs/architecture/scope-and-invariants.md` and `docs/architecture/public-api.md`. Agents must not violate them when proposing code changes:
 
 1. **Public API is fixed**: Only `parseVers()`, `validateVers()`, and `canonicalizeVers()` are public. Each accepts exactly one `string` argument. Non-string input must throw `TypeError`. Malformed input returns `Result` failures, never repaired output.
 2. **No parser internals in public results**: Public results must not expose tokens, scanner state, parser nodes, mutable state, or runtime-specific objects.
-3. **ESM-only, root-only**: Package consumers import only from `"vers-js"`. No subpath imports (`vers-js/parser`, `vers-js/errors`). No CommonJS artifact.
+3. **ESM-only, root-only**: Package consumers import only from `"vers-js"`. No subpath imports (`vers-js/parser`, `vers-js/errors`). No CommonJS artifact. No default export.
 4. **Strict canonical validation**: All public functions validate canonical VERS syntax. They do not trim whitespace, change casing, rewrite separators, reorder constraints, deduplicate, or repair percent escapes.
 5. **Type validation is syntax-only**: The parser validates `type` characters and lowercase casing. It must not reject unknown types (e.g., `support.unknown_type` is reserved, not active).
 6. **Constraint order preserved**: The parser preserves input constraint order. It does not sort, simplify, or normalize for containment.
@@ -102,12 +117,13 @@ When implementing or validating changes, run checks in this order:
 1. `pnpm run fmt:check` — formatting
 2. `pnpm run lint:ts` — linting (type-aware via `.oxlintrc.json`)
 3. `pnpm run lint:md` — markdown linting
-4. `tsc --noEmit` — type-checking (authoritative)
-5. `vitest run` — tests (unit, parser, fixture, diagnostic, resource, package-boundary)
-6. `tsc -p tsconfig.build.json` — package build
-7. Validate `package.json` metadata points at emitted files
-8. Smoke-test built package under Node.js, Deno, and Bun
-9. Windlass supply-chain checks (Scorecard, OSV Scanner, Dependency Review)
+4. `pnpm run typecheck` — type-checking (authoritative)
+5. `pnpm run test` — tests (unit, parser, fixture, diagnostic, resource, package-boundary)
+6. `pnpm run test:coverage` — coverage (also exercised in CI)
+7. `pnpm run build` — package build
+8. `pnpm run verify:package` — package artifact, consumer type, blocked subpath, and package-name smoke checks
+9. `pnpm run verify:runtime` — built package smoke under Node.js, Deno, and Bun
+10. Windlass supply-chain checks (Scorecard, OSV Scanner, Dependency Review)
 
 Independent checks may be reordered for CI speed, but release readiness requires all to pass.
 
@@ -157,13 +173,14 @@ Tests must not assert exact human-readable diagnostic message strings. They may 
   - <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/.github/PULL_REQUEST_TEMPLATE.md>
 - **Always fetch the template content** and write the PR body to match it. Do not rely on `gh pr create` to auto-populate the template; if it does not, manually compose the body using the fetched template structure.
 
-## What Does Not Exist Yet (Agent Traps)
+## Common Traps
 
-- Only initial TypeScript scaffolding exists; parser implementation files are not yet present.
-- Only initial Vitest smoke-test scaffolding exists; parser, fixture, diagnostic,
-  resource, package-boundary, and runtime smoke suites are not yet present.
-- No npm publish or release scripts yet.
-- If adding these, align with the decisions in `docs/decisions/` (TypeScript, Node.js LTS, pnpm) and the contracts in `docs/architecture/build-and-test.md`.
+- Do not leak parser internals (`Parser` class, `parseInput`, scanner state) through the public API or exported types.
+- Do not add Node.js/Deno/Bun-specific globals or imports to `src/`; Oxlint's `no-restricted-globals` and `import/no-nodejs-modules` rules enforce runtime agnosticism.
+- Do not implement comparison, containment, native range translation, resolver behavior, or vulnerability interpretation unless a new ADR explicitly expands scope.
+- Do not expose a default export or subpath exports from `package.json`.
+- Do not assert exact `VersIssue.message` strings in tests.
+- Do not edit the upstream fixture at `tests/fixtures/upstream/vers_canonical_parse_test.json`; local divergences are captured in `tests/fixtures/vers-canonical-disposition.json`.
 
 <!-- CODEGRAPH_START -->
 
@@ -205,7 +222,12 @@ The MCP server returns "not initialized." Ask the user: _"I notice this project 
 
 ## Useful References
 
+- VERS introduction: <https://www.packageurl.org/docs/vers/introduction>
 - VERS spec: <https://packageurl.org/docs/vers/specification>
 - VERS tests: <https://packageurl.org/docs/vers/tests>
+- VERS parsing guide: <https://github.com/package-url/vers-spec/blob/main/docs/how-to-parse.md>
+- Upstream canonical parse fixture (browse): <https://github.com/package-url/vers-spec/blob/main/tests/vers_canonical_parse_test.json>
+- Upstream canonical parse fixture (raw): <https://raw.githubusercontent.com/package-url/vers-spec/main/tests/vers_canonical_parse_test.json>
+- Local fixture disposition table: `tests/fixtures/vers-canonical-disposition.json`
 - MADR template: embedded in `docs/decisions/0000-use-markdown-architectural-decision-records.md`
 - Windlass dependency-security policy: <https://github.com/windlasstech/.github/blob/main/docs/security/dependency-security.md>
