@@ -2,6 +2,29 @@
 
 # vers-js
 
+[![GitHub License](https://img.shields.io/github/license/windlasstech/vers-js)](LICENSE)
+[![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
+[![NPM Version](https://img.shields.io/npm/v/vers-js)](https://www.npmjs.com/package/vers-js)
+[![NPM Last Update](https://img.shields.io/npm/last-update/vers-js)](https://www.npmjs.com/package/vers-js)
+[![Node Current](https://img.shields.io/node/v/vers-js)](package.json)
+![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/vers-js)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-3.0-4baaaa.svg)](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)
+[![GitHub issues](https://img.shields.io/badge/issue_tracking-GitHub-blue.svg)](https://github.com/windlasstech/vers-js/issues)
+
+[![TypeScript dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/typescript)](package.json)
+[![Vitest dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/vitest)](package.json)
+[![markdownlint-cli2 dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/markdownlint-cli2)](package.json)
+[![Oxlint dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxlint)](package.json)
+[![Oxfmt dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxfmt)](package.json)
+[![Lefthook dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/lefthook)](package.json)
+
+[![Quality Gates](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml)
+[![CodeQL](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql)
+[![OSV Scanner Full](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml)
+[![Dependency Review](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
+[![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
+
 English | [한국어](README.ko.md)
 
 </div>
@@ -14,7 +37,8 @@ A runtime-agnostic TypeScript library for parsing and validating [VERS](https://
 
 **Key characteristics:**
 
-- **Runtime-agnostic**: Works in Node.js, Deno, and Bun
+- **Runtime-agnostic**: Works in Node.js(>=22), Deno, and Bun
+- **Zero dependencies**: No runtime dependencies
 - **ESM-only**: Modern ECMAScript Modules, no CommonJS
 - **Named exports only**: Explicit root exports with no JavaScript default export
 - **TypeScript-first**: Written in TypeScript with full type declarations
