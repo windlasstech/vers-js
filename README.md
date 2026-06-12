@@ -11,12 +11,12 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-3.0-4baaaa.svg)](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-GitHub-blue.svg)](https://github.com/windlasstech/vers-js/issues)
 
-![TypeScript dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/typescript)
-![Vitest dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/vitest)
-![markdownlint-cli2 dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/markdownlint-cli2)
-![Oxlint dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxlint)
-![Oxfmt dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxfmt)
-![Lefthook dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/lefthook)
+[![TypeScript dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/typescript)](package.json)
+[![Vitest dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/vitest)](package.json)
+[![markdownlint-cli2 dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/markdownlint-cli2)](package.json)
+[![Oxlint dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxlint)](package.json)
+[![Oxfmt dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/oxfmt)](package.json)
+[![Lefthook dev dependency version](https://img.shields.io/github/package-json/dependency-version/windlasstech/vers-js/dev/lefthook)](package.json)
 
 [![Quality Gates](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml)
 [![CodeQL](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql)
