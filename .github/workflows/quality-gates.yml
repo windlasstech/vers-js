@@ -1,0 +1,108 @@
+name: Quality Gates
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gates:
+    name: Quality gates
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 11.5.2
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
+        with:
+          deno-version: "^2"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - name: Install dependencies
+        run: pnpm ci
+
+      - name: Run Markdownlint
+        run: pnpm run lint:md
+
+      - name: Run Oxlint
+        run: pnpm run lint:ts:github
+
+      - name: Check formatting
+        run: pnpm run fmt:check
+
+      - name: Type-check package
+        run: pnpm run typecheck
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Run coverage
+        run: pnpm run test:coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+        with:
+          disable_search: true
+          disable_telem: true
+          fail_ci_if_error: true
+          files: ./coverage/lcov.info
+          report_type: "coverage"
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+        with:
+          disable_search: true
+          disable_telem: true
+          fail_ci_if_error: true
+          files: ./test-report.junit.xml
+          report_type: "test_results"
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Build package
+        run: pnpm run build
+
+      - name: Check package artifacts
+        run: node tests/runtime-smoke/package-artifacts.mjs
+
+      - name: Type-check package consumer
+        run: tsc -p tests/types/tsconfig.package.json
+
+      - name: Type-check blocked package subpaths
+        run: node tests/runtime-smoke/blocked-subpath-typecheck.mjs
+
+      - name: Run package-name smoke test
+        run: node tests/runtime-smoke/package-name.mjs
+
+      - name: Run runtime smoke tests
+        run: pnpm run smoke:runtime

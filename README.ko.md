@@ -16,6 +16,7 @@
 
 - **런타임 독립적**: Node.js, Deno, Bun에서 모두 동작
 - **ESM 전용**: 최신 ECMAScript 모듈, CommonJS 미지원
+- **named export 전용**: JavaScript default export 없이 명시적 루트 export 제공
 - **TypeScript 우선**: TypeScript로 작성되며 완전한 타입 선언 제공
 - **엄격한 정규 검증**: 자동 수정, 강제 변환, 경고 모드 없음
 - **기계가 읽을 수 있는 진단 정보**: 하위 도구를 위한 구조화한 오류 코드
@@ -155,6 +156,17 @@ pnpm run build        # tsc -p tsconfig.build.json
 pnpm run test         # vitest run
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
+
+# 패키지 검증(빌드 산출물 사용)
+pnpm run test:package              # 빌드 후 배포 패키지 산출물 검증
+pnpm run typecheck:package         # 빌드 후 패키지 소비자 선언문 타입 검사
+pnpm run typecheck:package:blocked # 빌드 후 차단된 subpath import가 실패하는지 검증
+pnpm run smoke:package             # 빌드 후 package-name 런타임 스모크 테스트 실행
+pnpm run verify:package            # 위 모든 패키지 검증 작업 일괄 실행
+
+# 런타임 스모크 테스트
+pnpm run smoke:runtime # Node.js, Deno, Bun에서 빌드 산출물 스모크 테스트 실행
+pnpm run verify:runtime # 빌드 후 모든 런타임 스모크 테스트 실행
 
 # 린팅 및 포맷팅
 pnpm run lint:md      # markdownlint-cli2

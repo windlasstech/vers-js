@@ -1,0 +1,32 @@
+[
+  {
+    "input": "vers:npm/>=1.0.0|<2.0.0",
+    "disposition": "blocking-core",
+    "reason": "Canonical parse success is in v0.1.0 syntax-validation scope."
+  },
+  {
+    "input": "vers:npm/>=1.0.0| <2.0.0",
+    "disposition": "blocking-core",
+    "reason": "ASCII whitespace rejection is in v0.1.0 canonical syntax scope."
+  },
+  {
+    "input": "vers:npm/|>=1.0.0|<2.0.0",
+    "disposition": "blocking-core",
+    "reason": "Leading pipe rejection is in v0.1.0 canonical syntax scope."
+  },
+  {
+    "input": "vers:npm/>=1.0.0|<2.0.0|",
+    "disposition": "blocking-core",
+    "reason": "Trailing pipe rejection is in v0.1.0 canonical syntax scope."
+  },
+  {
+    "input": "vers:npm/>=1.0.0||<2.0.0",
+    "disposition": "blocking-core",
+    "reason": "Consecutive pipe rejection is in v0.1.0 canonical syntax scope."
+  },
+  {
+    "input": "vers:npm/>=2.0.0|<1.0.0",
+    "disposition": "known-divergence",
+    "reason": "ADR-0021 defers semantic ordering; v0.1.0 preserves constraint order and must not emit reserved semantic-order diagnostics."
+  }
+]

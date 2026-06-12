@@ -3,6 +3,7 @@
   "extends": "@tsconfig/node22/tsconfig.json",
 
   "include": ["src/**/*.ts", "tests/**/*.ts", "vitest.config.ts"],
+  "exclude": ["tests/types/**/*.ts"],
 
   "compilerOptions": {
     // File Layout
@@ -16,6 +17,7 @@
     "target": "ES2023",
     "types": [],
     "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

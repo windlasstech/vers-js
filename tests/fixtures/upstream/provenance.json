@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/package-url/vers-spec",
+  "commit": "cd8a9c98ec1a50918b4d0e1cb4f4a3b3743bf17f",
+  "commitDate": "12026-05-19",
+  "upstreamPath": "tests/vers_canonical_parse_test.json",
+  "sha256": "ab22ccf0518f08e34bfe17dd141fadb8a166ab0c0b7e399e54462ffc3ac6d83b",
+  "adoptedFor": "vers-js v0.1.0",
+  "adoptedOn": "12026-06-08"
+}

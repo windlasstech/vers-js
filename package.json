@@ -1,5 +1,43 @@
 {
+  "name": "vers-js",
+  "version": "0.1.0",
+  "description": "A runtime-agnostic TypeScript library for parsing and validating VErsion Range Specifier (VERS) expressions.",
+  "keywords": [
+    "dependencies",
+    "package",
+    "parser",
+    "parsing",
+    "validation-library",
+    "validator",
+    "vers",
+    "version",
+    "versioning"
+  ],
+  "homepage": "https://github.com/windlasstech/vers-js#readme",
+  "bugs": {
+    "url": "https://github.com/windlasstech/vers-js/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "Yunseo Kim <yunseokim@windlasstech.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windlasstech/vers-js.git"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "README.ko.md"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.build.json",
@@ -12,7 +50,17 @@
     "fmt:check": "oxfmt --check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:package": "pnpm run build && node tests/runtime-smoke/package-artifacts.mjs",
+    "typecheck:package": "pnpm run build && tsc -p tests/types/tsconfig.package.json",
+    "typecheck:package:blocked": "pnpm run build && node tests/runtime-smoke/blocked-subpath-typecheck.mjs",
+    "smoke:runtime:node": "node tests/runtime-smoke/built-package.mjs",
+    "smoke:runtime:deno": "deno run tests/runtime-smoke/built-package.mjs",
+    "smoke:runtime:bun": "bun tests/runtime-smoke/built-package.mjs",
+    "smoke:package": "pnpm run build && node tests/runtime-smoke/package-name.mjs",
+    "smoke:runtime": "pnpm run smoke:runtime:node && pnpm run smoke:runtime:deno && pnpm run smoke:runtime:bun",
+    "verify:package": "pnpm run test:package && pnpm run typecheck:package && pnpm run typecheck:package:blocked && pnpm run smoke:package",
+    "verify:runtime": "pnpm run build && pnpm run smoke:runtime"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",

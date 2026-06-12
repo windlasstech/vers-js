@@ -16,6 +16,7 @@ A runtime-agnostic TypeScript library for parsing and validating [VERS](https://
 
 - **Runtime-agnostic**: Works in Node.js, Deno, and Bun
 - **ESM-only**: Modern ECMAScript Modules, no CommonJS
+- **Named exports only**: Explicit root exports with no JavaScript default export
 - **TypeScript-first**: Written in TypeScript with full type declarations
 - **Strict canonical validation**: No repair, coercion, or warning modes
 - **Machine-readable diagnostics**: Structured error codes for downstream tooling
@@ -153,6 +154,17 @@ pnpm run build        # tsc -p tsconfig.build.json
 pnpm run test         # vitest run
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
+
+# Package verification (uses built artifacts)
+pnpm run test:package              # build and verify emitted package artifacts
+pnpm run typecheck:package         # build and type-check package consumer declarations
+pnpm run typecheck:package:blocked # build and verify blocked subpath imports fail
+pnpm run smoke:package             # build and run package-name runtime smoke tests
+pnpm run verify:package            # run all package verification checks above
+
+# Runtime smoke testing
+pnpm run smoke:runtime # run built-package smoke tests under Node.js, Deno, and Bun
+pnpm run verify:runtime # build, then run all runtime smoke tests
 
 # Linting and formatting
 pnpm run lint:md      # markdownlint-cli2

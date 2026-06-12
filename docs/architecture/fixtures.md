@@ -66,6 +66,46 @@ schema, and specification context for auditability and future fixture work.
 Tests must use the pinned snapshot or local artifacts generated from it. They must
 not fetch upstream `main` during blocking local or CI validation.
 
+## Fixture file layout
+
+The v0.1.0 implementation stores upstream conformance inputs, local disposition
+metadata, and the Vitest runner under the test tree:
+
+```text
+tests/
+├── fixtures/
+│   ├── upstream/
+│   │   ├── provenance.json
+│   │   └── vers_canonical_parse_test.json
+│   └── vers-canonical-disposition.json
+└── official-fixtures.test.ts
+```
+
+`tests/fixtures/upstream/vers_canonical_parse_test.json` is the local copy of the
+pinned upstream fixture selected by ADR-0041. It must remain semantically
+equivalent to the upstream artifact and must not be edited to add `vers-js` issue
+codes, spans, fatality expectations, or local assertion metadata.
+
+`tests/fixtures/upstream/provenance.json` records the source repository, upstream
+commit, upstream path, checksum, and adoption metadata for the copied upstream
+fixture. It is the implementation-local trace back to the selected upstream
+snapshot.
+
+`tests/fixtures/vers-canonical-disposition.json` is the local disposition table
+for the pinned upstream parse fixture. Each record is keyed by the upstream
+`input` string and assigns one disposition from the vocabulary in this document:
+`blocking-core`, `known-divergence`, or `future-semantic`. The disposition table
+is project-owned metadata and may cite local architecture decisions that explain
+why an upstream case does or does not block v0.1.0.
+
+`tests/official-fixtures.test.ts` is the Vitest adapter for official conformance
+fixtures. It reads the upstream fixture and local disposition table, then calls
+only the public API functions. For `blocking-core` failures, it asserts the public
+success/failure boundary rather than translating upstream `expected_failure_reason`
+text into `vers-js` issue codes. For upstream success records, it maps upstream
+`expected_output.scheme` to the local `VersRange.type` field and keeps local
+`VersRange.scheme` fixed to `"vers"`.
+
 ## Official fixture disposition vocabulary
 
 Every selected official fixture case must have one local disposition:

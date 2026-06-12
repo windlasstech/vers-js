@@ -12,8 +12,8 @@ linting, formatting, runtime, package-boundary, and supply-chain decisions into 
 implementation contract.
 
 Primary ADR inputs: ADR-0001, ADR-0002, ADR-0003, ADR-0011, ADR-0012,
-ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, and
-ADR-0040.
+ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, and
+ADR-0050.
 
 ## Development baseline
 
@@ -143,7 +143,7 @@ Package boundary tests must verify the package root exports:
 - `parseVers`;
 - `validateVers`;
 - `canonicalizeVers`;
-- the default export object containing exactly those three runtime functions;
+- no JavaScript default export;
 - public Result, metadata, data-model, span, and issue-code types through the root
   declaration file.
 
@@ -151,8 +151,8 @@ Package boundary tests must also verify that non-string runtime inputs such as
 `null`, `undefined`, arrays, objects, and byte arrays throw `TypeError` before
 input length checks or parsing.
 
-The default export must not include parser internals, issue-code registries,
-fixture helpers, package metadata, or runtime-specific adapters.
+The package root must not export parser internals, issue-code registries, fixture
+helpers, package metadata, or runtime-specific adapters.
 
 Package boundary tests must reject unsupported subpath imports such as:
 
@@ -170,6 +170,11 @@ typecheck:    tsc --noEmit
 build:        tsc -p tsconfig.build.json
 test:         vitest run
 test:watch:   vitest
+smoke:runtime:node: node tests/runtime-smoke/built-package.mjs
+smoke:runtime:deno: deno run tests/runtime-smoke/built-package.mjs
+smoke:runtime:bun:  bun tests/runtime-smoke/built-package.mjs
+smoke:runtime:      run all runtime smoke scripts against existing build output
+verify:runtime:     build package, then run all runtime smoke scripts
 lint:         oxlint --type-aware
 lint:fix:     oxlint --type-aware --fix
 format:       oxfmt
@@ -198,7 +203,7 @@ The test layers are:
 | Official fixture tests            | Run pinned upstream `vers_canonical_parse_test.json` cases through the local disposition table from `fixtures.md`.  |
 | Project diagnostic fixtures       | Assert active issue codes, severity, spans, test-only fatality expectations, ordering, and metadata.                |
 | Resource boundary tests           | Cover `1024` and `1025` UTF-16 code-unit input length boundaries, `16` issue cap behavior, and truncation metadata. |
-| Package boundary tests            | Validate root export metadata, declaration metadata, default export, named exports, and blocked subpaths.           |
+| Package boundary tests            | Validate root export metadata, declaration metadata, named exports only, and blocked subpaths.                      |
 | Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun.                                            |
 
 Tests must not assert exact human-readable diagnostic message strings. They may
@@ -213,6 +218,12 @@ Official fixture tests use the pinned upstream snapshot and local disposition
 rules from `fixtures.md`. Blocking official cases assert only the success or
 failure boundary and local success metadata mapping. Project diagnostic fixtures
 own exact diagnostic expectations.
+
+The v0.1.0 official fixture implementation stores copied upstream artifacts under
+`tests/fixtures/upstream/`, local parse-fixture dispositions in
+`tests/fixtures/vers-canonical-disposition.json`, and the Vitest adapter in
+`tests/official-fixtures.test.ts`. `fixtures.md` is the source of truth for the
+fixture file layout and disposition vocabulary.
 
 Project diagnostic fixture tests must cover every active v0.1.0 issue code from
 `diagnostics.md`, including `resource.input_too_long` and diagnostic truncation
@@ -234,9 +245,15 @@ under:
 Each smoke test must import the same built package root and exercise at least:
 
 1. named runtime exports;
-2. the default export object;
+2. absence of a JavaScript default export;
 3. one successful parse or canonicalization path;
 4. one normal failure Result path.
+
+The runtime smoke suite uses one shared built-package driver,
+`tests/runtime-smoke/built-package.mjs`. Runtime-specific package scripts for
+Node.js, Deno, and Bun all execute that same driver against `dist/index.js`. The
+driver must not import TypeScript source files, fixture helpers, test-only entry
+points, or runtime-specific package branches.
 
 Cross-runtime smoke tests must use built package output, not TypeScript source
 files or test-only entry points. They must not rely on runtime-specific package
@@ -308,6 +325,11 @@ New GitHub Actions workflows must follow Windlass workflow hardening guidance:
 Production release builds must run on hosted CI rather than a developer
 workstation when release provenance or attestations are claimed.
 
+Build/test CI must run `pnpm run build` before `pnpm run smoke:runtime`. Hosted CI
+may install Deno and Bun through SHA-pinned setup actions before dependency
+installation and verification, but runtime compatibility must remain tied to the
+emitted package artifact rather than development TypeScript source.
+
 ## Verification sequence
 
 The implementation-ready verification sequence is:
@@ -340,8 +362,8 @@ Implementation, tests, and CI must preserve these invariants:
    runtime entry.
 7. Root declaration metadata appears in both root `"types"` and
    `"exports"["."].types`.
-8. The default export object contains the three public runtime functions and no
-   internals.
+8. The package root exposes the three public runtime functions as named exports
+   only and does not provide a JavaScript default export.
 9. Vitest is the primary test runner under Node.js.
 10. Cross-runtime compatibility is proven by built-package smoke tests in Node.js,
     Deno, and Bun.

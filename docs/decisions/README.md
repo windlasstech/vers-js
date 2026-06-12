@@ -86,7 +86,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | Use Oxfmt for v1 formatting                                 | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Use Node 22 LTS and Oxc-aligned TypeScript baselines        | accepted |
 
-### Finalization (ADR-0041–0049)
+### Finalization (ADR-0041–0050)
 
 | ADR                                                                           | Title                                                         | Status   |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------- | -------- |
@@ -99,6 +99,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0047](0047-use-vitest-v8-coverage-and-codecov-reporting.md)                  | Use Vitest V8 coverage and Codecov reporting                  | accepted |
 | [0048](0048-use-separated-vitest-test-files.md)                               | Use separated Vitest test files                               | accepted |
 | [0049](0049-use-devengines-package-manager-for-pnpm-pinning.md)               | Use devEngines.packageManager for pnpm pinning                | accepted |
+| [0050](0050-use-named-exports-only.md)                                        | Use named exports only                                        | accepted |
 
 ## Adding a New ADR
 
