@@ -1,5 +1,11 @@
 import { configDefaults, defineConfig } from "vitest/config";
 
+declare const process: {
+  readonly env: {
+    readonly GITHUB_ACTIONS?: string;
+  };
+};
+
 export default defineConfig({
   test: {
     coverage: {
