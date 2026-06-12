@@ -1,4 +1,4 @@
-name: Lint and Format
+name: Quality Gates
 
 on:
   pull_request:
@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  lint-and-format:
-    name: Lint and format
+  quality-gates:
+    name: Quality gates
     runs-on: ubuntu-24.04
 
     steps:
