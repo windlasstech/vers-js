@@ -257,7 +257,7 @@ Options:
   --tag          Preview CHANGELOG-based annotation, then create and verify tag
   --push         Push the tag to origin after --tag verification
   --skip-checks  Skip the project quality and runtime verification commands
-  --skip-pack    Skip npm pack --json --dry-run
+  --skip-pack    Skip pnpm pack --json --dry-run
   -h, --help     Show this help
 
 Default behavior validates and writes release notes, but does not create a tag.`);
@@ -382,7 +382,7 @@ function runQualityChecks() {
 }
 
 function inspectPackageContents() {
-  const output = captureCommand("npm", ["pack", "--json", "--dry-run"], { inheritStderr: true });
+  const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true });
   const [packResult] = JSON.parse(output);
 
   return {
