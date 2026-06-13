@@ -11,6 +11,7 @@ const commandSuccess = 0;
 const helpExitCode = 0;
 const failureExitCode = 1;
 const noHeadingFound = -1;
+const releaseDatePattern = /^12\d{3}-\d{2}-\d{2}$/;
 const optionAssignments = {
   "--help": "help",
   "--push": "pushTag",
@@ -298,13 +299,13 @@ function assertTagDoesNotExist(tagName) {
 }
 
 function extractReleaseNotes(changelog, version) {
-  const headingMatch = releaseHeadingPattern(version).exec(changelog);
+  const headingMatch = findReleaseHeading(changelog, version);
 
   if (!headingMatch) {
     throw new Error(`CHANGELOG.md must contain a Human Era section for ${version}`);
   }
 
-  const sectionStart = headingMatch.index + headingMatch[0].length;
+  const sectionStart = headingMatch.index + headingMatch.text.length;
   const sectionBody = releaseSectionBody(changelog, sectionStart);
   const notes = sectionBody.trim();
 
@@ -313,10 +314,25 @@ function extractReleaseNotes(changelog, version) {
   return `${notes}\n`;
 }
 
-function releaseHeadingPattern(version) {
-  const escapedVersion = escapeRegExp(version);
+function findReleaseHeading(changelog, version) {
+  const expectedPrefix = `## [${version}] - `;
+  let lineStart = 0;
 
-  return new RegExp(`^## \\[${escapedVersion}\\] - 12\\d{3}-\\d{2}-\\d{2}\\s*$`, "m");
+  for (const rawLine of changelog.split("\n")) {
+    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
+
+    if (line.startsWith(expectedPrefix)) {
+      const releaseDate = line.slice(expectedPrefix.length);
+
+      if (releaseDatePattern.test(releaseDate)) {
+        return { index: lineStart, text: rawLine };
+      }
+    }
+
+    lineStart += rawLine.length + 1;
+  }
+
+  return undefined;
 }
 
 function assertReleaseNotesNotEmpty(notes, version) {
@@ -421,8 +437,4 @@ function captureCommand(command, arguments_, commandOptions = {}) {
       ? ["ignore", "pipe", "inherit"]
       : ["ignore", "pipe", "pipe"],
   });
-}
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
