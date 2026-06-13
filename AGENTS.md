@@ -154,6 +154,21 @@ Tests must not assert exact human-readable diagnostic message strings. They may 
 
 - **DCO sign-off required**: Every commit must include a `Signed-off-by:` line. Use `git commit -s` (or `git commit --signoff`) for all commits. Lefthook enforces this in the commit-msg hook.
 
+## Changelog Management
+
+- Maintain `CHANGELOG.md` according to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), but use the organization's Human Era date convention for release headings (for example, `## [0.1.0] - 12026-06-13`).
+- Changelog entries are for users and downstream integrators. Summarize notable upgrade-relevant behavior; do not generate changelog entries by dumping commit logs.
+- For every PR, complete the organization PR template's `Changelog` section with:
+  - **Category**: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`, or `None`
+  - **User-facing note**: a short impact summary, or why no note is needed
+- Use `None` for changes with no direct user-facing impact, such as test cleanup, internal refactoring, formatting, or CI-only maintenance.
+- During development, update only the `[Unreleased]` section when a PR has user-facing impact. Group entries by `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security`; do not create empty category sections.
+- For release PRs, move `[Unreleased]` entries into the new version section, recreate an empty `[Unreleased]` section at the top, update comparison links at the bottom of `CHANGELOG.md`, and use the finalized version section as the GitHub Release body.
+
+## Release Workflow
+
+- The canonical maintainer release runbook is `docs/release.md`. Keep signed tag, npm Trusted Publishing, provenance, and GitHub Release process details there rather than duplicating the full workflow in README or AGENTS notes.
+
 ## CI / Security
 
 - Reusable workflows from `windlasstech/.github`:
