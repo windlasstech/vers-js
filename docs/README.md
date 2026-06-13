@@ -14,6 +14,7 @@ This directory contains the design documentation and architecture specifications
 docs/
 ├── architecture/    # Implementation specifications
 ├── decisions/       # Architectural Decision Records (ADRs)
+├── release.md       # Maintainer release process
 └── README.md        # This file
 ```
 
@@ -32,6 +33,11 @@ Key specifications:
 - **[Diagnostics](architecture/diagnostics.md)**: Issue codes, spans, and metadata
 - **[Fixtures](architecture/fixtures.md)**: Conformance fixture handling
 - **[Resource Limits](architecture/resource-limits.md)**: Input length and diagnostic caps
+
+## Release Process
+
+The [`release.md`](release.md) runbook defines the maintainer workflow for signed
+Git tags, npm Trusted Publishing, provenance, and GitHub Release creation.
 
 ## Architectural Decision Records
 
