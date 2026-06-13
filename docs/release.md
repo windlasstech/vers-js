@@ -131,9 +131,12 @@ node -p 'require("./package.json").version'
 git tag --list "v$(node -p 'require("./package.json").version')"
 ```
 
-The local preparation script performs these checks, runs the repository
-verification sequence, reviews package contents with `npm pack --json --dry-run`,
-and extracts the matching changelog section to `.release/release-notes-vX.Y.Z.md`:
+The local preparation script performs these checks, runs the Node.js-based
+repository verification commands, reviews package contents with
+`npm pack --json --dry-run`, and extracts the matching changelog section to
+`.release/release-notes-vX.Y.Z.md`. Deno and Bun runtime smoke checks remain
+required in CI and the release PR checklist, but are not required by local tag
+preparation:
 
 ```bash
 pnpm run release:prepare
