@@ -383,7 +383,7 @@ function runQualityChecks() {
 
 function inspectPackageContents() {
   const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true });
-  const [packResult] = JSON.parse(output);
+  const packResult = JSON.parse(output);
 
   return {
     entryCount: packResult.files.length,
