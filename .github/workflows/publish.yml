@@ -75,6 +75,27 @@ jobs:
           }
           NODE
 
+      - name: Check npm package publication state
+        id: npm-package
+        run: |
+          PACKAGE_NAME="$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).name')"
+          PACKAGE_VERSION="$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).version')"
+
+          echo "name=${PACKAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=${PACKAGE_VERSION}" >> "$GITHUB_OUTPUT"
+
+          if npm view "${PACKAGE_NAME}" name --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
+            echo "version_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "version_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install dependencies
         run: pnpm ci
 
@@ -106,7 +127,28 @@ jobs:
         run: pnpm run verify:runtime
 
       - name: Publish to npm
+        if: ${{ steps.npm-package.outputs.exists == 'true' && steps.npm-package.outputs.version_exists == 'false' }}
         run: npm publish --access public
+
+      - name: Report first-publish bootstrap fallback
+        if: ${{ steps.npm-package.outputs.exists == 'false' }}
+        run: |
+          cat <<'EOF'
+          The npm package does not exist yet, so this workflow cannot use npm Trusted Publishing.
+          Publish the first version manually from a maintainer-controlled environment, then configure npm Trusted Publishing for future releases.
+
+          Recommended bootstrap command after local release validation:
+            npm publish --access public
+
+          If a token-based CI bootstrap is explicitly chosen instead, use a temporary granular npm token, publish with provenance, and revoke the token immediately:
+            npm publish --provenance --access public
+          EOF
+
+      - name: Report already-published version
+        if: ${{ steps.npm-package.outputs.version_exists == 'true' }}
+        run: |
+          echo "${{ steps.npm-package.outputs.name }}@${{ steps.npm-package.outputs.version }} is already published on npm."
+          echo "Skipping npm publish and continuing to GitHub Release creation."
 
   create-github-release:
     name: Create GitHub Release

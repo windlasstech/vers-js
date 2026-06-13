@@ -37,6 +37,37 @@ two-factor authentication and disallow traditional publish tokens. Trusted
 Publishing uses short-lived OIDC credentials and does not require an `NPM_TOKEN`
 secret.
 
+### First-publish bootstrap exception
+
+npm Trusted Publishing can only be configured for a package that already exists
+on the npm registry. The `vers-js` v0.1.0 first release therefore uses a
+one-time maintainer-controlled local publish before Trusted Publishing is
+configured.
+
+For v0.1.0 only:
+
+1. complete the release PR and local release preparation steps below;
+2. publish from a maintainer-controlled local environment with npm account 2FA;
+3. configure npm Trusted Publishing for `publish.yml` after the package exists;
+4. push the signed tag so GitHub Actions can create the GitHub Release;
+5. use Trusted Publishing for subsequent npm releases.
+
+The local first-publish command is:
+
+```bash
+npm publish --access public
+```
+
+If a token-based CI bootstrap is explicitly chosen instead, use a temporary
+granular npm token, publish with provenance, and revoke the token immediately:
+
+```bash
+npm publish --provenance --access public
+```
+
+Do not keep token-based publishing as the normal release path after Trusted
+Publishing is configured.
+
 Release workflows must follow Windlass supply-chain requirements:
 
 - run on GitHub-hosted runners when npm provenance or release attestations are
@@ -155,8 +186,11 @@ The workflow must verify the release before publishing:
    runtime smoke checks;
 4. verify that the tag version matches `package.json`;
 5. verify that the matching changelog section exists;
-6. publish to npm using Trusted Publishing;
-7. create the GitHub Release only after npm publish succeeds.
+6. publish to npm using Trusted Publishing when the package exists and the tag
+   version is not already published;
+7. create the GitHub Release after npm publish succeeds, after a first-publish
+   bootstrap skip, or after detecting that the tag version was already published
+   manually.
 
 The GitHub Release job extracts the matching `CHANGELOG.md` version section into
 `release-notes.md` and passes that file to `gh release create --verify-tag`.
@@ -165,6 +199,12 @@ Use `npm publish --access public` in the Trusted Publishing job. npm
 automatically generates provenance for public packages published from public
 GitHub repositories through Trusted Publishing, so a separate `--provenance` flag
 is not required for the trusted path.
+
+If the package does not yet exist on npm, the workflow prints first-publish
+bootstrap instructions, skips npm publish, and still creates the GitHub Release.
+If the exact tag version is already published on npm, the workflow also skips npm
+publish and continues to GitHub Release creation. These skips exist so the v0.1.0
+local first-publish bootstrap can still produce the signed-tag GitHub Release.
 
 If a token-based emergency fallback is ever used, publish with provenance
 explicitly:
@@ -178,7 +218,10 @@ credential handling and manual rotation.
 
 ## GitHub Release creation
 
-Create the GitHub Release after npm publish succeeds.
+Create the GitHub Release after the publish workflow completes successfully. For
+normal releases this means npm publish succeeded; for the v0.1.0 bootstrap this
+may mean the workflow intentionally skipped npm publish because the package is
+not registered yet or the tag version was already published manually.
 
 The release body should come from the matching `CHANGELOG.md` version section.
 Do not use generated commit logs as the release notes.
