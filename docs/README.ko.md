@@ -14,6 +14,7 @@
 docs/
 ├── architecture/    # 구현 사양
 ├── decisions/       # 아키텍처 의사결정 기록(ADR)
+├── release.md       # 메인테이너 릴리즈 절차
 └── README.md        # 이 파일
 ```
 
@@ -32,6 +33,12 @@ docs/
 - **[진단](architecture/diagnostics.md)**: 이슈 코드, 범위, 메타데이터
 - **[픽스처(fixtures)](architecture/fixtures.md)**: 적합성 픽스처 처리
 - **[리소스 제한](architecture/resource-limits.md)**: 입력 길이 및 진단 상한
+
+## 릴리즈 절차
+
+[`release.md`](release.md) 런북은 signed Git tag, npm Trusted Publishing,
+provenance, GitHub Release 생성을 포함한 메인테이너 릴리즈 워크플로우를
+정의합니다.
 
 ## 아키텍처 결정 기록
 

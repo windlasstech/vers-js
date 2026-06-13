@@ -154,10 +154,15 @@ validateVers(123); // TypeError 발생
 - 경고, 수정, 강제 변환 모드
 - 취약점 해석 또는 VEX 의미론
 
-## 문서
+## 문서 및 프로젝트 정책
 
 - **[아키텍처 사양](docs/architecture/)**: 구현 계약 및 기술 사양
 - **[아키텍처 결정 기록](docs/decisions/)**: 설계 결정 및 근거(MADR 형식)
+- **[릴리즈 절차](docs/release.md)**: signed tag, npm Trusted Publishing, provenance, GitHub Release 워크플로우
+- **[변경 기록](CHANGELOG.md)**: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 및 인류력 릴리즈 날짜 형식에 따라 유지관리하는, 사용자 대상 릴리즈 노트
+- **[기여 가이드](https://github.com/windlasstech/.github/blob/main/CONTRIBUTING.md)**: 윈들러스(Windlass) 조직 공통 기여 절차, PR 기대사항, 변경 기록 워크플로우
+- **[보안 정책](https://github.com/windlasstech/.github/blob/main/SECURITY.md)**: 비공개 취약점 제보, 조율된 공개, 공급망 무결성 요구사항
+- **[행동 강령](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)**: 모든 프로젝트 관련 상호작용에 적용되는 Contributor Covenant 3.0 커뮤니티 행동 강령 및 기준
 - **[AGENTS.md](AGENTS.md)**: 이 저장소에서 작업하는 AI 보조 도구용 지침
 
 ## 개발

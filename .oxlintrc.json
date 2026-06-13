@@ -89,6 +89,15 @@
       }
     },
     {
+      "files": ["scripts/*.mjs"],
+      "rules": {
+        "import/no-nodejs-modules": "off",
+        "no-console": "off",
+        "no-magic-numbers": "off",
+        "no-restricted-globals": "off"
+      }
+    },
+    {
       "files": ["tests/runtime-smoke/*.mjs"],
       "rules": {
         "import/no-nodejs-modules": "off"

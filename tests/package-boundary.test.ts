@@ -26,6 +26,12 @@ describe("package metadata boundary", (): void => {
   });
 
   it("limits published files to package artifacts and top-level documentation", (): void => {
-    expect(packageJson.files.toSorted()).toEqual(["LICENSE", "README.ko.md", "README.md", "dist"]);
+    expect(packageJson.files.toSorted()).toEqual([
+      "CHANGELOG.md",
+      "LICENSE",
+      "README.ko.md",
+      "README.md",
+      "dist",
+    ]);
   });
 });

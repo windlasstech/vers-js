@@ -14,11 +14,18 @@ const expectedArtifacts = [
   "dist/types.d.ts",
 ];
 
+const expectedPackageFiles = ["dist", "CHANGELOG.md", "LICENSE", "README.md", "README.ko.md"];
+
 for (const path of expectedArtifacts) {
   assert(existsSync(path), `${path} must exist after package build`);
 }
 
 assert.equal(packageJson.type, "module", "package must be ESM-only");
+assert.deepEqual(
+  packageJson.files,
+  expectedPackageFiles,
+  "package files must include public artifacts",
+);
 assert.equal(packageJson.types, "./dist/index.d.ts", "root types must point at dist/index.d.ts");
 assert.deepEqual(
   packageJson.exports,
