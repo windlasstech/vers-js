@@ -1,0 +1,172 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+jobs:
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-24.04
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: 11.5.2
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
+        with:
+          deno-version: "^2"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - name: Verify release tag and changelog
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const tagName = process.env.GITHUB_REF_NAME;
+
+          if (!tagName || !/^v\d+\.\d+\.\d+$/.test(tagName)) {
+            throw new Error(`release tag must match vX.Y.Z, got ${JSON.stringify(tagName)}`);
+          }
+
+          const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
+          const expectedTagName = `v${packageJson.version}`;
+
+          if (tagName !== expectedTagName) {
+            throw new Error(`release tag ${tagName} does not match package.json version ${packageJson.version}`);
+          }
+
+          const changelog = readFileSync("CHANGELOG.md", "utf8");
+          const escapedVersion = packageJson.version.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+          const headingPattern = new RegExp(`^## \\[${escapedVersion}\\] - 12\\d{3}-\\d{2}-\\d{2}\\s*$`, "m");
+
+          if (!headingPattern.test(changelog)) {
+            throw new Error(`CHANGELOG.md must contain a Human Era section for ${packageJson.version}`);
+          }
+          NODE
+
+      - name: Install dependencies
+        run: pnpm ci
+
+      - name: Check formatting
+        run: pnpm run fmt:check
+
+      - name: Run Oxlint
+        run: pnpm run lint:ts:github
+
+      - name: Run Markdownlint
+        run: pnpm run lint:md
+
+      - name: Type-check package
+        run: pnpm run typecheck
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Run coverage
+        run: pnpm run test:coverage
+
+      - name: Build package
+        run: pnpm run build
+
+      - name: Verify package artifacts
+        run: pnpm run verify:package
+
+      - name: Verify runtime smoke tests
+        run: pnpm run verify:runtime
+
+      - name: Publish to npm
+        run: npm publish --access public
+
+  create-github-release:
+    name: Create GitHub Release
+    needs: publish-npm
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Extract release notes
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from "node:fs";
+
+          const tagName = process.env.GITHUB_REF_NAME;
+          const version = tagName?.replace(/^v/, "");
+
+          if (!tagName || !version) {
+            throw new Error("GITHUB_REF_NAME must contain the release tag");
+          }
+
+          const changelog = readFileSync("CHANGELOG.md", "utf8");
+          const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+          const headingPattern = new RegExp(`^## \\[${escapedVersion}\\] - 12\\d{3}-\\d{2}-\\d{2}\\s*$`, "m");
+          const headingMatch = headingPattern.exec(changelog);
+
+          if (!headingMatch) {
+            throw new Error(`CHANGELOG.md must contain a Human Era section for ${version}`);
+          }
+
+          const sectionStart = headingMatch.index + headingMatch[0].length;
+          const remainingChangelog = changelog.slice(sectionStart);
+          const nextHeadingIndex = remainingChangelog.search(/^## /m);
+          const linkReferenceIndex = remainingChangelog.search(/^\[[^\]]+\]: /m);
+          const terminators = [nextHeadingIndex, linkReferenceIndex].filter((index) => index !== -1);
+          const sectionEnd = terminators.length === 0 ? remainingChangelog.length : Math.min(...terminators);
+          const notes = remainingChangelog.slice(0, sectionEnd).trim();
+
+          if (notes === "") {
+            throw new Error(`CHANGELOG.md section for ${version} must not be empty`);
+          }
+
+          writeFileSync("release-notes.md", `${notes}\n`, "utf8");
+          NODE
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md

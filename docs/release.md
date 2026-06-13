@@ -27,8 +27,7 @@ Before the first automated npm release, configure npm Trusted Publishing for the
 - publisher: GitHub Actions;
 - organization or user: `windlasstech`;
 - repository: `vers-js`;
-- workflow filename: the repository publish workflow filename, for example
-  `publish.yml`;
+- workflow filename: `publish.yml`;
 - environment name: the GitHub environment used by the publish job, for example
   `npm`;
 - allowed action: `npm publish`.
@@ -145,7 +144,8 @@ pnpm run release:prepare -- --tag --push
 
 ## Tag-triggered npm publish workflow
 
-The publish workflow should run only for release tags matching `v*`.
+The publish workflow lives at `.github/workflows/publish.yml` and runs only for
+release tags matching `v*`.
 
 The workflow must verify the release before publishing:
 
@@ -157,6 +157,9 @@ The workflow must verify the release before publishing:
 5. verify that the matching changelog section exists;
 6. publish to npm using Trusted Publishing;
 7. create the GitHub Release only after npm publish succeeds.
+
+The GitHub Release job extracts the matching `CHANGELOG.md` version section into
+`release-notes.md` and passes that file to `gh release create --verify-tag`.
 
 Use `npm publish --access public` in the Trusted Publishing job. npm
 automatically generates provenance for public packages published from public
