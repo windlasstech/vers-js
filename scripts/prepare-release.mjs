@@ -33,7 +33,7 @@ const qualityCommands = [
   ["pnpm", ["run", "test:coverage"]],
   ["pnpm", ["run", "build"]],
   ["pnpm", ["run", "verify:package"]],
-  ["pnpm", ["run", "verify:runtime"]],
+  ["pnpm", ["run", "smoke:runtime:node"]],
 ];
 
 const options = parseArguments(process.argv.slice(argumentOffset));
