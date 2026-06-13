@@ -152,10 +152,15 @@ validateVers(123); // throws TypeError
 - Warning, repair, or coercion modes
 - Vulnerability interpretation or VEX semantics
 
-## Documentation
+## Documentation and Project Policies
 
 - **[Architecture Specifications](docs/architecture/)**: Implementation contracts and technical specifications
 - **[Architectural Decision Records](docs/decisions/)**: Design decisions and rationale (MADR format)
+- **[Release Process](docs/release.md)**: Signed tag, npm Trusted Publishing, provenance, and GitHub Release workflow.
+- **[Changelog](CHANGELOG.md)**: User-facing release notes maintained according to Keep a Changelog, with Human Era release dates.
+- **[Contributing Guide](https://github.com/windlasstech/.github/blob/main/CONTRIBUTING.md)**: Organization-wide contribution process, PR expectations, and changelog workflow.
+- **[Security Policy](https://github.com/windlasstech/.github/blob/main/SECURITY.md)**: Windlass organization-wide private vulnerability reporting, coordinated disclosure, and supply-chain integrity requirements.
+- **[Code of Conduct](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)**: Contributor Covenant 3.0 community standards for all project interactions.
 - **[AGENTS.md](AGENTS.md)**: Guidelines for AI assistants working in this repository
 
 ## Development
