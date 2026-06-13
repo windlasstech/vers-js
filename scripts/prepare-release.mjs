@@ -3,6 +3,7 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
 const argumentOffset = 2;
@@ -10,7 +11,6 @@ const commandSuccess = 0;
 const helpExitCode = 0;
 const failureExitCode = 1;
 const noHeadingFound = -1;
-
 const optionAssignments = {
   "--help": "help",
   "--push": "pushTag",
@@ -43,13 +43,13 @@ if (options.help) {
 }
 
 try {
-  main(options);
+  await main(options);
 } catch (error) {
   console.error(`\nrelease preparation failed: ${error.message}`);
   process.exit(failureExitCode);
 }
 
-function main(currentOptions) {
+async function main(currentOptions) {
   process.chdir(repositoryRoot);
 
   const release = readReleaseContext();
@@ -62,7 +62,11 @@ function main(currentOptions) {
   const notesPath = writeReleaseNotes(release.tagName, release.notes);
 
   printPreparationSummary(release.tagName, notesPath, packSummary);
-  maybeCreateTag(release.tagName, currentOptions);
+  await maybeCreateTag(
+    release.tagName,
+    buildTagAnnotation(release.tagName, release.notes),
+    currentOptions,
+  );
 }
 
 function readReleaseContext() {
@@ -92,7 +96,7 @@ function printPreparationSummary(tagName, notesPath, packSummary) {
   }
 }
 
-function maybeCreateTag(tagName, currentOptions) {
+async function maybeCreateTag(tagName, tagAnnotation, currentOptions) {
   if (!currentOptions.createTag) {
     console.log(
       "Tag not created. Re-run with --tag to create and verify the signed annotated tag.",
@@ -100,10 +104,91 @@ function maybeCreateTag(tagName, currentOptions) {
     return;
   }
 
-  runCommand("git", ["tag", "-s", "-a", tagName, "-m", tagName]);
+  const annotationPath = writeTagAnnotation(tagName, tagAnnotation);
+  const finalAnnotation = await reviewTagAnnotation(annotationPath);
+  writeFileSync(annotationPath, finalAnnotation, "utf8");
+
+  runCommand("git", ["tag", "-s", "-a", tagName, "-F", annotationPath]);
   runCommand("git", ["tag", "-v", tagName]);
   console.log(`Signed tag verified: ${tagName}`);
   maybePushTag(tagName, currentOptions);
+}
+
+function buildTagAnnotation(tagName, releaseNotes) {
+  return `${tagName}\n\n${releaseNotes.trimEnd()}\n`;
+}
+
+async function reviewTagAnnotation(annotationPath) {
+  let tagAnnotation = readFileSync(annotationPath, "utf8");
+  printTagAnnotation(tagAnnotation, "Generated signed tag annotation");
+
+  if (!(await shouldEditTagAnnotation())) {
+    return tagAnnotation;
+  }
+
+  openEditor(annotationPath);
+  tagAnnotation = readFileSync(annotationPath, "utf8");
+  assertTagAnnotationNotEmpty(tagAnnotation);
+  printTagAnnotation(tagAnnotation, "Edited signed tag annotation");
+
+  return tagAnnotation;
+}
+
+function printTagAnnotation(tagAnnotation, heading) {
+  console.log(`\n${heading}`);
+  console.log("=".repeat(heading.length));
+  console.log(tagAnnotation.trimEnd());
+}
+
+async function shouldEditTagAnnotation() {
+  const readline = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  try {
+    const answer = await readline.question(
+      "\nEdit tag annotation before creating the signed tag? [y/N] ",
+    );
+    const normalizedAnswer = answer.trim().toLowerCase();
+
+    return normalizedAnswer === "y" || normalizedAnswer === "yes";
+  } finally {
+    readline.close();
+  }
+}
+
+function openEditor(annotationPath) {
+  const editor = process.env.GIT_EDITOR || process.env.VISUAL || process.env.EDITOR || "vi";
+  const [command, ...editorArguments] = parseEditorCommand(editor);
+  const result = spawnSync(command, [...editorArguments, annotationPath], {
+    cwd: repositoryRoot,
+    stdio: "inherit",
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== commandSuccess) {
+    throw new Error(`editor failed: ${editor}`);
+  }
+}
+
+function parseEditorCommand(editor) {
+  const editorParts = editor.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? [];
+
+  if (editorParts.length === 0) {
+    throw new Error("editor command must not be empty");
+  }
+
+  return editorParts.map((part) => part.replace(/^(?<quote>["'])(?<body>.*)\k<quote>$/, "$<body>"));
+}
+
+function assertTagAnnotationNotEmpty(tagAnnotation) {
+  if (tagAnnotation.trim() === "") {
+    throw new Error("signed tag annotation must not be empty");
+  }
 }
 
 function maybePushTag(tagName, currentOptions) {
@@ -164,11 +249,11 @@ function printHelp() {
   console.log(`Usage: pnpm run release:prepare -- [options]
 
 Validates the local checkout for a vers-js release, extracts the matching
-CHANGELOG.md section to .release/release-notes-<tag>.md, and optionally creates
-and pushes the signed annotated release tag.
+CHANGELOG.md section to .release/release-notes-<tag>.md, and optionally previews,
+edits, creates, verifies, and pushes the signed annotated release tag.
 
 Options:
-  --tag          Create and verify git tag -s -a vX.Y.Z after validation
+  --tag          Preview CHANGELOG-based annotation, then create and verify tag
   --push         Push the tag to origin after --tag verification
   --skip-checks  Skip the project quality and runtime verification commands
   --skip-pack    Skip npm pack --json --dry-run
@@ -299,6 +384,16 @@ function writeReleaseNotes(tagName, releaseNotes) {
   writeFileSync(notesPath, releaseNotes, "utf8");
 
   return notesPath;
+}
+
+function writeTagAnnotation(tagName, tagAnnotation) {
+  const releaseDirectory = path.join(repositoryRoot, ".release");
+  mkdirSync(releaseDirectory, { recursive: true });
+
+  const annotationPath = path.join(releaseDirectory, `tag-annotation-${tagName}.md`);
+  writeFileSync(annotationPath, tagAnnotation, "utf8");
+
+  return annotationPath;
 }
 
 function runCommand(command, arguments_) {
