@@ -51,6 +51,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "release:prepare": "node scripts/prepare-release.mjs",
     "test:package": "pnpm run build && node tests/runtime-smoke/package-artifacts.mjs",
     "typecheck:package": "pnpm run build && tsc -p tests/types/tsconfig.package.json",
     "typecheck:package:blocked": "pnpm run build && node tests/runtime-smoke/blocked-subpath-typecheck.mjs",
