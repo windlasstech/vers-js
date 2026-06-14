@@ -8,13 +8,19 @@ on:
 permissions: {}
 
 jobs:
-  publish-npm:
-    name: Publish to npm
+  build-release-artifact:
+    name: Build release artifact
     runs-on: ubuntu-24.04
-    environment: npm
+    outputs:
+      package-name: ${{ steps.npm-package.outputs.name }}
+      package-version: ${{ steps.npm-package.outputs.version }}
+      package-exists: ${{ steps.npm-package.outputs.exists }}
+      package-version-exists: ${{ steps.npm-package.outputs.version_exists }}
+      tarball-name: ${{ steps.pack.outputs.tarball-name }}
+      tarball-sha256: ${{ steps.pack.outputs.tarball-sha256 }}
+      tarball-subjects: ${{ steps.pack.outputs.tarball-subjects }}
     permissions:
       contents: read
-      id-token: write
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -37,7 +43,6 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 22
-          registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
       - name: Set up Deno
@@ -84,17 +89,40 @@ jobs:
           echo "name=${PACKAGE_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=${PACKAGE_VERSION}" >> "$GITHUB_OUTPUT"
 
-          if npm view "${PACKAGE_NAME}" name --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
+          if pnpm view "${PACKAGE_NAME}" name --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
+          if pnpm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
             echo "version_exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "version_exists=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Report first-publish bootstrap fallback
+        if: ${{ steps.npm-package.outputs.exists == 'false' }}
+        run: |
+          cat <<'EOF'
+          The npm package does not exist yet, so this workflow will skip npm Trusted Publishing.
+          Publish the first version manually from a maintainer-controlled environment, then configure npm Trusted Publishing for future releases.
+
+          Recommended bootstrap command after local release validation:
+            pnpm publish --access public
+
+          If a token-based CI bootstrap is explicitly chosen instead, use a temporary granular npm token, publish with provenance, and revoke the token immediately:
+            pnpm publish --provenance --access public
+
+          The GitHub Release, release tarball, checksum, and SLSA provenance will still be created for this signed tag.
+          EOF
+
+      - name: Block already-published version
+        if: ${{ steps.npm-package.outputs.version_exists == 'true' }}
+        run: |
+          echo "${{ steps.npm-package.outputs.name }}@${{ steps.npm-package.outputs.version }} is already published on npm."
+          echo "Stopping before release creation to avoid publishing release artifacts for an already-published version."
+          exit 1
 
       - name: Install dependencies
         run: pnpm ci
@@ -126,33 +154,123 @@ jobs:
       - name: Verify runtime smoke tests
         run: pnpm run verify:runtime
 
+      - name: Pack release tarball
+        id: pack
+        run: |
+          set -euo pipefail
+
+          PACK_JSON="$(pnpm pack --json)"
+          TARBALL_NAME="$(node --input-type=module -e 'const pack = JSON.parse(process.argv[1]); console.log(pack.filename);' "$PACK_JSON")"
+          TARBALL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
+
+          sha256sum "$TARBALL_NAME" > "${TARBALL_NAME}.sha256"
+
+          echo "tarball-name=${TARBALL_NAME}" >> "$GITHUB_OUTPUT"
+          echo "tarball-sha256=${TARBALL_SHA256}" >> "$GITHUB_OUTPUT"
+          echo "tarball-subjects=$(sha256sum "$TARBALL_NAME" | base64 -w0)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release tarball artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: npm-release-artifacts
+          path: |
+            ${{ steps.pack.outputs.tarball-name }}
+            ${{ steps.pack.outputs.tarball-name }}.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  generate-slsa-provenance:
+    name: Generate SLSA provenance
+    needs: build-release-artifact
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.build-release-artifact.outputs.tarball-subjects }}
+      draft-release: true
+      provenance-name: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
+      upload-assets: true
+      upload-tag-name: ${{ github.ref_name }}
+
+  publish-npm:
+    name: Publish to npm
+    if: ${{ needs.build-release-artifact.outputs.package-exists == 'true' && needs.build-release-artifact.outputs.package-version-exists == 'false' }}
+    needs:
+      - build-release-artifact
+      - generate-slsa-provenance
+    runs-on: ubuntu-24.04
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Show publish tool versions
+        run: |
+          node --version
+          npm --version
+
+      - name: Download npm release tarball artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: npm-release-artifacts
+
+      - name: Verify npm release tarball checksum
+        env:
+          EXPECTED_SHA256: ${{ needs.build-release-artifact.outputs.tarball-sha256 }}
+          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
+        run: |
+          ACTUAL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
+
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
+            echo "Tarball checksum mismatch for $TARBALL_NAME" >&2
+            echo "expected: $EXPECTED_SHA256" >&2
+            echo "actual:   $ACTUAL_SHA256" >&2
+            exit 1
+          fi
+
+      - name: Download SLSA provenance from draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
+        run: |
+          gh release download "$GITHUB_REF_NAME" \
+            --pattern "$PROVENANCE_NAME" \
+            --dir "$RUNNER_TEMP"
+
+      - name: Prepare npm publish inputs
+        env:
+          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
+        run: cp "$TARBALL_NAME" "$RUNNER_TEMP/$TARBALL_NAME"
+
       - name: Publish to npm
-        if: ${{ steps.npm-package.outputs.exists == 'true' && steps.npm-package.outputs.version_exists == 'false' }}
-        run: npm publish --access public
+        working-directory: ${{ runner.temp }}
+        env:
+          PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
+          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
+        run: npm publish "./$TARBALL_NAME" --access public --provenance-file "./$PROVENANCE_NAME"
 
-      - name: Report first-publish bootstrap fallback
-        if: ${{ steps.npm-package.outputs.exists == 'false' }}
-        run: |
-          cat <<'EOF'
-          The npm package does not exist yet, so this workflow cannot use npm Trusted Publishing.
-          Publish the first version manually from a maintainer-controlled environment, then configure npm Trusted Publishing for future releases.
-
-          Recommended bootstrap command after local release validation:
-            npm publish --access public
-
-          If a token-based CI bootstrap is explicitly chosen instead, use a temporary granular npm token, publish with provenance, and revoke the token immediately:
-            npm publish --provenance --access public
-          EOF
-
-      - name: Report already-published version
-        if: ${{ steps.npm-package.outputs.version_exists == 'true' }}
-        run: |
-          echo "${{ steps.npm-package.outputs.name }}@${{ steps.npm-package.outputs.version }} is already published on npm."
-          echo "Skipping npm publish and continuing to GitHub Release creation."
-
-  create-github-release:
-    name: Create GitHub Release
-    needs: publish-npm
+  publish-github-release:
+    name: Publish GitHub Release
+    if: ${{ !cancelled() && needs.build-release-artifact.result == 'success' && needs.generate-slsa-provenance.result == 'success' && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
+    needs:
+      - build-release-artifact
+      - generate-slsa-provenance
+      - publish-npm
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -167,6 +285,11 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
+
+      - name: Download npm release tarball artifact
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        with:
+          name: npm-release-artifacts
 
       - name: Extract release notes
         run: |
@@ -204,11 +327,21 @@ jobs:
           writeFileSync("release-notes.md", `${notes}\n`, "utf8");
           NODE
 
-      - name: Create GitHub Release
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" \
+            "$TARBALL_NAME" \
+            "${TARBALL_NAME}.sha256"
+
+      - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
+          gh release edit "$GITHUB_REF_NAME" \
             --verify-tag \
             --title "$GITHUB_REF_NAME" \
-            --notes-file release-notes.md
+            --notes-file release-notes.md \
+            --draft=false

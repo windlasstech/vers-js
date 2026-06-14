@@ -177,10 +177,26 @@ Tests must not assert exact human-readable diagnostic message strings. They may 
   - Dependency Review (on PRs + merge groups)
 - Do not add build/test CI that bypasses these security checks.
 - **Always reference** `windlasstech/.github` main branch security docs before making security-relevant changes:
-  - Primary: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/SECURITY.md>
+  - Primary security policy: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/SECURITY.md>
+  - Artifact attestations: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/docs/security/artifact-attestations.md>
+  - Dependency security: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/docs/security/dependency-security.md>
   - SLSA compliance framework: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/docs/security/slsa-compliance-framework.md>
   - Workflow hardening: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/docs/security/workflow-hardening.md>
-  - Dependency security policy: <https://raw.githubusercontent.com/windlasstech/.github/refs/heads/main/docs/security/dependency-security.md>
+- Supply-chain baseline from the organization policy:
+  - SLSA Build L1/L2 are required; Build L3+ is the target wherever feasible.
+  - SLSA Source L1/L2 are required; Source L3 controls are followed where feasible; Source L4 is structurally blocked for a 1-person organization.
+  - Release source integrity uses GPG-signed annotated tags, GPG-signed commits on `main`, protected branches/tags, linear history, and required CI gates.
+  - Released artifacts that consumers run, install, deploy, or download must include signed provenance attestations. Prefer SLSA GitHub Generator builders/generators; use reusable-workflow attestations when practical; use direct `actions/attest` only as the baseline path when Build L3+ is not yet feasible.
+  - Released binaries and container images must include signed SPDX and CycloneDX SBOM attestations when the build can generate them; public releases should publish the same SBOM files as release assets when possible.
+  - Registry-published release artifacts should upload linked artifacts storage metadata with `artifact-metadata: write` when supported.
+  - Dependency security is layered: committed lockfiles, Dependabot, cooldowns, Dependency Review, and OSV Scanner. Security updates bypass cooldowns; normal version updates use cooldowns.
+  - Workflow hardening requires SHA-pinned third-party actions, hardened runners, explicit minimal top-level permissions, job-level elevation only when required, OIDC instead of long-lived cloud credentials, and protected production environments.
+- GitHub Actions permission reminders:
+  - Artifact attestations with `actions/attest`: `contents: read`, `id-token: write`, `attestations: write`.
+  - Linked artifacts storage records: add `artifact-metadata: write` and use registry artifact subjects by immutable digest.
+  - Container registry pushes: add `packages: write` only on the job that pushes images.
+  - Release asset upload: add `contents: write` only on the release job.
+  - PR comments: add `pull-requests: write` only for jobs that write comments.
 
 ## Pull Requests
 
