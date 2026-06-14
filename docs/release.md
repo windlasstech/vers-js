@@ -3,7 +3,7 @@
 This document is the canonical maintainer runbook for releasing `vers-js` to
 npm and GitHub. It implements
 [ADR-0051](decisions/0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md),
-which records the release publication trust-boundary decision.
+which documents the trust boundary for release publication.
 
 The release model is:
 
@@ -32,7 +32,7 @@ Before the first automated npm release, configure npm Trusted Publishing for the
   `npm`;
 - allowed action: `npm publish`.
 
-After Trusted Publishing is verified, prefer npm package settings that require
+After Trusted Publishing is verified, use npm package settings that require
 two-factor authentication and disallow traditional publish tokens. Trusted
 Publishing uses short-lived OIDC credentials and does not require an `NPM_TOKEN`
 secret.
@@ -44,14 +44,14 @@ on the npm registry. The `vers-js` v0.1.0 first release therefore uses a
 one-time maintainer-controlled local publish before Trusted Publishing is
 configured.
 
-For v0.1.0 only, before this SLSA-targeted release workflow became the normal
+For v0.1.0 only, before this SLSA-targeted release workflow becomes the normal
 path:
 
 1. complete the release PR and local release preparation steps below;
 2. publish from a maintainer-controlled local environment with npm account 2FA;
 3. configure npm Trusted Publishing for `publish.yml` after the package exists;
-4. push the signed tag so GitHub Actions can create the GitHub Release while
-   skipping npm publication for the already-published version;
+4. push the signed tag so GitHub Actions can create the GitHub Release, and skip
+   npm publication because the version is already published;
 5. use Trusted Publishing for subsequent npm releases.
 
 The local first-publish command is:
@@ -180,26 +180,26 @@ pnpm run release:prepare -- --tag --push
 
 ## Tag-triggered npm publish workflow
 
-The publish workflow lives at `.github/workflows/publish.yml` and runs only for
-release tags matching `v*`.
+The publish workflow is defined in `.github/workflows/publish.yml` and runs only
+for release tags matching `v*`.
 
 The workflow must verify the release before publishing:
 
-1. check out the tagged commit;
-2. install with the committed pnpm lockfile;
-3. run formatting, linting, type-checking, tests, coverage, package checks, and
+1. check out the tagged commit and install dependencies from the committed pnpm
+   lockfile;
+2. run formatting, linting, type-checking, tests, coverage, package checks, and
    runtime smoke checks;
-4. verify that the tag version matches `package.json`;
-5. verify that the matching changelog section exists;
-6. pack the npm release tarball once with `pnpm pack --json`;
-7. generate SLSA Build L3 provenance for the tarball digest and upload it to a
+3. verify that the tag version matches `package.json` and that the matching
+   changelog section exists;
+4. pack the npm release tarball once with `pnpm pack --json`;
+5. generate SLSA Build L3 provenance for the tarball digest and upload it to a
    draft GitHub Release;
-8. verify the downloaded tarball checksum before npm publication;
-9. download the SLSA provenance from the draft GitHub Release;
-10. publish that exact tarball to npm from outside the repository with
-    `npm publish --provenance-file`, when the package exists;
-11. upload the same tarball and its SHA-256 checksum to the draft GitHub Release;
-12. publish the GitHub Release after npm publish succeeds or is skipped.
+6. download the SLSA provenance and verify the tarball checksum before npm
+   publication;
+7. publish that exact tarball to npm from outside the repository with
+   `npm publish --provenance-file`, when the package exists;
+8. upload the same tarball and its SHA-256 checksum to the draft GitHub Release;
+9. publish the GitHub Release after npm publish succeeds or is skipped.
 
 The GitHub Release job extracts the matching `CHANGELOG.md` version section into
 `release-notes.md` and passes that file to `gh release edit --verify-tag` when
@@ -233,9 +233,9 @@ to review. The GitHub Release still publishes after the build and SLSA provenanc
 jobs succeed. If the exact tag version is already published on npm, the workflow
 fails before provenance or GitHub Release publication.
 
-Token-based fallback should remain exceptional because it requires long-lived
-credential handling, manual rotation, and an explicit maintainer procedure outside
-the normal pnpm Trusted Publishing path.
+Token-based fallback should be used only as an exception because it requires
+long-lived credential handling, manual rotation, and an explicit maintainer
+procedure outside the normal pnpm Trusted Publishing path.
 
 ## GitHub Release creation
 
@@ -266,8 +266,8 @@ gh release edit "v${VERSION}" \
   --draft=false
 ```
 
-Using `--verify-tag` prevents GitHub CLI from targeting a tag that does not exist
-on the remote.
+Using `--verify-tag` prevents GitHub CLI from referencing a tag that does not
+exist on the remote.
 
 Expected public release assets are:
 
