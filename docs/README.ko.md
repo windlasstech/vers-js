@@ -33,6 +33,7 @@ docs/
 - **[진단](architecture/diagnostics.md)**: 이슈 코드, 범위, 메타데이터
 - **[픽스처(fixtures)](architecture/fixtures.md)**: 적합성 픽스처 처리
 - **[리소스 제한](architecture/resource-limits.md)**: 입력 길이 및 진단 상한
+- **[속성 기반 테스트](architecture/property-based-testing.md)**: PBT 도구, 속성, 생성기 및 CI 동작
 
 ## 릴리즈 절차
 
