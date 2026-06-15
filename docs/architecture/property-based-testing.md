@@ -54,11 +54,13 @@ to take roughly `property count × 10 seconds`, plus Vitest startup and import
 overhead. Vitest's `--testTimeout=30000` is the timeout for each individual property
 test case; it is not a suite-level timeout.
 
-Reproducibility is controlled with `VERS_PBT_SEED=<integer seed>`. Invalid seed
-values must fail during test setup instead of silently producing an unreplayable
-run. When a property fails, fast-check reports the seed, path, and counterexample;
-the minimized input should be added to the project diagnostic fixtures or a
-regression test.
+Reproducibility is controlled with `VERS_PBT_SEED=<integer seed>` and
+`VERS_PBT_PATH=<shrinking path>`. Invalid seed values must fail during test setup
+instead of silently producing an unreplayable run. When a property fails,
+fast-check reports the seed, path, and counterexample; replay the failure by
+setting both environment variables before running `pnpm run test:pbt`. The
+minimized input should be added to the project diagnostic fixtures or a regression
+test.
 
 ## Scripts
 

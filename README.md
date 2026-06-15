@@ -189,6 +189,7 @@ pnpm run test:coverage # vitest run --coverage
 
 # test:fuzz applies its 10-second fast-check budget to each property test.
 # Expected runtime is roughly: property count × 10 seconds, plus startup overhead.
+# Replay a property failure with VERS_PBT_SEED=<seed> and VERS_PBT_PATH=<path>.
 
 # Package verification (uses built artifacts)
 pnpm run test:package              # build and verify emitted package artifacts

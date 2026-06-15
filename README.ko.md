@@ -191,6 +191,7 @@ pnpm run test:coverage # vitest run --coverage
 
 # test:fuzz의 10초 fast-check 시간 예산은 각 property 테스트마다 적용됩니다.
 # 예상 실행 시간은 대략 property 수 × 10초에 시작 오버헤드를 더한 값입니다.
+# property 실패는 VERS_PBT_SEED=<seed>와 VERS_PBT_PATH=<path>로 재현합니다.
 
 # 패키지 검증(빌드 산출물 사용)
 pnpm run test:package              # 빌드 후 배포 패키지 산출물 검증
