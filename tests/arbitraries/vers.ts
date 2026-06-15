@@ -22,6 +22,7 @@ const ISSUE_CAP_MIN_MULTIPLIER = 2;
 const ISSUE_CAP_MAX_MULTIPLIER = 2;
 const OVER_MAX_EXTRA = 1;
 const ZERO_INDEX = 0;
+const BINARY_BASE = 2;
 const MIXED_VALID_WEIGHT = 3;
 const MIXED_BROAD_WEIGHT = 1;
 const MIXED_OVER_MAX_WEIGHT = 1;
@@ -32,6 +33,25 @@ const BARE_VERSION_WEIGHT = 4;
 const COMPARATOR_VERSION_WEIGHT = 4;
 const HEX_RADIX = 16;
 const PERCENT_ESCAPE_LENGTH = 2;
+const CODE_POINT_MIN = 0;
+const CODE_POINT_STEP = 1;
+const UTF8_ONE_BYTE_MAX = 127;
+const UTF8_TWO_BYTE_MAX = 2047;
+const UTF8_THREE_BYTE_MAX = 65_535;
+const UTF8_FOUR_BYTE_MAX = 1_114_111;
+const UTF8_TWO_BYTE_PREFIX = 192;
+const UTF8_THREE_BYTE_PREFIX = 224;
+const UTF8_FOUR_BYTE_PREFIX = 240;
+const UTF8_CONTINUATION_PREFIX = 128;
+const UTF8_CONTINUATION_MODULO = 64;
+const UTF8_TWO_BYTE_SHIFT = 6;
+const UTF8_THREE_BYTE_FIRST_SHIFT = 12;
+const UTF8_FOUR_BYTE_FIRST_SHIFT = 18;
+const UTF8_FOUR_BYTE_SECOND_SHIFT = 12;
+const SURROGATE_START = 55_296;
+const SURROGATE_END = 57_343;
+const BEFORE_SURROGATE_END = SURROGATE_START - CODE_POINT_STEP;
+const AFTER_SURROGATE_START = SURROGATE_END + CODE_POINT_STEP;
 
 const LOWER_ALPHA = "abcdefghijklmnopqrstuvwxyz";
 const DIGITS = "0123456789";
@@ -58,11 +78,65 @@ function stringChars(input: string): string[] {
   return chars;
 }
 
+function percentByte(byte: number): string {
+  return `%${byte.toString(HEX_RADIX).toUpperCase().padStart(PERCENT_ESCAPE_LENGTH, "0")}`;
+}
+
+function continuationByte(scalar: number): number {
+  return UTF8_CONTINUATION_PREFIX + (scalar % UTF8_CONTINUATION_MODULO);
+}
+
+function leadingByte(prefix: number, scalar: number, shift: number): number {
+  return prefix + Math.floor(scalar / BINARY_BASE ** shift);
+}
+
+function shiftedContinuationByte(scalar: number, shift: number): number {
+  return continuationByte(Math.floor(scalar / BINARY_BASE ** shift));
+}
+
+function encodeThreeByteScalar(scalar: number): number[] {
+  return [
+    leadingByte(UTF8_THREE_BYTE_PREFIX, scalar, UTF8_THREE_BYTE_FIRST_SHIFT),
+    shiftedContinuationByte(scalar, UTF8_TWO_BYTE_SHIFT),
+    continuationByte(scalar),
+  ];
+}
+
+function encodeFourByteScalar(scalar: number): number[] {
+  return [
+    leadingByte(UTF8_FOUR_BYTE_PREFIX, scalar, UTF8_FOUR_BYTE_FIRST_SHIFT),
+    shiftedContinuationByte(scalar, UTF8_FOUR_BYTE_SECOND_SHIFT),
+    shiftedContinuationByte(scalar, UTF8_TWO_BYTE_SHIFT),
+    continuationByte(scalar),
+  ];
+}
+
+function encodeCodePointUtf8Bytes(scalar: number): number[] {
+  if (scalar <= UTF8_ONE_BYTE_MAX) {
+    return [scalar];
+  }
+
+  if (scalar <= UTF8_TWO_BYTE_MAX) {
+    return [
+      leadingByte(UTF8_TWO_BYTE_PREFIX, scalar, UTF8_TWO_BYTE_SHIFT),
+      continuationByte(scalar),
+    ];
+  }
+
+  return scalar <= UTF8_THREE_BYTE_MAX
+    ? encodeThreeByteScalar(scalar)
+    : encodeFourByteScalar(scalar);
+}
+
 const typeFirstChar = constantFrom(...stringChars(LOWER_ALPHA));
 const typeRestChar = constantFrom(...stringChars(TYPE_REST_CHARS));
 const unreservedChar = constantFrom(...stringChars(UNRESERVED));
 const comparatorChar = constantFrom(...COMPARATORS);
 const nonEqualityComparatorChar = constantFrom(...NON_EQUALITY_COMPARATORS);
+const unicodeScalarChar = oneof(
+  integer({ max: BEFORE_SURROGATE_END, min: CODE_POINT_MIN }),
+  integer({ max: UTF8_FOUR_BYTE_MAX, min: AFTER_SURROGATE_START }),
+).map((codePoint) => String.fromCodePoint(codePoint));
 
 const typeArbitrary = tuple(
   typeFirstChar,
@@ -174,12 +248,17 @@ function encodeUtf8Percent(input: string): string {
     const scalar = codePoint.codePointAt(ZERO_INDEX);
 
     if (scalar !== undefined) {
-      encoded.push(`%${scalar.toString(HEX_RADIX).padStart(PERCENT_ESCAPE_LENGTH, "0")}`);
+      encoded.push(...encodeCodePointUtf8Bytes(scalar).map(percentByte));
     }
   }
 
   return encoded.join("");
 }
+
+const unicodeScalarVersionArbitrary = array(unicodeScalarChar, {
+  maxLength: MAX_VERSIONS,
+  minLength: MIN_VERSIONS,
+}).map((chars) => chars.join(""));
 
 const percentEncodedDeclarationArbitrary = tuple(typeArbitrary, bareVersionArbitrary).map(
   ([type, version]) => ({
@@ -187,6 +266,14 @@ const percentEncodedDeclarationArbitrary = tuple(typeArbitrary, bareVersionArbit
     input: `vers:${type}/${encodeUtf8Percent(version)}`,
   }),
 );
+
+const percentEncodedUnicodeDeclarationArbitrary = tuple(
+  typeArbitrary,
+  unicodeScalarVersionArbitrary,
+).map(([type, version]) => ({
+  decodedVersion: version,
+  input: `vers:${type}/${encodeUtf8Percent(version)}`,
+}));
 
 const uppercasePercentEncodedDeclarationArbitrary = tuple(
   typeArbitrary,
@@ -218,6 +305,7 @@ export {
   mixedVersInputArbitrary,
   overMaxInputArbitrary,
   percentEncodedDeclarationArbitrary,
+  percentEncodedUnicodeDeclarationArbitrary,
   uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
   validAsciiDeclarationArbitrary,

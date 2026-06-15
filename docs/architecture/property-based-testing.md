@@ -38,11 +38,11 @@ package's runtime dependencies.
 Global fast-check configuration lives in `tests/setup/fast-check.ts` and is
 registered as a Vitest `setupFiles` entry. The setup supports three modes:
 
-| Mode   | Trigger                                         | Behavior                                                                 |
-| ------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
-| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded deterministic run (`numRuns: 100`).                              |
-| CI     | `CI=true`                                       | Bounded deterministic run with an interrupt time limit.                  |
-| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Per-property exploratory run until `interruptAfterTimeLimit` is reached. |
+| Mode   | Trigger                                         | Behavior                                                                                  |
+| ------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded run (`numRuns: 100`) reproducible on failure via reported seed/path.              |
+| CI     | `CI=true`                                       | Bounded run with an interrupt time limit, reproducible on failure via reported seed/path. |
+| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Per-property exploratory run until `interruptAfterTimeLimit` is reached.                  |
 
 Fuzz-mode interruption is a successful stop condition after at least one
 generated case has passed. It must still fail on real property failures and report
@@ -183,8 +183,9 @@ root or shipped as runtime code.
 
 ## Determinism and reproducibility
 
-Properties must be deterministic by default. Each property run must use a fixed seed
-or record the seed and shrinking path so that CI failures can be replayed locally.
+Properties must be reproducible on failure. Each failing property run must report the
+seed and shrinking path so that CI failures can be replayed locally. Maintainers may
+also set `VERS_PBT_SEED=<seed>` to force a specific replay.
 
 When a property fails:
 

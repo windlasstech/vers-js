@@ -13,6 +13,7 @@ import {
   mixedVersInputArbitrary,
   overMaxInputArbitrary,
   percentEncodedDeclarationArbitrary,
+  percentEncodedUnicodeDeclarationArbitrary,
   uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
   validNonDuplicateDeclarationArbitrary,
@@ -261,15 +262,17 @@ describe("property-based VERS invariants", (): void => {
     );
 
     test.prop([issueCapPressureInputArbitrary])(
-      "issue-cap pressure inputs report exact truncation metadata",
+      "issue-cap pressure inputs report exact truncation metadata for every public operation",
       (input) => {
-        const result = parseVers(input);
+        for (const operation of [parseVers, validateVers, canonicalizeVers]) {
+          const result = operation(input);
 
-        assertFailure(result);
-        expect(result.issues).toHaveLength(MAX_ISSUES);
-        expect(result.metadata).toEqual({
-          diagnostics: { maxIssues: MAX_ISSUES, truncated: true },
-        });
+          assertFailure(result);
+          expect(result.issues).toHaveLength(MAX_ISSUES);
+          expect(result.metadata).toEqual({
+            diagnostics: { maxIssues: MAX_ISSUES, truncated: true },
+          });
+        }
       },
     );
 
@@ -294,6 +297,13 @@ describe("property-based VERS invariants", (): void => {
   describe("percent encoding", (): void => {
     test.prop([percentEncodedDeclarationArbitrary])(
       "percent escape canonicalization is stable",
+      (fixture) => {
+        assertPercentEscapeStable(parseVers(fixture.input), fixture.decodedVersion);
+      },
+    );
+
+    test.prop([percentEncodedUnicodeDeclarationArbitrary])(
+      "UTF-8 percent-encoded Unicode scalar versions canonicalize stably",
       (fixture) => {
         assertPercentEscapeStable(parseVers(fixture.input), fixture.decodedVersion);
       },
