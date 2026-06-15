@@ -38,25 +38,27 @@ package's runtime dependencies.
 Global fast-check configuration lives in `tests/setup/fast-check.ts` and is
 registered as a Vitest `setupFiles` entry. The setup supports three modes:
 
-| Mode   | Trigger                                         | Behavior                                                                                  |
-| ------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded run (`numRuns: 100`) reproducible on failure via reported seed/path.              |
-| CI     | `CI=true`                                       | Bounded run with an interrupt time limit, reproducible on failure via reported seed/path. |
-| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Per-property exploratory run until `interruptAfterTimeLimit` is reached.                  |
+| Mode   | Trigger                                         | Behavior                                                                                                        |
+| ------ | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded run (`numRuns: 100`) reproducible on failure via reported seed/path.                                    |
+| CI     | `CI=true`                                       | Bounded run with an interrupt time limit that fails if reached, reproducible on failure via reported seed/path. |
+| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Per-property exploratory run until `interruptAfterTimeLimit` is reached.                                        |
 
 Fuzz-mode interruption is a successful stop condition after at least one
 generated case has passed. It must still fail on real property failures and report
 the seed, path, and counterexample.
 
 The fuzz budget is applied per property, not to the whole Vitest process. With the
-current 10-second `interruptAfterTimeLimit` and 15 property tests, a complete
-`test:fuzz` run is expected to take about 150 seconds plus Vitest startup and import
+current 10-second `interruptAfterTimeLimit`, a complete `test:fuzz` run is expected
+to take roughly `property count × 10 seconds`, plus Vitest startup and import
 overhead. Vitest's `--testTimeout=30000` is the timeout for each individual property
 test case; it is not a suite-level timeout.
 
-Reproducibility is controlled with `VERS_PBT_SEED=<seed>`. When a property fails,
-fast-check reports the seed, path, and counterexample; the minimized input should
-be added to the project diagnostic fixtures or a regression test.
+Reproducibility is controlled with `VERS_PBT_SEED=<integer seed>`. Invalid seed
+values must fail during test setup instead of silently producing an unreplayable
+run. When a property fails, fast-check reports the seed, path, and counterexample;
+the minimized input should be added to the project diagnostic fixtures or a
+regression test.
 
 ## Scripts
 
@@ -157,9 +159,9 @@ Property-based tests include focused generators for percent-encoding edges:
 
 ## Generators
 
-Generators may be composed from fast-check primitives. The initial suite can use broad
-string generators; later iterations should add grammar-aware generators that produce a
-higher ratio of valid VERS declarations.
+Generators may be composed from fast-check primitives. The suite uses both broad
+Unicode string generators for public API robustness and grammar-aware generators that
+produce a higher ratio of valid VERS declarations.
 
 A grammar-aware generator for VERS declarations produces values matching:
 

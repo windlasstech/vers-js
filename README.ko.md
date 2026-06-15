@@ -189,8 +189,8 @@ pnpm run test:fuzz    # property별 시간 예산 기반 fuzz 탐색
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
-# test:fuzz의 fast-check 시간 예산은 각 property 테스트마다 적용됩니다.
-# 현재 property 수 기준으로 시작 오버헤드를 제외하고 대략 180초 동안 실행됩니다.
+# test:fuzz의 10초 fast-check 시간 예산은 각 property 테스트마다 적용됩니다.
+# 예상 실행 시간은 대략 property 수 × 10초에 시작 오버헤드를 더한 값입니다.
 
 # 패키지 검증(빌드 산출물 사용)
 pnpm run test:package              # 빌드 후 배포 패키지 산출물 검증
