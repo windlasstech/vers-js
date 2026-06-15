@@ -18,7 +18,6 @@ const MAX_VERSIONS = 8;
 const MIN_VERSION_LENGTH = 1;
 const MAX_VERSION_LENGTH = 64;
 const MAX_TYPE_REST_LENGTH = 24;
-const EXACT_BOUNDARY_VERSION_LENGTH = MAX_INPUT_LENGTH - "vers:generic/".length;
 const ISSUE_CAP_MIN_MULTIPLIER = 2;
 const ISSUE_CAP_MAX_MULTIPLIER = 2;
 const OVER_MAX_EXTRA = 1;
@@ -40,7 +39,7 @@ const TYPE_REST_CHARS = `${LOWER_ALPHA}${DIGITS}.-`;
 const UNRESERVED = `${LOWER_ALPHA}ABCDEFGHIJKLMNOPQRSTUVWXYZ${DIGITS}-._~`;
 const COMPARATORS = ["!=", "<", "<=", ">", ">=", "="] as const;
 const NON_EQUALITY_COMPARATORS = COMPARATORS.filter((comparator) => comparator !== "=");
-const HEX_DIGITS = "0123456789abcdef";
+const NO_COMPARATOR = "";
 const UPPERCASE_PERCENT_FIXTURES = [
   { canonicalVersion: "%E2%82%AC", decodedVersion: "€", encodedVersion: "%e2%82%ac" },
   { canonicalVersion: "%ED%95%9C", decodedVersion: "한", encodedVersion: "%ed%95%9c" },
@@ -64,7 +63,6 @@ const typeRestChar = constantFrom(...stringChars(TYPE_REST_CHARS));
 const unreservedChar = constantFrom(...stringChars(UNRESERVED));
 const comparatorChar = constantFrom(...COMPARATORS);
 const nonEqualityComparatorChar = constantFrom(...NON_EQUALITY_COMPARATORS);
-const hexDigit = constantFrom(...stringChars(HEX_DIGITS));
 
 const typeArbitrary = tuple(
   typeFirstChar,
@@ -76,21 +74,9 @@ const bareVersionArbitrary = array(unreservedChar, {
   minLength: MIN_VERSION_LENGTH,
 }).map((chars) => chars.join(""));
 
-const percentEscapeArbitrary = tuple(hexDigit, hexDigit).map(
-  ([firstDigit, secondDigit]) => `%${firstDigit}${secondDigit}`,
+const comparatorVersionConstraintArbitrary = tuple(comparatorChar, bareVersionArbitrary).map(
+  ([comparator, version]) => `${comparator}${version}`,
 );
-
-const encodedByteArbitrary = oneof(unreservedChar, percentEscapeArbitrary);
-
-const encodedVersionArbitrary = array(encodedByteArbitrary, {
-  maxLength: MAX_VERSION_LENGTH,
-  minLength: MIN_VERSION_LENGTH,
-}).map((tokens) => tokens.join(""));
-
-const comparatorVersionConstraintArbitrary = tuple(
-  comparatorChar,
-  oneof(bareVersionArbitrary, encodedVersionArbitrary),
-).map(([comparator, version]) => `${comparator}${version}`);
 
 const constraintArbitrary = oneof(
   { arbitrary: constant("*"), weight: STAR_WEIGHT },
@@ -103,7 +89,7 @@ const constraintsListArbitrary = array(constraintArbitrary, {
   minLength: MIN_CONSTRAINTS,
 }).map((constraints) => constraints.join("|"));
 
-const validDeclarationArbitrary = tuple(typeArbitrary, constraintsListArbitrary).map(
+const validAsciiDeclarationArbitrary = tuple(typeArbitrary, constraintsListArbitrary).map(
   ([type, constraints]) => `vers:${type}/${constraints}`,
 );
 
@@ -154,9 +140,14 @@ const overMaxInputArbitrary = stringMatching(/^[\x20-\x7E]+$/).map((suffix) => {
     : `${candidate}${"a".repeat(MAX_INPUT_LENGTH + OVER_MAX_EXTRA - candidate.length)}`;
 });
 
-const exactMaxInputArbitrary = constant(
-  `vers:generic/${"a".repeat(EXACT_BOUNDARY_VERSION_LENGTH)}`,
-);
+const exactMaxInputArbitrary = tuple(
+  typeArbitrary,
+  oneof(constant(NO_COMPARATOR), nonEqualityComparatorChar),
+).map(([type, comparator]) => {
+  const prefix = `vers:${type}/${comparator}`;
+
+  return `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
+});
 
 const issueCapPressureInputArbitrary = integer({
   max: MAX_ISSUES * ISSUE_CAP_MAX_MULTIPLIER,
@@ -166,14 +157,14 @@ const issueCapPressureInputArbitrary = integer({
 const broadInputArbitrary = stringMatching(/^[\x20-\x7E]{0,128}$/);
 
 const mixedVersInputArbitrary = oneof(
-  { arbitrary: validDeclarationArbitrary, weight: MIXED_VALID_WEIGHT },
+  { arbitrary: validAsciiDeclarationArbitrary, weight: MIXED_VALID_WEIGHT },
   { arbitrary: broadInputArbitrary, weight: MIXED_BROAD_WEIGHT },
   { arbitrary: overMaxInputArbitrary, weight: MIXED_OVER_MAX_WEIGHT },
 );
 
 const anyVersInputArbitrary = oneof(
   { arbitrary: broadInputArbitrary, weight: ANY_BROAD_WEIGHT },
-  { arbitrary: validDeclarationArbitrary, weight: ANY_VALID_WEIGHT },
+  { arbitrary: validAsciiDeclarationArbitrary, weight: ANY_VALID_WEIGHT },
 );
 
 function encodeUtf8Percent(input: string): string {
@@ -229,7 +220,7 @@ export {
   percentEncodedDeclarationArbitrary,
   uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
-  validDeclarationArbitrary,
+  validAsciiDeclarationArbitrary,
   validNonDuplicateDeclarationArbitrary,
   validOrderedConstraintDeclarationArbitrary,
 };

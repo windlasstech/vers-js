@@ -260,20 +260,31 @@ describe("property-based VERS invariants", (): void => {
       },
     );
 
-    test.prop([issueCapPressureInputArbitrary, anyVersInputArbitrary])(
+    test.prop([issueCapPressureInputArbitrary])(
+      "issue-cap pressure inputs report exact truncation metadata",
+      (input) => {
+        const result = parseVers(input);
+
+        assertFailure(result);
+        expect(result.issues).toHaveLength(MAX_ISSUES);
+        expect(result.metadata).toEqual({
+          diagnostics: { maxIssues: MAX_ISSUES, truncated: true },
+        });
+      },
+    );
+
+    test.prop([anyVersInputArbitrary])(
       "failed parses never exceed the diagnostic issue cap",
-      (pressureInput, anyInput) => {
-        for (const input of [pressureInput, anyInput]) {
-          const result = parseVers(input);
+      (input) => {
+        const result = parseVers(input);
 
-          if (!result.ok) {
-            expect(result.issues.length).toBeLessThanOrEqual(MAX_ISSUES);
+        if (!result.ok) {
+          expect(result.issues.length).toBeLessThanOrEqual(MAX_ISSUES);
 
-            if (result.issues.length >= MAX_ISSUES) {
-              expect(result.metadata).toEqual({
-                diagnostics: { maxIssues: MAX_ISSUES, truncated: true },
-              });
-            }
+          if (result.issues.length >= MAX_ISSUES) {
+            expect(result.metadata).toEqual({
+              diagnostics: { maxIssues: MAX_ISSUES, truncated: true },
+            });
           }
         }
       },
