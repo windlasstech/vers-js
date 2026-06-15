@@ -48,6 +48,12 @@ Fuzz-mode interruption is a successful stop condition after at least one
 generated case has passed. It must still fail on real property failures and report
 the seed, path, and counterexample.
 
+The fuzz budget is applied per property, not to the whole Vitest process. With the
+current 10-second `interruptAfterTimeLimit` and 15 property tests, a complete
+`test:fuzz` run is expected to take about 150 seconds plus Vitest startup and import
+overhead. Vitest's `--testTimeout=30000` is the timeout for each individual property
+test case; it is not a suite-level timeout.
+
 Reproducibility is controlled with `VERS_PBT_SEED=<seed>`. When a property fails,
 fast-check reports the seed, path, and counterexample; the minimized input should
 be added to the project diagnostic fixtures or a regression test.
@@ -56,10 +62,10 @@ be added to the project diagnostic fixtures or a regression test.
 
 The following package scripts are provided:
 
-| Script      | Command                                                                          | Purpose                                 |
-| ----------- | -------------------------------------------------------------------------------- | --------------------------------------- |
-| `test:pbt`  | `vitest run tests/property-based.test.ts`                                        | Run bounded property-based tests.       |
-| `test:fuzz` | `VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000` | Run extended fuzz-style property tests. |
+| Script      | Command                                                                          | Purpose                                                |
+| ----------- | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `test:pbt`  | `vitest run tests/property-based.test.ts`                                        | Run bounded property-based tests.                      |
+| `test:fuzz` | `VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000` | Run per-property, time-budgeted fuzz-style properties. |
 
 Property-based tests also run as part of the normal `pnpm run test` suite.
 
@@ -194,9 +200,10 @@ default run count keeps CI execution time reasonable. Larger exploratory runs ar
 exposed through the dedicated `pnpm run test:pbt` and `pnpm run test:fuzz` scripts.
 
 `test:fuzz` is not required in PR gates. It is intended for manual or scheduled
-exploration with a strict per-property time budget. If a longer campaign is needed,
-properties should be split across separate processes so that one infinite fuzz loop
-does not starve the rest of the suite.
+exploration with a strict per-property time budget, so total runtime scales with the
+number of properties in `tests/property-based.test.ts`. If a longer campaign is
+needed, properties should be split across separate processes so that one infinite
+fuzz loop does not starve the rest of the suite.
 
 If a property-based test becomes flaky because of a non-deterministic generator or an
 unfixed seed, the test must be fixed rather than disabled or deleted.

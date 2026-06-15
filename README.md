@@ -183,9 +183,12 @@ pnpm run build        # tsc -p tsconfig.build.json
 # Testing
 pnpm run test         # vitest run
 pnpm run test:pbt     # vitest run tests/property-based.test.ts
-pnpm run test:fuzz    # time-budgeted fuzz-style exploration using fast-check
+pnpm run test:fuzz    # per-property time-budgeted fuzz exploration
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
+
+# test:fuzz applies its fast-check time budget to each property test.
+# With the current property count, expect roughly 150 seconds plus startup overhead.
 
 # Package verification (uses built artifacts)
 pnpm run test:package              # build and verify emitted package artifacts
