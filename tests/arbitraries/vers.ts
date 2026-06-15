@@ -4,6 +4,7 @@ import {
   constantFrom,
   integer,
   oneof,
+  string,
   stringMatching,
   tuple,
   uniqueArray,
@@ -238,6 +239,10 @@ const issueCapPressureInputArbitrary = integer({
 }).map((pipeCount) => `vers:generic/${"|".repeat(pipeCount)}`);
 
 const broadInputArbitrary = stringMatching(/^[\x20-\x7E]{0,128}$/);
+const broadUnicodeInputArbitrary = string({
+  maxLength: MAX_INPUT_LENGTH + OVER_MAX_EXTRA,
+  size: "max",
+});
 
 const mixedVersInputArbitrary = oneof(
   { arbitrary: validAsciiDeclarationArbitrary, weight: MIXED_VALID_WEIGHT },
@@ -315,6 +320,7 @@ const invalidUtf8DeclarationArbitrary = tuple(
 export {
   anyVersInputArbitrary,
   broadInputArbitrary,
+  broadUnicodeInputArbitrary,
   exactMaxInputArbitrary,
   explicitEqualityDeclarationArbitrary,
   invalidPercentEncodingDeclarationArbitrary,

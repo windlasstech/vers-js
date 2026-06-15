@@ -5,6 +5,7 @@ import { describe, expect } from "vitest";
 
 import {
   anyVersInputArbitrary,
+  broadUnicodeInputArbitrary,
   exactMaxInputArbitrary,
   explicitEqualityDeclarationArbitrary,
   invalidPercentEncodingDeclarationArbitrary,
@@ -146,6 +147,22 @@ describe("property-based VERS invariants", (): void => {
         const validateResult = validateVers(input);
 
         expect(parseResult.ok).toBe(validateResult.ok);
+      },
+    );
+
+    test.prop([broadUnicodeInputArbitrary])(
+      "all public operations accept arbitrary strings without throwing",
+      (input) => {
+        const parseResult = parseVers(input);
+        const validateResult = validateVers(input);
+        const canonicalResult = canonicalizeVers(input);
+
+        expect(validateResult.ok).toBe(parseResult.ok);
+        expect(canonicalResult.ok).toBe(parseResult.ok);
+
+        if (!parseResult.ok) {
+          expect(parseResult.issues.length).toBeLessThanOrEqual(MAX_ISSUES);
+        }
       },
     );
 
