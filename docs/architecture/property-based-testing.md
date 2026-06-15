@@ -38,11 +38,15 @@ package's runtime dependencies.
 Global fast-check configuration lives in `tests/setup/fast-check.ts` and is
 registered as a Vitest `setupFiles` entry. The setup supports three modes:
 
-| Mode   | Trigger                                         | Behavior                                                             |
-| ------ | ----------------------------------------------- | -------------------------------------------------------------------- |
-| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded deterministic run (`numRuns: 100`).                          |
-| CI     | `CI=true`                                       | Bounded deterministic run with an interrupt time limit.              |
-| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Extended run with `interruptAfterTimeLimit` for exploratory testing. |
+| Mode   | Trigger                                         | Behavior                                                                 |
+| ------ | ----------------------------------------------- | ------------------------------------------------------------------------ |
+| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded deterministic run (`numRuns: 100`).                              |
+| CI     | `CI=true`                                       | Bounded deterministic run with an interrupt time limit.                  |
+| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Per-property exploratory run until `interruptAfterTimeLimit` is reached. |
+
+Fuzz-mode interruption is a successful stop condition after at least one
+generated case has passed. It must still fail on real property failures and report
+the seed, path, and counterexample.
 
 Reproducibility is controlled with `VERS_PBT_SEED=<seed>`. When a property fails,
 fast-check reports the seed, path, and counterexample; the minimized input should
@@ -121,6 +125,9 @@ For every generated string input where `parseVers(input)` succeeds,
 For every generated string input longer than 1024 UTF-16 code units, parsing fails with
 `resource.input_too_long` before ordinary syntax diagnostics are emitted.
 
+Generated inputs exactly 1024 UTF-16 code units long remain inside the accepted
+resource boundary and must proceed to ordinary syntax/canonical validation.
+
 ### Diagnostic cap
 
 For every generated string input, a failed parse returns at most 16 issues. When the
@@ -132,6 +139,15 @@ issue cap is exceeded, `metadata.diagnostics` is present and contains exactly
 For every generated valid constraint list joined by `|`, the parsed `constraints`
 array preserves the original order. The canonical output must not reorder, sort, or
 deduplicate constraints.
+
+### Character encoding edges
+
+Property-based tests include focused generators for percent-encoding edges:
+
+- lowercase percent hex is accepted and reserialized as uppercase hex;
+- invalid percent escapes fail with `constraint.invalid_percent_encoding`;
+- invalid UTF-8 byte sequences fail with `constraint.invalid_utf8`;
+- successful percent-encoded inputs remain stable after canonicalization.
 
 ## Generators
 
@@ -151,6 +167,10 @@ where:
 - each `<constraint>` is `*`, a bare version, or a comparator followed by a version;
 - versions consist of allowed raw version characters defined by `character-encoding.md`;
 - percent escapes are valid `%XX` sequences.
+
+Generators used for successful-parse properties must avoid decoded duplicate versions,
+because duplicate detection is part of canonical validation and correctly turns those
+inputs into failures.
 
 Generators must remain dev-only test code. They must not be exported from the package
 root or shipped as runtime code.
@@ -174,7 +194,9 @@ default run count keeps CI execution time reasonable. Larger exploratory runs ar
 exposed through the dedicated `pnpm run test:pbt` and `pnpm run test:fuzz` scripts.
 
 `test:fuzz` is not required in PR gates. It is intended for manual or scheduled
-exploration with a strict time budget.
+exploration with a strict per-property time budget. If a longer campaign is needed,
+properties should be split across separate processes so that one infinite fuzz loop
+does not starve the rest of the suite.
 
 If a property-based test becomes flaky because of a non-deterministic generator or an
 unfixed seed, the test must be fixed rather than disabled or deleted.

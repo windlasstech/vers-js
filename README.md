@@ -183,7 +183,7 @@ pnpm run build        # tsc -p tsconfig.build.json
 # Testing
 pnpm run test         # vitest run
 pnpm run test:pbt     # vitest run tests/property-based.test.ts
-pnpm run test:fuzz    # VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000
+pnpm run test:fuzz    # time-budgeted fuzz-style exploration using fast-check
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 

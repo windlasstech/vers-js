@@ -185,7 +185,7 @@ pnpm run build        # tsc -p tsconfig.build.json
 # 테스트
 pnpm run test         # vitest run
 pnpm run test:pbt     # vitest run tests/property-based.test.ts
-pnpm run test:fuzz    # VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000
+pnpm run test:fuzz    # fast-check를 사용한 시간 예산 기반 fuzz-style 탐색
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
