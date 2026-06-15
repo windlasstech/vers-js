@@ -14,6 +14,8 @@ import {
   overMaxInputArbitrary,
   percentEncodedDeclarationArbitrary,
   percentEncodedUnicodeDeclarationArbitrary,
+  reservedPercentEncodedDeclarationArbitrary,
+  starDeclarationArbitrary,
   uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
   validNonDuplicateDeclarationArbitrary,
@@ -192,6 +194,23 @@ describe("property-based VERS invariants", (): void => {
       },
     );
 
+    test.prop([starDeclarationArbitrary])(
+      "star declarations parse as public star constraint metadata",
+      (input) => {
+        const result = parseVers(input);
+
+        expect(result.ok).toBe(true);
+
+        if (!result.ok) {
+          return;
+        }
+
+        expect(result.value.constraints).toEqual([{ comparator: "*", version: null }]);
+        expect(result.value.canonical).toBe(input);
+        expect(canonicalizeVers(input)).toEqual({ ok: true, value: input });
+      },
+    );
+
     test.prop([validOrderedConstraintDeclarationArbitrary])(
       "constraint order is preserved for valid generated declarations",
       (fixture) => {
@@ -311,6 +330,30 @@ describe("property-based VERS invariants", (): void => {
 
     test.prop([uppercasePercentEncodedDeclarationArbitrary])(
       "lowercase percent hex is accepted and canonicalized to uppercase hex",
+      (fixture) => {
+        const result = parseVers(fixture.input);
+
+        expect(result.ok).toBe(true);
+
+        if (!result.ok) {
+          return;
+        }
+
+        const [constraint] = result.value.constraints;
+
+        expect(constraint).toBeDefined();
+
+        if (constraint !== undefined && constraint.comparator !== "*") {
+          expect(constraint.version).toBe(fixture.decodedVersion);
+        }
+
+        expect(result.value.canonical).toBe(fixture.canonical);
+        expect(canonicalizeVers(fixture.input)).toEqual({ ok: true, value: fixture.canonical });
+      },
+    );
+
+    test.prop([reservedPercentEncodedDeclarationArbitrary])(
+      "reserved decoded characters remain percent-serialized in canonical output",
       (fixture) => {
         const result = parseVers(fixture.input);
 

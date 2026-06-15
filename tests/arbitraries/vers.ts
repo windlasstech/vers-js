@@ -65,6 +65,13 @@ const UPPERCASE_PERCENT_FIXTURES = [
   { canonicalVersion: "%ED%95%9C", decodedVersion: "한", encodedVersion: "%ed%95%9c" },
   { canonicalVersion: "%F0%9F%99%88", decodedVersion: "🙈", encodedVersion: "%f0%9f%99%88" },
 ] as const;
+const RESERVED_PERCENT_FIXTURES = [
+  { canonicalVersion: "%21", decodedVersion: "!" },
+  { canonicalVersion: "%27", decodedVersion: "'" },
+  { canonicalVersion: "%28", decodedVersion: "(" },
+  { canonicalVersion: "%29", decodedVersion: ")" },
+  { canonicalVersion: "%2A", decodedVersion: "*" },
+] as const;
 const INVALID_PERCENT_ENCODINGS = ["%", "%0", "%xz", "abc%q0"] as const;
 const INVALID_UTF8_ENCODINGS = ["%C3%28", "%E2%28%A1", "%F0%28%8C%BC"] as const;
 
@@ -197,6 +204,8 @@ const explicitEqualityDeclarationArbitrary = tuple(typeArbitrary, bareVersionArb
   ([type, version]) => `vers:${type}/=${version}`,
 );
 
+const starDeclarationArbitrary = typeArbitrary.map((type) => `vers:${type}/*`);
+
 const uppercaseTypeDeclarationArbitrary = tuple(
   stringMatching(/^[A-Z][A-Za-z0-9.-]{0,24}$/),
   bareVersionArbitrary,
@@ -284,6 +293,15 @@ const uppercasePercentEncodedDeclarationArbitrary = tuple(
   input: `vers:${type}/${fixture.encodedVersion}`,
 }));
 
+const reservedPercentEncodedDeclarationArbitrary = tuple(
+  typeArbitrary,
+  constantFrom(...RESERVED_PERCENT_FIXTURES),
+).map(([type, fixture]) => ({
+  canonical: `vers:${type}/${fixture.canonicalVersion}`,
+  decodedVersion: fixture.decodedVersion,
+  input: `vers:${type}/${fixture.canonicalVersion}`,
+}));
+
 const invalidPercentEncodingDeclarationArbitrary = tuple(
   typeArbitrary,
   constantFrom(...INVALID_PERCENT_ENCODINGS),
@@ -306,6 +324,8 @@ export {
   overMaxInputArbitrary,
   percentEncodedDeclarationArbitrary,
   percentEncodedUnicodeDeclarationArbitrary,
+  reservedPercentEncodedDeclarationArbitrary,
+  starDeclarationArbitrary,
   uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
   validAsciiDeclarationArbitrary,

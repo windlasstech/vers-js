@@ -8,6 +8,7 @@ const CI_INTERRUPT_MS = 5000;
 declare const process: {
   readonly env: {
     readonly CI?: string;
+    readonly VERS_PBT_PATH?: string;
     readonly VERS_PBT_MODE?: string;
     readonly VERS_PBT_SEED?: string;
   };
@@ -18,8 +19,11 @@ const isFuzzMode = process.env.VERS_PBT_MODE === "fuzz";
 
 const seed =
   process.env.VERS_PBT_SEED !== undefined ? Number(process.env.VERS_PBT_SEED) : undefined;
+const path = process.env.VERS_PBT_PATH;
 
-const baseConfig = seed === undefined ? {} : { seed };
+const seedConfig = seed === undefined ? {} : { seed };
+const pathConfig = path === undefined ? {} : { path };
+const baseConfig = { ...seedConfig, ...pathConfig };
 
 if (isFuzzMode) {
   configureGlobal({
