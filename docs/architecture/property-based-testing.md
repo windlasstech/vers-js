@@ -26,13 +26,38 @@ suite.
 
 ## Tooling
 
-The project uses `fast-check` as the property-based testing library. The optional
-`@fast-check/vitest` adapter may be used to write properties with native Vitest
-`test.prop` and `it.prop` styles, provided the adapter's Node version requirement is
-compatible with the development baseline.
+The project uses `fast-check` as the property-based testing library and
+`@fast-check/vitest` as the Vitest adapter. Properties are written with
+`test.prop` from `@fast-check/vitest` and standard `expect` from `vitest`.
 
 All PBT dependencies are devDependencies. They must not appear in the published
 package's runtime dependencies.
+
+## Configuration and modes
+
+Global fast-check configuration lives in `tests/setup/fast-check.ts` and is
+registered as a Vitest `setupFiles` entry. The setup supports three modes:
+
+| Mode   | Trigger                                         | Behavior                                                             |
+| ------ | ----------------------------------------------- | -------------------------------------------------------------------- |
+| Normal | default `pnpm run test` and `pnpm run test:pbt` | Bounded deterministic run (`numRuns: 100`).                          |
+| CI     | `CI=true`                                       | Bounded deterministic run with an interrupt time limit.              |
+| Fuzz   | `VERS_PBT_MODE=fuzz`                            | Extended run with `interruptAfterTimeLimit` for exploratory testing. |
+
+Reproducibility is controlled with `VERS_PBT_SEED=<seed>`. When a property fails,
+fast-check reports the seed, path, and counterexample; the minimized input should
+be added to the project diagnostic fixtures or a regression test.
+
+## Scripts
+
+The following package scripts are provided:
+
+| Script      | Command                                                                          | Purpose                                 |
+| ----------- | -------------------------------------------------------------------------------- | --------------------------------------- |
+| `test:pbt`  | `vitest run tests/property-based.test.ts`                                        | Run bounded property-based tests.       |
+| `test:fuzz` | `VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000` | Run extended fuzz-style property tests. |
+
+Property-based tests also run as part of the normal `pnpm run test` suite.
 
 ## Test file layout
 
@@ -145,8 +170,11 @@ When a property fails:
 ## CI behavior
 
 Property-based tests run as part of the normal Vitest suite via `pnpm run test`. The
-default run count must keep CI execution time reasonable. Larger exploratory runs may
-be exposed through a separate script such as `test:pbt` or run locally.
+default run count keeps CI execution time reasonable. Larger exploratory runs are
+exposed through the dedicated `pnpm run test:pbt` and `pnpm run test:fuzz` scripts.
+
+`test:fuzz` is not required in PR gates. It is intended for manual or scheduled
+exploration with a strict time budget.
 
 If a property-based test becomes flaky because of a non-deterministic generator or an
 unfixed seed, the test must be fixed rather than disabled or deleted.
