@@ -20,5 +20,6 @@ export default defineConfig({
     outputFile: "./test-report.junit.xml",
     reporters:
       process.env.GITHUB_ACTIONS === "true" ? ["default", "junit", "github-actions"] : ["default"],
+    setupFiles: ["./tests/setup/fast-check.ts"],
   },
 });

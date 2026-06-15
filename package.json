@@ -50,6 +50,8 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "vitest run",
+    "test:pbt": "vitest run tests/property-based.test.ts",
+    "test:fuzz": "VERS_PBT_MODE=fuzz vitest run tests/property-based.test.ts --testTimeout=30000",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "release:prepare": "node scripts/prepare-release.mjs",
@@ -65,8 +67,10 @@
     "verify:runtime": "pnpm run build && pnpm run smoke:runtime"
   },
   "devDependencies": {
+    "@fast-check/vitest": "^0.4.1",
     "@tsconfig/node22": "^22.0.5",
     "@vitest/coverage-v8": "^4.1.8",
+    "fast-check": "^4.8.0",
     "lefthook": "^2.1.9",
     "markdownlint-cli2": "^0.22.1",
     "oxfmt": "^0.53.0",
