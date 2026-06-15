@@ -1,4 +1,13 @@
-import { array, constant, constantFrom, integer, oneof, stringMatching, tuple } from "fast-check";
+import {
+  array,
+  constant,
+  constantFrom,
+  integer,
+  oneof,
+  stringMatching,
+  tuple,
+  uniqueArray,
+} from "fast-check";
 
 const MAX_INPUT_LENGTH = 1024;
 const MAX_ISSUES = 16;
@@ -9,6 +18,7 @@ const MAX_VERSIONS = 8;
 const MIN_VERSION_LENGTH = 1;
 const MAX_VERSION_LENGTH = 64;
 const MAX_TYPE_REST_LENGTH = 24;
+const EXACT_BOUNDARY_VERSION_LENGTH = MAX_INPUT_LENGTH - "vers:generic/".length;
 const ISSUE_CAP_MIN_MULTIPLIER = 2;
 const ISSUE_CAP_MAX_MULTIPLIER = 2;
 const OVER_MAX_EXTRA = 1;
@@ -31,6 +41,13 @@ const UNRESERVED = `${LOWER_ALPHA}ABCDEFGHIJKLMNOPQRSTUVWXYZ${DIGITS}-._~`;
 const COMPARATORS = ["!=", "<", "<=", ">", ">=", "="] as const;
 const NON_EQUALITY_COMPARATORS = COMPARATORS.filter((comparator) => comparator !== "=");
 const HEX_DIGITS = "0123456789abcdef";
+const UPPERCASE_PERCENT_FIXTURES = [
+  { canonicalVersion: "%E2%82%AC", decodedVersion: "€", encodedVersion: "%e2%82%ac" },
+  { canonicalVersion: "%ED%95%9C", decodedVersion: "한", encodedVersion: "%ed%95%9c" },
+  { canonicalVersion: "%F0%9F%99%88", decodedVersion: "🙈", encodedVersion: "%f0%9f%99%88" },
+] as const;
+const INVALID_PERCENT_ENCODINGS = ["%", "%0", "%xz", "abc%q0"] as const;
+const INVALID_UTF8_ENCODINGS = ["%C3%28", "%E2%28%A1", "%F0%28%8C%BC"] as const;
 
 function stringChars(input: string): string[] {
   const chars: string[] = [];
@@ -92,14 +109,19 @@ const validDeclarationArbitrary = tuple(typeArbitrary, constraintsListArbitrary)
 
 const validNonDuplicateDeclarationArbitrary = tuple(
   typeArbitrary,
-  array(bareVersionArbitrary, { maxLength: MAX_VERSIONS, minLength: MIN_VERSIONS }),
+  uniqueArray(bareVersionArbitrary, {
+    maxLength: MAX_VERSIONS,
+    minLength: MIN_VERSIONS,
+    selector: (version) => version,
+  }),
 ).map(([type, versions]) => `vers:${type}/${versions.join("|")}`);
 
 const validOrderedConstraintDeclarationArbitrary = tuple(
   typeArbitrary,
-  array(tuple(nonEqualityComparatorChar, bareVersionArbitrary), {
+  uniqueArray(tuple(nonEqualityComparatorChar, bareVersionArbitrary), {
     maxLength: MAX_VERSIONS,
     minLength: MIN_VERSIONS,
+    selector: ([, version]) => version,
   }),
 ).map(([type, pairs]) => {
   const constraints = pairs.map(([comparator, version]) => `${comparator}${version}`);
@@ -131,6 +153,10 @@ const overMaxInputArbitrary = stringMatching(/^[\x20-\x7E]+$/).map((suffix) => {
     ? candidate
     : `${candidate}${"a".repeat(MAX_INPUT_LENGTH + OVER_MAX_EXTRA - candidate.length)}`;
 });
+
+const exactMaxInputArbitrary = constant(
+  `vers:generic/${"a".repeat(EXACT_BOUNDARY_VERSION_LENGTH)}`,
+);
 
 const issueCapPressureInputArbitrary = integer({
   max: MAX_ISSUES * ISSUE_CAP_MAX_MULTIPLIER,
@@ -171,14 +197,37 @@ const percentEncodedDeclarationArbitrary = tuple(typeArbitrary, bareVersionArbit
   }),
 );
 
+const uppercasePercentEncodedDeclarationArbitrary = tuple(
+  typeArbitrary,
+  constantFrom(...UPPERCASE_PERCENT_FIXTURES),
+).map(([type, fixture]) => ({
+  canonical: `vers:${type}/${fixture.canonicalVersion}`,
+  decodedVersion: fixture.decodedVersion,
+  input: `vers:${type}/${fixture.encodedVersion}`,
+}));
+
+const invalidPercentEncodingDeclarationArbitrary = tuple(
+  typeArbitrary,
+  constantFrom(...INVALID_PERCENT_ENCODINGS),
+).map(([type, version]) => `vers:${type}/${version}`);
+
+const invalidUtf8DeclarationArbitrary = tuple(
+  typeArbitrary,
+  constantFrom(...INVALID_UTF8_ENCODINGS),
+).map(([type, version]) => `vers:${type}/${version}`);
+
 export {
   anyVersInputArbitrary,
   broadInputArbitrary,
+  exactMaxInputArbitrary,
   explicitEqualityDeclarationArbitrary,
+  invalidPercentEncodingDeclarationArbitrary,
+  invalidUtf8DeclarationArbitrary,
   issueCapPressureInputArbitrary,
   mixedVersInputArbitrary,
   overMaxInputArbitrary,
   percentEncodedDeclarationArbitrary,
+  uppercasePercentEncodedDeclarationArbitrary,
   uppercaseTypeDeclarationArbitrary,
   validDeclarationArbitrary,
   validNonDuplicateDeclarationArbitrary,

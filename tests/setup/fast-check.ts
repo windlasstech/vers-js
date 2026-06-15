@@ -25,7 +25,6 @@ if (isFuzzMode) {
   configureGlobal({
     ...baseConfig,
     interruptAfterTimeLimit: FUZZ_INTERRUPT_MS,
-    markInterruptAsFailure: true,
     numRuns: Number.POSITIVE_INFINITY,
   });
 } else if (isCi) {
