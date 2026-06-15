@@ -33,6 +33,7 @@ Key specifications:
 - **[Diagnostics](architecture/diagnostics.md)**: Issue codes, spans, and metadata
 - **[Fixtures](architecture/fixtures.md)**: Conformance fixture handling
 - **[Resource Limits](architecture/resource-limits.md)**: Input length and diagnostic caps
+- **[Property-Based Testing](architecture/property-based-testing.md)**: PBT tooling, properties, generators, and CI behavior
 
 ## Release Process
 

@@ -7,6 +7,11 @@ declare const process: {
 };
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "vers-js": "./src/index.ts",
+    },
+  },
   test: {
     coverage: {
       exclude: ["src/types.ts", "tests/**", "**/*.{test,spec}.ts", "dist/**"],
@@ -20,5 +25,6 @@ export default defineConfig({
     outputFile: "./test-report.junit.xml",
     reporters:
       process.env.GITHUB_ACTIONS === "true" ? ["default", "junit", "github-actions"] : ["default"],
+    setupFiles: ["./tests/setup/fast-check.ts"],
   },
 });

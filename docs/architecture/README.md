@@ -37,10 +37,11 @@ This project follows **SDD (Spec-Driven Development)** methodology.
 
 ### Testing and Build
 
-| Document                            | Description                                          | Primary ADR Inputs                                                                                                     |
-| ----------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| [Fixtures](fixtures.md)             | Official conformance and project diagnostic fixtures | ADR-0008, ADR-0009, ADR-0037, ADR-0041, ADR-0044, ADR-0045, ADR-0046                                                   |
-| [Build and Test](build-and-test.md) | Package scaffolding, output, and verification        | ADR-0002, ADR-0003, ADR-0011, ADR-0012, ADR-0013, ADR-0014, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050 |
+| Document                                            | Description                                          | Primary ADR Inputs                                                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [Fixtures](fixtures.md)                             | Official conformance and project diagnostic fixtures | ADR-0008, ADR-0009, ADR-0037, ADR-0041, ADR-0044, ADR-0045, ADR-0046                                                   |
+| [Build and Test](build-and-test.md)                 | Package scaffolding, output, and verification        | ADR-0002, ADR-0003, ADR-0011, ADR-0012, ADR-0013, ADR-0014, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050 |
+| [Property-Based Testing](property-based-testing.md) | PBT tooling, properties, generators, and CI behavior | ADR-0037, ADR-0040, ADR-0050, ADR-0052                                                                                 |
 
 ## Specification Writing Order
 

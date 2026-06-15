@@ -24,6 +24,7 @@
 [![Dependency Review](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
 [![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
+[![Tested with fast-check](https://img.shields.io/badge/tested%20with-fast%E2%80%91check%20%F0%9F%90%92-%23282ea9?flat&logoSize=auto&labelColor=%231b1b1d)](https://fast-check.dev/)
 
 English | [한국어](README.ko.md)
 
@@ -181,8 +182,14 @@ pnpm run build        # tsc -p tsconfig.build.json
 
 # Testing
 pnpm run test         # vitest run
+pnpm run test:pbt     # vitest run tests/property-based.test.ts
+pnpm run test:fuzz    # per-property time-budgeted fuzz exploration
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
+
+# test:fuzz applies its 10-second fast-check budget to each property test.
+# Expected runtime is roughly: property count × 10 seconds, plus startup overhead.
+# Replay a property failure with VERS_PBT_SEED=<seed> and VERS_PBT_PATH=<path>.
 
 # Package verification (uses built artifacts)
 pnpm run test:package              # build and verify emitted package artifacts

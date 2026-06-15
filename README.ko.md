@@ -24,6 +24,7 @@
 [![Dependency Review](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
 [![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
+[![Tested with fast-check](https://img.shields.io/badge/tested%20with-fast%E2%80%91check%20%F0%9F%90%92-%23282ea9?flat&logoSize=auto&labelColor=%231b1b1d)](https://fast-check.dev/)
 
 [English](README.md) | 한국어
 
@@ -183,8 +184,14 @@ pnpm run build        # tsc -p tsconfig.build.json
 
 # 테스트
 pnpm run test         # vitest run
+pnpm run test:pbt     # vitest run tests/property-based.test.ts
+pnpm run test:fuzz    # property별 시간 예산 기반 fuzz 탐색
 pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
+
+# test:fuzz의 10초 fast-check 시간 예산은 각 property 테스트마다 적용됩니다.
+# 예상 실행 시간은 대략 property 수 × 10초에 시작 오버헤드를 더한 값입니다.
+# property 실패는 VERS_PBT_SEED=<seed>와 VERS_PBT_PATH=<path>로 재현합니다.
 
 # 패키지 검증(빌드 산출물 사용)
 pnpm run test:package              # 빌드 후 배포 패키지 산출물 검증

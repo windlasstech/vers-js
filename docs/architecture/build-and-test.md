@@ -206,6 +206,10 @@ The test layers are:
 | Package boundary tests            | Validate root export metadata, declaration metadata, named exports only, and blocked subpaths.                      |
 | Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun.                                            |
 
+Property-based testing policy is specified separately in
+`property-based-testing.md`, including PBT tooling, properties, generators,
+determinism, and CI behavior.
+
 Tests must not assert exact human-readable diagnostic message strings. They may
 assert that messages are non-empty strings.
 

@@ -45,7 +45,12 @@
     "max-params": "error",
     "max-statements": "error",
     "no-console": "error",
-    "no-duplicate-imports": "error",
+    "no-duplicate-imports": [
+      "error",
+      {
+        "allowSeparateTypeImports": true
+      }
+    ],
     "no-implicit-coercion": "error",
     "no-magic-numbers": [
       "warn",
@@ -101,12 +106,6 @@
       "files": ["tests/runtime-smoke/*.mjs"],
       "rules": {
         "import/no-nodejs-modules": "off"
-      }
-    },
-    {
-      "files": ["tests/types/*.ts"],
-      "rules": {
-        "no-duplicate-imports": "off"
       }
     }
   ],
