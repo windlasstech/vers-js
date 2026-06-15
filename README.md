@@ -188,7 +188,7 @@ pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
 # test:fuzz applies its fast-check time budget to each property test.
-# With the current property count, expect roughly 150 seconds plus startup overhead.
+# With the current property count, expect roughly 180 seconds plus startup overhead.
 
 # Package verification (uses built artifacts)
 pnpm run test:package              # build and verify emitted package artifacts

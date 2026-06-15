@@ -190,7 +190,7 @@ pnpm run test:watch   # vitest
 pnpm run test:coverage # vitest run --coverage
 
 # test:fuzz의 fast-check 시간 예산은 각 property 테스트마다 적용됩니다.
-# 현재 property 수 기준으로 시작 오버헤드를 제외하고 대략 150초 동안 실행됩니다.
+# 현재 property 수 기준으로 시작 오버헤드를 제외하고 대략 180초 동안 실행됩니다.
 
 # 패키지 검증(빌드 산출물 사용)
 pnpm run test:package              # 빌드 후 배포 패키지 산출물 검증
