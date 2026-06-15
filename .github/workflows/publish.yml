@@ -225,7 +225,7 @@ jobs:
           npm --version
 
       - name: Download npm release tarball artifact
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: npm-release-artifacts
 
@@ -287,7 +287,7 @@ jobs:
           persist-credentials: false
 
       - name: Download npm release tarball artifact
-        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: npm-release-artifacts
 
