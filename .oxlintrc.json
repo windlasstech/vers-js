@@ -108,6 +108,12 @@
       "rules": {
         "no-duplicate-imports": "off"
       }
+    },
+    {
+      "files": ["tests/property-based.test.ts"],
+      "rules": {
+        "no-duplicate-imports": "off"
+      }
     }
   ],
   "options": {

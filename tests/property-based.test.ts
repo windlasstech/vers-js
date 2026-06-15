@@ -1,8 +1,8 @@
 import { test } from "@fast-check/vitest";
+import { canonicalizeVers, parseVers, validateVers } from "vers-js";
+import type { VersConstraint, VersFailure, VersParseResult } from "vers-js";
 import { describe, expect } from "vitest";
 
-import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
-import type { VersConstraint, VersFailure, VersParseResult } from "../src/types.ts";
 import {
   anyVersInputArbitrary,
   exactMaxInputArbitrary,

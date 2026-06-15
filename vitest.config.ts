@@ -7,6 +7,11 @@ declare const process: {
 };
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "vers-js": "./src/index.ts",
+    },
+  },
   test: {
     coverage: {
       exclude: ["src/types.ts", "tests/**", "**/*.{test,spec}.ts", "dist/**"],

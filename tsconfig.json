@@ -17,6 +17,9 @@
     "target": "ES2023",
     "types": [],
     "moduleResolution": "Bundler",
+    "paths": {
+      "vers-js": ["./src/index.ts"]
+    },
     "resolveJsonModule": true,
     // For nodejs:
     // "lib": ["esnext"],
