@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to publish, for example v0.1.1"
+        required: true
+        type: string
 
 permissions: {}
 
@@ -13,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     environment: npm
     outputs:
+      release-tag: ${{ steps.release.outputs.tag }}
       package-name: ${{ steps.npm-package.outputs.name }}
       package-version: ${{ steps.npm-package.outputs.version }}
       package-exists: ${{ steps.npm-package.outputs.exists }}
@@ -33,7 +40,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
           persist-credentials: false
+
+      - name: Resolve release tag
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+        run: echo "tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Install pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -56,11 +70,13 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
       - name: Verify release tag and changelog
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
-          const tagName = process.env.GITHUB_REF_NAME;
+          const tagName = process.env.RELEASE_TAG;
 
           if (!tagName || !/^v\d+\.\d+\.\d+$/.test(tagName)) {
             throw new Error(`release tag must match vX.Y.Z, got ${JSON.stringify(tagName)}`);
@@ -207,7 +223,7 @@ jobs:
       draft-release: true
       provenance-name: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
       upload-assets: true
-      upload-tag-name: ${{ github.ref_name }}
+      upload-tag-name: ${{ needs.build-release-artifact.outputs.release-tag }}
 
   publish-npm:
     name: Publish to npm
@@ -264,8 +280,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
+          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
         run: |
-          gh release download "$GITHUB_REF_NAME" \
+          gh release download "$RELEASE_TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --pattern "$PROVENANCE_NAME" \
             --dir "$RUNNER_TEMP"
@@ -278,6 +295,7 @@ jobs:
       - name: Publish to npm
         working-directory: ${{ runner.temp }}
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
           TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
         run: npm publish "./$TARBALL_NAME" --access public --provenance-file "./$PROVENANCE_NAME"
@@ -302,6 +320,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
+          ref: ${{ needs.build-release-artifact.outputs.release-tag }}
           persist-credentials: false
 
       - name: Download npm release tarball artifact
@@ -310,15 +329,17 @@ jobs:
           name: npm-release-artifacts
 
       - name: Extract release notes
+        env:
+          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync, writeFileSync } from "node:fs";
 
-          const tagName = process.env.GITHUB_REF_NAME;
+          const tagName = process.env.RELEASE_TAG;
           const version = tagName?.replace(/^v/, "");
 
           if (!tagName || !version) {
-            throw new Error("GITHUB_REF_NAME must contain the release tag");
+            throw new Error("RELEASE_TAG must contain the release tag");
           }
 
           const changelog = readFileSync("CHANGELOG.md", "utf8");
@@ -348,18 +369,20 @@ jobs:
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
           TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
         run: |
-          gh release upload "$GITHUB_REF_NAME" \
+          gh release upload "$RELEASE_TAG" \
             "$TARBALL_NAME" \
             "${TARBALL_NAME}.sha256"
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
         run: |
-          gh release edit "$GITHUB_REF_NAME" \
+          gh release edit "$RELEASE_TAG" \
             --verify-tag \
-            --title "$GITHUB_REF_NAME" \
+            --title "$RELEASE_TAG" \
             --notes-file release-notes.md \
             --draft=false
