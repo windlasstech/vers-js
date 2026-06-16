@@ -58,10 +58,10 @@ The v1 package will expose only the package root through `"exports"`:
 The root export is the only supported package import path for v1:
 
 ```ts
-import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "vers-js";
 ```
 
-Subpath imports such as `@windlass/vers-js/parser`, `@windlass/vers-js/errors`, or `@windlass/vers-js/*` are
+Subpath imports such as `vers-js/parser`, `vers-js/errors`, or `vers-js/*` are
 not supported in v1. A future ADR may add specific subpath exports when there is
 a stable public API boundary that should be imported independently.
 
@@ -88,7 +88,7 @@ checks show that:
 - no wildcard export such as `"./*"` is present;
 - no named subpath export is present in v1;
 - package boundary tests reject unsupported subpath imports;
-- documented examples import public API from `"@windlass/vers-js"` only.
+- documented examples import public API from `"vers-js"` only.
 
 ## Pros and Cons of the Options
 

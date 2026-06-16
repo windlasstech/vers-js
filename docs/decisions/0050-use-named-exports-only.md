@@ -58,7 +58,7 @@ Users that want a namespace-style object can use the standard ESM namespace
 import form:
 
 ```ts
-import * as vers from "@windlass/vers-js";
+import * as vers from "vers-js";
 ```
 
 The package export map may still use the `"default"` condition to route runtime
@@ -91,8 +91,8 @@ module exports provided by the runtime entry file.
 - Good, because the source can satisfy `import/no-default-export` without a
   project-specific exception for the package root.
 - Neutral, because namespace-style access remains possible through
-  `import * as vers from "@windlass/vers-js"`.
-- Bad, because consumers cannot write `import vers from "@windlass/vers-js"`.
+  `import * as vers from "vers-js"`.
+- Bad, because consumers cannot write `import vers from "vers-js"`.
 
 ### Confirmation
 
@@ -133,7 +133,7 @@ not expose a JavaScript default export.
 This option keeps named functions and also exports a default object containing
 those functions.
 
-- Good, because users can write `import vers from "@windlass/vers-js"`.
+- Good, because users can write `import vers from "vers-js"`.
 - Good, because the default object gives one explicit runtime value to pass
   around.
 - Bad, because the default object duplicates the named export surface.
@@ -149,11 +149,11 @@ those functions.
 This option exports the three functions as named exports and also exports a named
 object such as `vers`.
 
-- Good, because users can write `import { vers } from "@windlass/vers-js"` for grouped
+- Good, because users can write `import { vers } from "vers-js"` for grouped
   access without a JavaScript default export.
 - Good, because the API avoids default import name ambiguity.
 - Bad, because it still duplicates the function export surface.
-- Bad, because `import * as vers from "@windlass/vers-js"` already provides a standard ESM
+- Bad, because `import * as vers from "vers-js"` already provides a standard ESM
   namespace form without adding another public object.
 - Bad, because the extra object would need its own package-boundary tests and
   documentation.
