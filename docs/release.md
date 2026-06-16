@@ -11,7 +11,9 @@ The release model is:
 2. merge the release PR into `main` after all required checks pass;
 3. create and push a signed annotated Git tag from the updated `main` commit;
 4. let the tag-triggered GitHub Actions workflow publish to npm with Trusted
-   Publishing when eligible and create the GitHub Release.
+   Publishing when eligible and create the GitHub Release. If the tag workflow
+   needs to be rerun manually before npm publication succeeds, use the workflow's
+   `release_tag` input with the existing signed tag name.
 
 This keeps the changelog human-curated, the source revision signed, and the npm
 publication tokenless and provenance-backed.
@@ -180,8 +182,10 @@ pnpm run release:prepare -- --tag --push
 
 ## Tag-triggered npm publish workflow
 
-The publish workflow is defined in `.github/workflows/publish.yml` and runs only
-for release tags matching `v*`.
+The publish workflow is defined in `.github/workflows/publish.yml` and runs for
+release tags matching `v*`. It can also be started manually with the
+`workflow_dispatch` `release_tag` input, which must name the existing signed tag
+to publish.
 
 The workflow must verify the release before publishing:
 
