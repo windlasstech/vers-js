@@ -205,6 +205,22 @@ The workflow must verify the release before publishing:
 8. upload the same tarball and its SHA-256 checksum to the draft GitHub Release;
 9. publish the GitHub Release after npm publish succeeds or is skipped.
 
+> [!WARNING]
+> When passing subjects to the SLSA generic generator for npm publication, keep the
+> digest tied to the exact packed tarball, but name the subject with the npm package
+> purl rather than the tarball filename. The generator expects `sha256sum`-formatted
+> input, so the workflow constructs a line like:
+>
+> ```text
+> <tarball-sha256>  pkg:npm/%40windlass/vers-js@X.Y.Z
+> ```
+>
+> Do not pass raw `sha256sum windlass-vers-js-X.Y.Z.tgz` output as the provenance
+> subject for `npm publish --provenance-file`. That would name the subject
+> `windlass-vers-js-X.Y.Z.tgz`; npm validates the external provenance against the
+> package identity and rejects that mismatch with a `Provenance subject ... does not
+match the package` error.
+
 The GitHub Release job extracts the matching `CHANGELOG.md` version section into
 `release-notes.md` and passes that file to `gh release edit --verify-tag` when
 publishing the draft release created by the SLSA provenance job.
