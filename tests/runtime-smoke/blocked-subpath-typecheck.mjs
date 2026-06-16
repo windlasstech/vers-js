@@ -14,7 +14,7 @@ mkdirSync(workspace, { recursive: true });
 
 writeFileSync(
   path.join(workspace, "consumer.ts"),
-  'import { parseInput } from "vers-js/parser";\nparseInput("vers:npm/1.0.0");\n',
+  'import { parseInput } from "@windlass/vers-js/parser";\nparseInput("vers:npm/1.0.0");\n',
 );
 writeFileSync(
   path.join(workspace, "tsconfig.json"),
@@ -44,6 +44,6 @@ const result = spawnSync("pnpm", ["exec", "tsc", "-p", path.join(workspace, "tsc
 assert.notEqual(result.status, SUCCESS_STATUS, "blocked package subpath type import must fail");
 assert.match(
   `${result.stdout}\n${result.stderr}`,
-  /vers-js\/parser/u,
-  "blocked package subpath diagnostic must mention vers-js/parser",
+  /@windlass\/vers-js\/parser/u,
+  "blocked package subpath diagnostic must mention @windlass/vers-js/parser",
 );

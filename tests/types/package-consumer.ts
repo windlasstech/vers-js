@@ -1,4 +1,4 @@
-import { canonicalizeVers, parseVers, validateVers } from "vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
 import type {
   VersCanonicalIssueCode,
   VersCanonicalizeResult,
@@ -25,7 +25,7 @@ import type {
   VersValidationResult,
   VersVersionComparator,
   VersVersionConstraint,
-} from "vers-js";
+} from "@windlass/vers-js";
 
 const parsed: VersParseResult = parseVers("vers:npm/>=1.0.0|<2.0.0");
 const validated: VersValidationResult = validateVers("vers:npm/>=1.0.0|<2.0.0");

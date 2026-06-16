@@ -1,6 +1,6 @@
 import { test } from "@fast-check/vitest";
-import { canonicalizeVers, parseVers, validateVers } from "vers-js";
-import type { VersConstraint, VersFailure, VersParseResult } from "vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
+import type { VersConstraint, VersFailure, VersParseResult } from "@windlass/vers-js";
 import { describe, expect } from "vitest";
 
 import {
