@@ -16,6 +16,7 @@ jobs:
       package-version: ${{ steps.npm-package.outputs.version }}
       package-exists: ${{ steps.npm-package.outputs.exists }}
       package-version-exists: ${{ steps.npm-package.outputs.version_exists }}
+      bootstrap-with-token: ${{ steps.first-publish.outputs.bootstrap-with-token }}
       tarball-name: ${{ steps.pack.outputs.tarball-name }}
       tarball-sha256: ${{ steps.pack.outputs.tarball-sha256 }}
       tarball-subjects: ${{ steps.pack.outputs.tarball-subjects }}
@@ -102,9 +103,21 @@ jobs:
           fi
 
       - name: Report first-publish bootstrap fallback
+        id: first-publish
         if: ${{ steps.npm-package.outputs.exists == 'false' }}
+        env:
+          HAS_NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}
         run: |
-          cat <<'EOF'
+          echo "bootstrap-with-token=${HAS_NPM_TOKEN}" >> "$GITHUB_OUTPUT"
+
+          if [ "${HAS_NPM_TOKEN}" = "true" ]; then
+            cat <<'EOF'
+          The npm package does not exist yet, but an NPM_TOKEN secret is present.
+          This workflow will publish the first version using the token and upload SLSA provenance.
+          After this release, configure npm Trusted Publishing and remove the NPM_TOKEN secret.
+          EOF
+          else
+            cat <<'EOF'
           The npm package does not exist yet, so this workflow will skip npm Trusted Publishing.
           Publish the first version manually from a maintainer-controlled environment, then configure npm Trusted Publishing for future releases.
 
@@ -116,6 +129,7 @@ jobs:
 
           The GitHub Release, release tarball, checksum, and SLSA provenance will still be created for this signed tag.
           EOF
+          fi
 
       - name: Block already-published version
         if: ${{ steps.npm-package.outputs.version_exists == 'true' }}
@@ -196,7 +210,7 @@ jobs:
 
   publish-npm:
     name: Publish to npm
-    if: ${{ needs.build-release-artifact.outputs.package-exists == 'true' && needs.build-release-artifact.outputs.package-version-exists == 'false' }}
+    if: ${{ needs.build-release-artifact.outputs.package-version-exists == 'false' && (needs.build-release-artifact.outputs.package-exists == 'true' || needs.build-release-artifact.outputs.bootstrap-with-token == 'true') }}
     needs:
       - build-release-artifact
       - generate-slsa-provenance
@@ -218,6 +232,8 @@ jobs:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Show publish tool versions
         run: |
