@@ -103,7 +103,7 @@ These invariants are defined in `docs/architecture/scope-and-invariants.md` and 
 
 1. **Public API is fixed**: Only `parseVers()`, `validateVers()`, and `canonicalizeVers()` are public. Each accepts exactly one `string` argument. Non-string input must throw `TypeError`. Malformed input returns `Result` failures, never repaired output.
 2. **No parser internals in public results**: Public results must not expose tokens, scanner state, parser nodes, mutable state, or runtime-specific objects.
-3. **ESM-only, root-only**: Package consumers import only from `"vers-js"`. No subpath imports (`vers-js/parser`, `vers-js/errors`). No CommonJS artifact. No default export.
+3. **ESM-only, root-only**: Package consumers import only from `"@windlass/vers-js"`. No subpath imports (`@windlass/vers-js/parser`, `@windlass/vers-js/errors`). No CommonJS artifact. No default export.
 4. **Strict canonical validation**: All public functions validate canonical VERS syntax. They do not trim whitespace, change casing, rewrite separators, reorder constraints, deduplicate, or repair percent escapes.
 5. **Type validation is syntax-only**: The parser validates `type` characters and lowercase casing. It must not reject unknown types (e.g., `support.unknown_type` is reserved, not active).
 6. **Constraint order preserved**: The parser preserves input constraint order. It does not sort, simplify, or normalize for containment.
