@@ -136,7 +136,7 @@ validateVers(123); // throws TypeError
 
 ## Scope
 
-**In scope (v0.1.0):**
+**In scope (v0.1):**
 
 - Canonical VERS syntax validation
 - Parsed declaration metadata (`VersRange`, `VersConstraint`)
@@ -145,7 +145,7 @@ validateVers(123); // throws TypeError
 - Single-pass percent-decoding
 - Bounded diagnostics with original-input spans
 
-**Out of scope (v0.1.0):**
+**Out of scope (v0.1):**
 
 - Version comparison or containment
 - Native ecosystem range translation
