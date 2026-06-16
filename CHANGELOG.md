@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Published package name changed from unscoped `vers-js` to scoped
   `@windlass/vers-js` after npm registry name-similarity rejection.
+- Required pnpm version in `devEngines` raised from `11.5.2` to `11.7.0`.
 
 ## [0.1.0] - 12026-06-13
 
