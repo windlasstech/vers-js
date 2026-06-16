@@ -1,4 +1,4 @@
-# pnpm workspace configuration for vers-js
+# pnpm workspace configuration for @windlass/vers-js
 # Aligned with ADR-0003 (pnpm package manager) and Windlass dependency-security policy.
 #
 # Docs: https://pnpm.io/settings
