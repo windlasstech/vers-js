@@ -6,7 +6,7 @@ English | [한국어](README.ko.md)
 
 </div>
 
-This directory contains the design documentation and architecture specifications for `vers-js`.
+This directory contains the design documentation and architecture specifications for `@windlass/vers-js`.
 
 ## Structure
 

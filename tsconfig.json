@@ -18,7 +18,7 @@
     "types": [],
     "moduleResolution": "Bundler",
     "paths": {
-      "vers-js": ["./src/index.ts"]
+      "@windlass/vers-js": ["./src/index.ts"]
     },
     "resolveJsonModule": true,
     // For nodejs:

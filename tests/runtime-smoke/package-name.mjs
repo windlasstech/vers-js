@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 
-import { canonicalizeVers, parseVers, validateVers } from "vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
 
 const EMPTY_LENGTH = 0;
-const vers = await import("vers-js");
+const vers = await import("@windlass/vers-js");
 
 async function assertBlockedSubpath(specifier) {
   await assert.rejects(
@@ -29,6 +29,6 @@ if (canonicalized.ok) {
 const failed = validateVers("not-vers");
 assert(!failed.ok, "package-name import must return failure Results for invalid input");
 
-await assertBlockedSubpath("vers-js/parser");
-await assertBlockedSubpath("vers-js/errors");
-await assertBlockedSubpath("vers-js/types");
+await assertBlockedSubpath("@windlass/vers-js/parser");
+await assertBlockedSubpath("@windlass/vers-js/errors");
+await assertBlockedSubpath("@windlass/vers-js/types");

@@ -2,12 +2,13 @@
 
 # vers-js
 
-[![GitHub License](https://img.shields.io/github/license/windlasstech/vers-js)](LICENSE)
+[![NPM License](https://img.shields.io/npm/l/%40windlass%2Fvers-js)](LICENSE)
 [![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
-[![NPM Version](https://img.shields.io/npm/v/vers-js)](https://www.npmjs.com/package/vers-js)
-[![NPM Last Update](https://img.shields.io/npm/last-update/vers-js)](https://www.npmjs.com/package/vers-js)
-[![Node Current](https://img.shields.io/node/v/vers-js)](package.json)
-![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/vers-js)
+[![SLSA Build L3](./docs/slsa-build-l3-badge.svg)](https://slsa.dev/spec/v1.2/build-track-basics#build-l3)
+[![NPM Version](https://img.shields.io/npm/v/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
+[![NPM Last Update](https://img.shields.io/npm/last-update/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
+[![Node Current](https://img.shields.io/node/v/@windlass/vers-js)](package.json)
+![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/@windlass/vers-js)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-3.0-4baaaa.svg)](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-GitHub-blue.svg)](https://github.com/windlasstech/vers-js/issues)
 
@@ -49,17 +50,17 @@ A runtime-agnostic TypeScript library for parsing and validating [VERS](https://
 ## Installation
 
 ```bash
-npm install vers-js
+npm install @windlass/vers-js
 # or
-pnpm add vers-js
+pnpm add @windlass/vers-js
 # or
-yarn add vers-js
+yarn add @windlass/vers-js
 ```
 
 ## Quick Start
 
 ```typescript
-import { parseVers, validateVers, canonicalizeVers } from "vers-js";
+import { parseVers, validateVers, canonicalizeVers } from "@windlass/vers-js";
 
 // Parse a VERS declaration
 const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
@@ -135,7 +136,7 @@ validateVers(123); // throws TypeError
 
 ## Scope
 
-**In scope (v0.1.0):**
+**In scope (v0.1):**
 
 - Canonical VERS syntax validation
 - Parsed declaration metadata (`VersRange`, `VersConstraint`)
@@ -144,7 +145,7 @@ validateVers(123); // throws TypeError
 - Single-pass percent-decoding
 - Bounded diagnostics with original-input spans
 
-**Out of scope (v0.1.0):**
+**Out of scope (v0.1):**
 
 - Version comparison or containment
 - Native ecosystem range translation

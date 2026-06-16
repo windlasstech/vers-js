@@ -86,7 +86,7 @@ Additional PBT files may be added when the generator surface grows, using the pr
 
 ## Public API surface
 
-Property-based tests must call only the public API exported from `"vers-js"`:
+Property-based tests must call only the public API exported from `"@windlass/vers-js"`:
 
 - `parseVers(input)`;
 - `validateVers(input)`;
@@ -216,7 +216,7 @@ unfixed seed, the test must be fixed rather than disabled or deleted.
 ## Invariants
 
 1. PBT dependencies are devDependencies only.
-2. PBT tests use only the public API from `"vers-js"`.
+2. PBT tests use only the public API from `"@windlass/vers-js"`.
 3. PBT tests do not assert exact diagnostic `message` strings.
 4. PBT tests preserve runtime-agnostic source boundaries.
 5. Coverage-guided fuzzers, if added later, are isolated from the Vitest suite.

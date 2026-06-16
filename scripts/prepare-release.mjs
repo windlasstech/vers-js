@@ -249,7 +249,7 @@ function assertCompatibleOptions(parsed) {
 function printHelp() {
   console.log(`Usage: pnpm run release:prepare -- [options]
 
-Validates the local checkout for a vers-js release, extracts the matching
+Validates the local checkout for a @windlass/vers-js release, extracts the matching
 CHANGELOG.md section to .release/release-notes-<tag>.md, and optionally previews,
 edits, creates, verifies, and pushes the signed annotated release tag.
 

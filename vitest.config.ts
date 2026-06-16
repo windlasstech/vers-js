@@ -9,7 +9,7 @@ declare const process: {
 export default defineConfig({
   resolve: {
     alias: {
-      "vers-js": "./src/index.ts",
+      "@windlass/vers-js": "./src/index.ts",
     },
   },
   test: {
