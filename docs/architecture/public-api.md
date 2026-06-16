@@ -287,14 +287,14 @@ parsing.
 Public examples must import from the package root:
 
 ```ts
-import { canonicalizeVers, parseVers, validateVers } from "vers-js";
+import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
 ```
 
 The package must not support public subpath imports such as:
 
 ```ts
-import { parseVers } from "vers-js/parser";
-import type { VersIssue } from "vers-js/errors";
+import { parseVers } from "@windlass/vers-js/parser";
+import type { VersIssue } from "@windlass/vers-js/errors";
 ```
 
 The package must not publish a CommonJS runtime artifact, `.cjs` entry point,
@@ -339,7 +339,7 @@ The package root must not provide a JavaScript default export. Users that want a
 namespace-style runtime value can use the standard ESM namespace import form:
 
 ```ts
-import * as vers from "vers-js";
+import * as vers from "@windlass/vers-js";
 ```
 
 Named exports keep public symbols stable for TypeScript, editor tooling, static
@@ -392,7 +392,7 @@ Implementation, tests, and examples must preserve these invariants:
    failures omit `metadata.diagnostics`.
 8. Public results expose stable data only, never parser internals or
    runtime-specific objects.
-9. Package consumers import runtime values and public types from `"vers-js"`
+9. Package consumers import runtime values and public types from `"@windlass/vers-js"`
    only.
 10. The package remains ESM-only, root-only, and runtime-agnostic in v0.1.0.
 11. The package root provides named runtime exports only and no JavaScript default
