@@ -75,7 +75,7 @@ layout may be refined during implementation, but the first release should not
 publish a separate CommonJS artifact, `.cjs` entry point, or `"require"`
 conditional export.
 
-CommonJS `require("vers-js")` is not a v1 compatibility target. CommonJS
+CommonJS `require("@windlass/vers-js")` is not a v1 compatibility target. CommonJS
 consumers can use dynamic `import()` where their runtime supports it. A future
 ADR may add a dual package if a concrete first-party or consumer integration
 cannot reasonably consume ESM.

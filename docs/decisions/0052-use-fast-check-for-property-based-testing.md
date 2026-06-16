@@ -91,7 +91,7 @@ Compliance with this decision is confirmed when architecture and implementation
 reviews show that:
 
 - property-based tests live under `tests/` and use only the public API from
-  `"vers-js"`;
+  `"@windlass/vers-js"`;
 - tests do not assert exact human-readable diagnostic `message` strings;
 - failure reproduction uses a committed or logged seed and path;
 - generators are grammar-aware enough to produce a useful ratio of valid VERS inputs;
