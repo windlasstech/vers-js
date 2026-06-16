@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 12026-06-16
+
 ### Changed
 
 - Published package name changed from unscoped `vers-js` to scoped
@@ -33,5 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ESM-only, root-only package publishing with named exports and no runtime
   dependencies.
 
-[Unreleased]: https://github.com/windlasstech/vers-js/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/windlasstech/vers-js/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/windlasstech/vers-js/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/windlasstech/vers-js/releases/tag/v0.1.0
