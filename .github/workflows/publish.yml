@@ -266,6 +266,7 @@ jobs:
           PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
         run: |
           gh release download "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
             --pattern "$PROVENANCE_NAME" \
             --dir "$RUNNER_TEMP"
 
