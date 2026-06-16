@@ -2,12 +2,12 @@
 
 # vers-js
 
-[![GitHub License](https://img.shields.io/github/license/windlasstech/vers-js)](LICENSE)
+[![NPM License](https://img.shields.io/npm/l/%40windlass%2Fvers-js)](LICENSE)
 [![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
-[![NPM Version](https://img.shields.io/npm/v/vers-js)](https://www.npmjs.com/package/vers-js)
-[![NPM Last Update](https://img.shields.io/npm/last-update/vers-js)](https://www.npmjs.com/package/vers-js)
-[![Node Current](https://img.shields.io/node/v/vers-js)](package.json)
-![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/vers-js)
+[![NPM Version](https://img.shields.io/npm/v/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
+[![NPM Last Update](https://img.shields.io/npm/last-update/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
+[![Node Current](https://img.shields.io/node/v/@windlass/vers-js)](package.json)
+![NPM Unpacked Size](https://img.shields.io/npm/unpacked-size/@windlass/vers-js)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-3.0-4baaaa.svg)](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)
 [![GitHub issues](https://img.shields.io/badge/issue_tracking-GitHub-blue.svg)](https://github.com/windlasstech/vers-js/issues)
 
@@ -30,7 +30,7 @@
 
 </div>
 
-[VERS](https://packageurl.org/docs/vers/specification)(VErsion Range Specifier) 선언문을 파싱하고 검증하는, 런타임 독립적인 TypeScript 라이브러리.
+[VERS](https://packageurl.org/docs/vers/specification)(VErsion Range Specifier) 선언문을 파싱하고 검증하는, 런타임에 무관하게 동작하는 TypeScript 라이브러리.
 
 ## 개요
 
@@ -49,19 +49,19 @@
 ## 설치
 
 ```bash
-npm install vers-js
+npm install @windlass/vers-js
 # 또는
-pnpm add vers-js
+pnpm add @windlass/vers-js
 # 또는
-yarn add vers-js
+yarn add @windlass/vers-js
 # 또는
-bun add vers-js
+bun add @windlass/vers-js
 ```
 
 ## 빠른 시작
 
 ```typescript
-import { parseVers, validateVers, canonicalizeVers } from "vers-js";
+import { parseVers, validateVers, canonicalizeVers } from "@windlass/vers-js";
 
 // VERS 선언문 파싱
 const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
