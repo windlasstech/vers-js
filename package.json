@@ -69,20 +69,20 @@
   "devDependencies": {
     "@fast-check/vitest": "^0.4.1",
     "@tsconfig/node22": "^22.0.5",
-    "@vitest/coverage-v8": "^4.1.8",
-    "fast-check": "^4.8.0",
-    "lefthook": "^2.1.9",
+    "@vitest/coverage-v8": "^4.1.10",
+    "fast-check": "^4.9.0",
+    "lefthook": "^2.1.10",
     "markdownlint-cli2": "^0.22.1",
     "oxfmt": "^0.53.0",
-    "oxlint": "^1.68.0",
+    "oxlint": "^1.75.0",
     "oxlint-tsgolint": "^0.23.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   },
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "11.7.0",
+      "version": "11.17.0",
       "onFail": "download"
     }
   },
