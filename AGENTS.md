@@ -11,10 +11,13 @@ Compact guidance for AI assistants working in this repository.
 ## Development Baseline
 
 - **Runtime**: Node.js 22 LTS for development only. The published library must remain runtime-agnostic (Node.js, Deno, Bun).
-- **Package manager**: pnpm 11.5.2, pinned via `devEngines.packageManager` in `package.json`.
-- **Language**: TypeScript (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
+- **Package manager**: pnpm 11.17.0, pinned via `devEngines.packageManager` in `package.json`.
+- **Language**: TypeScript 7 (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI via `pnpm ci`).
-- **Toolchain** (decided, see ADR-0036 through ADR-0040 and ADR-0049):
+- **Editor (VS Code)**: Install and enable the official TypeScript 7 VS Code extension
+  (`TypeScriptTeam.native-preview`) to use the TypeScript 7 native language server. Repository
+  builds and type checks remain authoritative via the workspace `tsc` through pnpm scripts.
+- **Toolchain** (decided, see ADR-0036 through ADR-0040, ADR-0049, and ADR-0053):
   - **Build**: `tsc` only — no bundler. Build script: `tsc -p tsconfig.build.json`.
   - **Typecheck**: `tsc --noEmit` (authoritative; Oxlint does not replace this).
   - **Test**: Vitest. Run: `vitest run`. Watch: `vitest`.

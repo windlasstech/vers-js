@@ -12,8 +12,8 @@ linting, formatting, runtime, package-boundary, and supply-chain decisions into 
 implementation contract.
 
 Primary ADR inputs: ADR-0001, ADR-0002, ADR-0003, ADR-0011, ADR-0012,
-ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, and
-ADR-0050.
+ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050, and
+ADR-0053.
 
 ## Development baseline
 
