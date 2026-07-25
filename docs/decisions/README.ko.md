@@ -86,7 +86,7 @@ ADR은 중요한 아키텍처 결정과 그 맥락, 결과를 담은 문서입�
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | v1 포맷팅용으로 Oxfmt 사용                            | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Node 22 LTS 및 Oxc에 적합한 TypeScript 기준선 사용    | accepted |
 
-### 최종 사양 고정(ADR-0041–0052)
+### 최종 사양 고정(ADR-0041–0053)
 
 | ADR                                                                           | 제목                                              | 상태     |
 | ----------------------------------------------------------------------------- | ------------------------------------------------- | -------- |
@@ -102,6 +102,7 @@ ADR은 중요한 아키텍처 결정과 그 맥락, 결과를 담은 문서입�
 | [0050](0050-use-named-exports-only.md)                                        | named export만 사용                               | accepted |
 | [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)       | 릴리즈에 signed tag와 npm Trusted Publishing 사용 | accepted |
 | [0052](0052-use-fast-check-for-property-based-testing.md)                     | 속성 기반 테스트에 fast-check 사용                | accepted |
+| [0053](0053-typescript-7-toolchain-migration.md)                              | TypeScript 7 도구 체인 마이그레이션               | accepted |
 
 ## 새 ADR 추가하기
 

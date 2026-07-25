@@ -86,7 +86,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | Use Oxfmt for v1 formatting                                 | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Use Node 22 LTS and Oxc-aligned TypeScript baselines        | accepted |
 
-### Finalization (ADR-0041–0052)
+### Finalization (ADR-0041–0053)
 
 | ADR                                                                           | Title                                                         | Status   |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------- | -------- |
@@ -102,6 +102,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0050](0050-use-named-exports-only.md)                                        | Use named exports only                                        | accepted |
 | [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)       | Use signed tags and npm Trusted Publishing for releases       | accepted |
 | [0052](0052-use-fast-check-for-property-based-testing.md)                     | Use fast-check for property-based testing                     | accepted |
+| [0053](0053-typescript-7-toolchain-migration.md)                              | TypeScript 7 Toolchain Migration                              | accepted |
 
 ## Adding a New ADR
 
