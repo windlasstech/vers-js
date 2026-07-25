@@ -6,9 +6,9 @@ has_children: true
 
 # Architecture Specifications
 
-This directory contains the implementation specifications for `vers-js` v0.1.0.
-These documents translate the accepted ADRs in `docs/decisions/` into concrete
-contracts that an implementation and fixture suite can follow.
+This directory contains the implementation specifications for `vers-js` v0.1.0. These documents
+translate the accepted ADRs in `docs/decisions/` into concrete contracts that an implementation and
+fixture suite can follow.
 
 The intended development flow is:
 
@@ -16,14 +16,13 @@ The intended development flow is:
 2. use these architecture specifications to define exact observable behavior;
 3. implement the library and tests against the architecture specifications.
 
-This index is also a handoff document. If work continues in a new session, start
-here before drafting or editing the individual specification documents.
+This index is also a handoff document. If work continues in a new session, start here before
+drafting or editing the individual specification documents.
 
 ## Scope for v0.1.0
 
-The v0.1.0 implementation scope is a runtime-agnostic TypeScript library for
-canonical VERS syntax validation, canonicalization, and parsed declaration
-metadata.
+The v0.1.0 implementation scope is a runtime-agnostic TypeScript library for canonical VERS syntax
+validation, canonicalization, and parsed declaration metadata.
 
 In scope:
 
@@ -45,8 +44,8 @@ Out of scope for v0.1.0:
 - vulnerability interpretation or VEX semantics;
 - built-in known-type registry enforcement;
 - advisory, warning, tolerant repair, or suggestion APIs;
-- semantic official fixture families except where a specific fixture is explicitly
-  classified as syntax-only and in scope.
+- semantic official fixture families except where a specific fixture is explicitly classified as
+  syntax-only and in scope.
 
 ## Specification writing order
 
@@ -62,15 +61,15 @@ Write the architecture specifications in this order:
 8. `resource-limits.md`
 9. `build-and-test.md`
 
-After those are drafted, add top-level docs navigation such as `docs/index.md` if
-the repository needs a docs hub.
+After those are drafted, add top-level docs navigation such as `docs/index.md` if the repository
+needs a docs hub.
 
 ## Planned specification documents
 
 ### `scope-and-invariants.md`
 
-Defines the common v0.1.0 implementation boundary that every other architecture
-specification must preserve.
+Defines the common v0.1.0 implementation boundary that every other architecture specification must
+preserve.
 
 Include:
 
@@ -78,13 +77,13 @@ Include:
 - runtime-agnostic core constraints;
 - relationship between ADRs and architecture specs;
 - canonical syntax validation plus parsed metadata as the only core behavior;
-- explicit exclusion of comparison, containment, native translation, registries,
-  repair, warnings, and vulnerability semantics;
+- explicit exclusion of comparison, containment, native translation, registries, repair, warnings,
+  and vulnerability semantics;
 - upstream VERS baseline and known v0.1.0 divergence points;
 - invariants that implementation, tests, and docs must not violate.
 
-Primary ADR inputs: ADR-0001, ADR-0002, ADR-0004, ADR-0008, ADR-0010,
-ADR-0015, ADR-0021, ADR-0033, ADR-0034, ADR-0041, ADR-0046.
+Primary ADR inputs: ADR-0001, ADR-0002, ADR-0004, ADR-0008, ADR-0010, ADR-0015, ADR-0021, ADR-0033,
+ADR-0034, ADR-0041, ADR-0046.
 
 ### `public-api.md`
 
@@ -92,8 +91,8 @@ Defines the public TypeScript package surface and exact Result shapes.
 
 Include:
 
-- exact signatures for `parseVers(input: string)`, `validateVers(input: string)`,
-  and `canonicalizeVers(input: string)`;
+- exact signatures for `parseVers(input: string)`, `validateVers(input: string)`, and
+  `canonicalizeVers(input: string)`;
 - `VersParseResult`, `VersValidationResult`, and `VersCanonicalizeResult`;
 - the successful value for `validateVers()`;
 - the successful value for `canonicalizeVers()`;
@@ -102,8 +101,8 @@ Include:
 - exported public types and reserved/non-exported internals;
 - named export, no-default-export, root-only export, and ESM-only expectations.
 
-Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013,
-ADR-0014, ADR-0031, ADR-0032, ADR-0044, ADR-0050.
+Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013, ADR-0014, ADR-0031, ADR-0032,
+ADR-0044, ADR-0050.
 
 ### `data-model-and-canonical-output.md`
 
@@ -125,8 +124,8 @@ Primary ADR inputs: ADR-0005, ADR-0010, ADR-0021, ADR-0022.
 
 ### `character-encoding.md`
 
-Defines type characters, version characters, percent escapes, UTF-8 decoding, and
-canonical percent serialization.
+Defines type characters, version characters, percent escapes, UTF-8 decoding, and canonical percent
+serialization.
 
 Include:
 
@@ -142,8 +141,8 @@ Include:
 - single-pass percent-decoding and literal `%` behavior;
 - examples such as `%25`, `%252F`, lowercase percent hex, and invalid UTF-8.
 
-Primary ADR inputs: ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0020,
-ADR-0023, ADR-0024, ADR-0025, ADR-0026, ADR-0042.
+Primary ADR inputs: ADR-0015, ADR-0017, ADR-0018, ADR-0019, ADR-0020, ADR-0023, ADR-0024, ADR-0025,
+ADR-0026, ADR-0042.
 
 ### `parser-phases.md`
 
@@ -173,40 +172,35 @@ Include:
 - `VersIssue`, `VersSpan`, and failure metadata shapes;
 - active v0.1.0 core issue-code unions;
 - reserved issue-code unions;
-- issue-code table with code, phase, condition, span policy, fatality, and
-  example input;
+- issue-code table with code, phase, condition, span policy, fatality, and example input;
 - distinction between source diagnostics and result metadata;
-- message stability rules: issue messages are human-readable convenience text, not
-  the machine contract;
+- message stability rules: issue messages are human-readable convenience text, not the machine
+  contract;
 - diagnostic truncation behavior and metadata;
 - handling of issues without spans.
 
-Primary ADR inputs: ADR-0006, ADR-0007, ADR-0023, ADR-0024, ADR-0025,
-ADR-0026, ADR-0027, ADR-0028, ADR-0029, ADR-0042, ADR-0043, ADR-0044,
-ADR-0045.
+Primary ADR inputs: ADR-0006, ADR-0007, ADR-0023, ADR-0024, ADR-0025, ADR-0026, ADR-0027, ADR-0028,
+ADR-0029, ADR-0042, ADR-0043, ADR-0044, ADR-0045.
 
 ### `fixtures.md`
 
-Defines official conformance fixture handling and project diagnostic fixture
-contracts.
+Defines official conformance fixture handling and project diagnostic fixture contracts.
 
 Include:
 
 - pinned upstream VERS snapshot identity;
 - official fixture source files and checksum expectations;
-- official fixture disposition vocabulary: `blocking-core`, `known-divergence`,
-  and `future-semantic`;
+- official fixture disposition vocabulary: `blocking-core`, `known-divergence`, and
+  `future-semantic`;
 - disposition table for `vers_canonical_parse_test.json` cases;
-- rule that upstream `expected_failure_reason` strings are not issue-code
-  contracts;
+- rule that upstream `expected_failure_reason` strings are not issue-code contracts;
 - project diagnostic fixture JSON shape;
 - issue, span, fatality, and metadata assertion rules;
 - no exact assertion of human-readable messages;
 - resource limit and diagnostic truncation fixture coverage;
 - which semantic fixture families are deferred.
 
-Primary ADR inputs: ADR-0008, ADR-0009, ADR-0037, ADR-0041, ADR-0044,
-ADR-0045, ADR-0046.
+Primary ADR inputs: ADR-0008, ADR-0009, ADR-0037, ADR-0041, ADR-0044, ADR-0045, ADR-0046.
 
 ### `resource-limits.md`
 
@@ -224,8 +218,7 @@ Include:
 - no public resource options in v0.1.0;
 - boundary examples at 1024, 1025, 16 issues, and truncated diagnostics.
 
-Primary ADR inputs: ADR-0027, ADR-0028, ADR-0029, ADR-0030, ADR-0032,
-ADR-0043, ADR-0044, ADR-0045.
+Primary ADR inputs: ADR-0027, ADR-0028, ADR-0029, ADR-0030, ADR-0032, ADR-0043, ADR-0044, ADR-0045.
 
 ### `build-and-test.md`
 
@@ -239,8 +232,8 @@ Include:
 - ESM-only package output;
 - root-only package exports and root type declarations;
 - named-export-only behavior;
-- Vitest test layers: unit, parser, official fixture, project diagnostic fixture,
-  resource boundary, and package boundary tests;
+- Vitest test layers: unit, parser, official fixture, project diagnostic fixture, resource boundary,
+  and package boundary tests;
 - oxlint and oxfmt roles;
 - Node, Deno, and Bun compatibility checks;
 - runtime-agnostic implementation constraints.
@@ -252,12 +245,12 @@ ADR-0038, ADR-0039, ADR-0040, ADR-0050, ADR-0053.
 
 ### `docs/index.md`
 
-Use this as a top-level documentation landing page if the repository needs a docs
-hub before source implementation exists.
+Use this as a top-level documentation landing page if the repository needs a docs hub before source
+implementation exists.
 
 Include:
 
 - link to `docs/decisions/`;
 - link to `docs/architecture/`;
-- short explanation of the SDD workflow: ADRs first, architecture specs second,
-  implementation third.
+- short explanation of the SDD workflow: ADRs first, architecture specs second, implementation
+  third.

@@ -6,7 +6,8 @@ English | [한국어](README.ko.md)
 
 </div>
 
-This directory contains the design documentation and architecture specifications for `@windlass/vers-js`.
+This directory contains the design documentation and architecture specifications for
+`@windlass/vers-js`.
 
 ## Structure
 
@@ -20,29 +21,36 @@ docs/
 
 ## Architecture Specifications
 
-The [`architecture/`](architecture/) directory contains concrete implementation contracts that translate accepted ADRs into observable behavior specifications.
+The [`architecture/`](architecture/) directory contains concrete implementation contracts that
+translate accepted ADRs into observable behavior specifications.
 
 Key specifications:
 
-- **[Scope and Invariants](architecture/scope-and-invariants.md)**: The v0.1.0 implementation boundary
+- **[Scope and Invariants](architecture/scope-and-invariants.md)**: The v0.1.0 implementation
+  boundary
 - **[Public API](architecture/public-api.md)**: Exact function signatures and Result shapes
-- **[Build and Test](architecture/build-and-test.md)**: Package scaffolding and verification architecture
-- **[Data Model and Canonical Output](architecture/data-model-and-canonical-output.md)**: Parsed syntax metadata
+- **[Build and Test](architecture/build-and-test.md)**: Package scaffolding and verification
+  architecture
+- **[Data Model and Canonical Output](architecture/data-model-and-canonical-output.md)**: Parsed
+  syntax metadata
 - **[Character Encoding](architecture/character-encoding.md)**: Percent-decoding and UTF-8 handling
 - **[Parser Phases](architecture/parser-phases.md)**: Scanner/parser execution contract
 - **[Diagnostics](architecture/diagnostics.md)**: Issue codes, spans, and metadata
 - **[Fixtures](architecture/fixtures.md)**: Conformance fixture handling
 - **[Resource Limits](architecture/resource-limits.md)**: Input length and diagnostic caps
-- **[Property-Based Testing](architecture/property-based-testing.md)**: PBT tooling, properties, generators, and CI behavior
+- **[Property-Based Testing](architecture/property-based-testing.md)**: PBT tooling, properties,
+  generators, and CI behavior
 
 ## Release Process
 
-The [`release.md`](release.md) runbook defines the maintainer workflow for signed
-Git tags, npm Trusted Publishing, provenance, and GitHub Release creation.
+The [`release.md`](release.md) runbook defines the maintainer workflow for signed Git tags, npm
+Trusted Publishing, provenance, and GitHub Release creation.
 
 ## Architectural Decision Records
 
-The [`decisions/`](decisions/) directory contains ADRs in [MADR 4.0.0](https://adr.github.io/madr/) format. Each record documents a significant architectural decision, its context, considered alternatives, and consequences.
+The [`decisions/`](decisions/) directory contains ADRs in [MADR 4.0.0](https://adr.github.io/madr/)
+format. Each record documents a significant architectural decision, its context, considered
+alternatives, and consequences.
 
 Notable decisions:
 

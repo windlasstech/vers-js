@@ -6,11 +6,14 @@ English | [한국어](README.ko.md)
 
 </div>
 
-This directory contains the Architectural Decision Records (ADRs) for `vers-js`, following the [MADR 4.0.0](https://adr.github.io/madr/) format.
+This directory contains the Architectural Decision Records (ADRs) for `vers-js`, following the
+[MADR 4.0.0](https://adr.github.io/madr/) format.
 
 ## What is an ADR?
 
-An ADR captures an important architectural decision made along with its context and consequences. It helps future contributors understand _why_ the project is built the way it is, not just _what_ was built.
+An ADR captures an important architectural decision made along with its context and consequences. It
+helps future contributors understand _why_ the project is built the way it is, not just _what_ was
+built.
 
 ## Format
 
@@ -109,11 +112,17 @@ Each ADR follows the MADR 4.0.0 template:
 When adding a new decision record:
 
 1. Use the next sequential number
-2. Follow the MADR 4.0.0 template from [ADR-0000](0000-use-markdown-architectural-decision-records.md)
+2. Follow the MADR 4.0.0 template from
+   [ADR-0000](0000-use-markdown-architectural-decision-records.md)
 3. Set `status: proposed` initially
 4. Update the status to `accepted` or `rejected` after review
 5. Add the ADR to the index table above
-6. If a new ADR supersedes or updates a decision from a previous ADR, update the status of the affected prior ADR to `superseded by ADR-NNNN` (or `deprecated`, `updated` as appropriate) and add a backward link in its front matter.
+6. If a new ADR supersedes or updates a decision from a previous ADR, update the status of the
+   affected prior ADR to `superseded by ADR-NNNN` (or `deprecated`, `updated` as appropriate) and
+   add a backward link in its front matter.
 
-> [!WARNING]
-> Existing ADRs are immutable. Except for trivial typo corrections or formatting, **never edit the body of an accepted ADR after the fact**. The only permitted post-acceptance content change is updating the `status` field (e.g., to `superseded`, `deprecated`). If a decision changes, write a new ADR rather than rewriting history.
+> [!WARNING]  
+> Existing ADRs are immutable. Except for trivial typo corrections or formatting, **never edit the
+> body of an accepted ADR after the fact**. The only permitted post-acceptance content change is
+> updating the `status` field (e.g., to `superseded`, `deprecated`). If a decision changes, write a
+> new ADR rather than rewriting history.

@@ -31,11 +31,14 @@ English | [한국어](README.ko.md)
 
 </div>
 
-A runtime-agnostic TypeScript library for parsing and validating [VERS](https://packageurl.org/docs/vers/introduction) (VErsion Range Specifier) declarations.
+A runtime-agnostic TypeScript library for parsing and validating
+[VERS](https://packageurl.org/docs/vers/introduction) (VErsion Range Specifier) declarations.
 
 ## Overview
 
-`vers-js` provides a small, data-oriented API for canonical VERS syntax validation and parsed declaration metadata. It validates VERS strings like `vers:npm/>=1.0.0|<2.0.0` and returns structured success/failure results with machine-readable diagnostics.
+`vers-js` provides a small, data-oriented API for canonical VERS syntax validation and parsed
+declaration metadata. It validates VERS strings like `vers:npm/>=1.0.0|<2.0.0` and returns
+structured success/failure results with machine-readable diagnostics.
 
 **Key characteristics:**
 
@@ -156,13 +159,21 @@ validateVers(123); // throws TypeError
 
 ## Documentation and Project Policies
 
-- **[Architecture Specifications](docs/architecture/)**: Implementation contracts and technical specifications
-- **[Architectural Decision Records](docs/decisions/)**: Design decisions and rationale (MADR format)
-- **[Release Process](docs/release.md)**: Signed tag, npm Trusted Publishing, provenance, and GitHub Release workflow.
-- **[Changelog](CHANGELOG.md)**: User-facing release notes maintained according to Keep a Changelog, with Human Era release dates.
-- **[Contributing Guide](https://github.com/windlasstech/.github/blob/main/CONTRIBUTING.md)**: Organization-wide contribution process, PR expectations, and changelog workflow.
-- **[Security Policy](https://github.com/windlasstech/.github/blob/main/SECURITY.md)**: Windlass organization-wide private vulnerability reporting, coordinated disclosure, and supply-chain integrity requirements.
-- **[Code of Conduct](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)**: Contributor Covenant 3.0 community standards for all project interactions.
+- **[Architecture Specifications](docs/architecture/)**: Implementation contracts and technical
+  specifications
+- **[Architectural Decision Records](docs/decisions/)**: Design decisions and rationale (MADR
+  format)
+- **[Release Process](docs/release.md)**: Signed tag, npm Trusted Publishing, provenance, and GitHub
+  Release workflow.
+- **[Changelog](CHANGELOG.md)**: User-facing release notes maintained according to Keep a Changelog,
+  with Human Era release dates.
+- **[Contributing Guide](https://github.com/windlasstech/.github/blob/main/CONTRIBUTING.md)**:
+  Organization-wide contribution process, PR expectations, and changelog workflow.
+- **[Security Policy](https://github.com/windlasstech/.github/blob/main/SECURITY.md)**: Windlass
+  organization-wide private vulnerability reporting, coordinated disclosure, and supply-chain
+  integrity requirements.
+- **[Code of Conduct](https://github.com/windlasstech/.github/blob/main/CODE_OF_CONDUCT.md)**:
+  Contributor Covenant 3.0 community standards for all project interactions.
 - **[AGENTS.md](AGENTS.md)**: Guidelines for AI assistants working in this repository
 
 ## Development
