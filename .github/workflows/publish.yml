@@ -40,19 +40,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+          ref:
+            ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
           persist-credentials: false
 
       - name: Resolve release tag
         id: release
         env:
-          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+          RELEASE_TAG:
+            ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
         run: echo "tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Install pnpm
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          version: 11.7.0
+          version: 11.17.0
           run_install: false
 
       - name: Set up Node.js
@@ -236,7 +238,10 @@ jobs:
 
   publish-npm:
     name: Publish to npm
-    if: ${{ needs.build-release-artifact.outputs.package-version-exists == 'false' && (needs.build-release-artifact.outputs.package-exists == 'true' || needs.build-release-artifact.outputs.bootstrap-with-token == 'true') }}
+    if:
+      ${{ needs.build-release-artifact.outputs.package-version-exists == 'false' &&
+      (needs.build-release-artifact.outputs.package-exists == 'true' ||
+      needs.build-release-artifact.outputs.bootstrap-with-token == 'true') }}
     needs:
       - build-release-artifact
       - generate-slsa-provenance
@@ -311,7 +316,10 @@ jobs:
 
   publish-github-release:
     name: Publish GitHub Release
-    if: ${{ !cancelled() && needs.build-release-artifact.result == 'success' && needs.generate-slsa-provenance.result == 'success' && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
+    if:
+      ${{ !cancelled() && needs.build-release-artifact.result == 'success' &&
+      needs.generate-slsa-provenance.result == 'success' && (needs.publish-npm.result == 'success'
+      || needs.publish-npm.result == 'skipped') }}
     needs:
       - build-release-artifact
       - generate-slsa-provenance

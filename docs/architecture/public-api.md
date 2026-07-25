@@ -6,13 +6,12 @@ nav_order: 2
 
 # Public API
 
-This specification defines the public TypeScript package surface for `vers-js`
-v0.1.0. It fixes the callable functions, Result shapes, exported public types,
-runtime input behavior, and package import boundary that implementation and tests
-must preserve.
+This specification defines the public TypeScript package surface for `vers-js` v0.1.0. It fixes the
+callable functions, Result shapes, exported public types, runtime input behavior, and package import
+boundary that implementation and tests must preserve.
 
-Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013,
-ADR-0014, ADR-0031, ADR-0032, ADR-0044, and ADR-0050.
+Primary ADR inputs: ADR-0004, ADR-0005, ADR-0011, ADR-0012, ADR-0013, ADR-0014, ADR-0031, ADR-0032,
+ADR-0044, and ADR-0050.
 
 ## Public entry points
 
@@ -24,8 +23,8 @@ export function validateVers(input: string): VersValidationResult;
 export function canonicalizeVers(input: string): VersCanonicalizeResult;
 ```
 
-Each function accepts one required public argument: the VERS declaration string.
-The v0.1.0 public functions must not expose overloads or options for:
+Each function accepts one required public argument: the VERS declaration string. The v0.1.0 public
+functions must not expose overloads or options for:
 
 - resource-budget overrides;
 - warning, advisory, loose, repair, recovery, or coercion modes;
@@ -33,10 +32,9 @@ The v0.1.0 public functions must not expose overloads or options for:
 - byte input such as `Uint8Array`, `ArrayBuffer`, or Node.js `Buffer`;
 - object input shapes or parser adapter hooks.
 
-Callers that receive bytes must decode those bytes to a JavaScript string before
-calling `vers-js`. Callers that need registry checks, advisory behavior, repair
-suggestions, or configurable budgets must layer that behavior outside the v0.1.0
-core API.
+Callers that receive bytes must decode those bytes to a JavaScript string before calling `vers-js`.
+Callers that need registry checks, advisory behavior, repair suggestions, or configurable budgets
+must layer that behavior outside the v0.1.0 core API.
 
 ## Result types
 
@@ -57,13 +55,12 @@ export interface VersFailure {
 }
 ```
 
-`ok` is the only discriminator. Public callers must be able to narrow on
-`result.ok` and receive the matching `value` or `issues` shape.
+`ok` is the only discriminator. Public callers must be able to narrow on `result.ok` and receive the
+matching `value` or `issues` shape.
 
-Failure results must describe malformed, non-canonical, oversized, or otherwise
-invalid VERS strings. They must not expose parser internals such as tokens,
-scanner state, generated parser nodes, mutable parser state, recovery state, or
-runtime-specific objects.
+Failure results must describe malformed, non-canonical, oversized, or otherwise invalid VERS
+strings. They must not expose parser internals such as tokens, scanner state, generated parser
+nodes, mutable parser state, recovery state, or runtime-specific objects.
 
 ## Operation-specific result aliases
 
@@ -75,13 +72,12 @@ export type VersValidationResult = VersResult<true>;
 export type VersCanonicalizeResult = VersResult<string>;
 ```
 
-The aliases are part of the public type surface. They keep call-site intent clear
-while preserving one shared Result contract.
+The aliases are part of the public type surface. They keep call-site intent clear while preserving
+one shared Result contract.
 
 ## `parseVers()` behavior
 
-`parseVers(input)` parses a valid canonical VERS declaration and returns syntax
-metadata:
+`parseVers(input)` parses a valid canonical VERS declaration and returns syntax metadata:
 
 ```ts
 const result = parseVers("vers:npm/>=1.0.0|<2.0.0");
@@ -94,16 +90,16 @@ if (result.ok) {
 }
 ```
 
-On success, `value` is a `VersRange`. On failure, `issues` contains public
-diagnostics and `metadata` is present only when result metadata is needed.
+On success, `value` is a `VersRange`. On failure, `issues` contains public diagnostics and
+`metadata` is present only when result metadata is needed.
 
-`parseVers()` must not expose raw scanner tokens, parser nodes, decoded byte
-buffers, or type-specific version objects.
+`parseVers()` must not expose raw scanner tokens, parser nodes, decoded byte buffers, or
+type-specific version objects.
 
 ## `validateVers()` behavior
 
-`validateVers(input)` validates the same canonical VERS contract as `parseVers()`
-without returning parsed syntax metadata.
+`validateVers(input)` validates the same canonical VERS contract as `parseVers()` without returning
+parsed syntax metadata.
 
 On success, it returns:
 
@@ -111,18 +107,16 @@ On success, it returns:
 { ok: true, value: true }
 ```
 
-The success value is the literal `true`. This keeps the Result shape uniform while
-making the operation's payload intentionally minimal. It does not return the
-input string, parsed metadata, canonical output, an empty object, or `undefined`.
+The success value is the literal `true`. This keeps the Result shape uniform while making the
+operation's payload intentionally minimal. It does not return the input string, parsed metadata,
+canonical output, an empty object, or `undefined`.
 
-On failure, `validateVers()` returns the same failure shape as the other public
-functions.
+On failure, `validateVers()` returns the same failure shape as the other public functions.
 
 ## `canonicalizeVers()` behavior
 
-`canonicalizeVers(input)` validates the same canonical VERS contract as
-`parseVers()` and returns the canonical VERS string represented by the parsed
-syntax metadata.
+`canonicalizeVers(input)` validates the same canonical VERS contract as `parseVers()` and returns
+the canonical VERS string represented by the parsed syntax metadata.
 
 On success, it returns:
 
@@ -130,12 +124,11 @@ On success, it returns:
 { ok: true, value: "vers:npm/>=1.0.0|<2.0.0" }
 ```
 
-The successful `value` must be equivalent to `parseVers(input).value.canonical`
-for the same accepted input.
+The successful `value` must be equivalent to `parseVers(input).value.canonical` for the same
+accepted input.
 
-`canonicalizeVers()` is not a repair, cleanup, or coercion API. Malformed or
-non-canonical strings fail with structured diagnostics rather than repaired
-output.
+`canonicalizeVers()` is not a repair, cleanup, or coercion API. Malformed or non-canonical strings
+fail with structured diagnostics rather than repaired output.
 
 ## Successful parse data model
 
@@ -162,13 +155,12 @@ export interface VersVersionConstraint {
 }
 ```
 
-`scheme` is always `"vers"`. `type` is the validated lowercase VERS type string.
-`constraints` contains the parsed constraints according to the v0.1.0 core order
-rules. `canonical` is the canonical VERS string represented by the parsed value.
+`scheme` is always `"vers"`. `type` is the validated lowercase VERS type string. `constraints`
+contains the parsed constraints according to the v0.1.0 core order rules. `canonical` is the
+canonical VERS string represented by the parsed value.
 
-The model must not expose type-specific parsed version objects, comparison
-results, containment checks, native range translations, resolver data,
-vulnerability interpretation, or VEX semantics.
+The model must not expose type-specific parsed version objects, comparison results, containment
+checks, native range translations, resolver data, vulnerability interpretation, or VEX semantics.
 
 The detailed metadata and canonical-output contract is defined by
 `data-model-and-canonical-output.md`.
@@ -200,12 +192,11 @@ export interface VersDiagnosticsMetadata {
 }
 ```
 
-`VersIssue.message` is human-readable convenience text. It is not the stable
-machine contract. Callers must use `code`, `severity`, `span`, and documented
-metadata for machine behavior.
+`VersIssue.message` is human-readable convenience text. It is not the stable machine contract.
+Callers must use `code`, `severity`, `span`, and documented metadata for machine behavior.
 
-`VersSpan` offsets point into the original input string. The detailed coordinate
-system and omission rules are defined by `diagnostics.md`.
+`VersSpan` offsets point into the original input string. The detailed coordinate system and omission
+rules are defined by `diagnostics.md`.
 
 ## Issue-code exports
 
@@ -224,18 +215,17 @@ export type VersCoreIssueCode =
 export type VersReservedIssueCode = VersReservedCanonicalIssueCode | VersSupportIssueCode;
 ```
 
-`VersReservedIssueCode` is exported as reserved vocabulary but is not part of the
-v0.1.0 `VersIssueCode` union. The core public functions must not return reserved
-codes such as `support.unknown_type`, `support.unsupported_semantic`,
-`canonical.non_canonical_order`, or `canonical.invalid_comparator_sequence`.
+`VersReservedIssueCode` is exported as reserved vocabulary but is not part of the v0.1.0
+`VersIssueCode` union. The core public functions must not return reserved codes such as
+`support.unknown_type`, `support.unsupported_semantic`, `canonical.non_canonical_order`, or
+`canonical.invalid_comparator_sequence`.
 
-The complete active and reserved issue-code unions are defined by
-`diagnostics.md`.
+The complete active and reserved issue-code unions are defined by `diagnostics.md`.
 
 ## Failure metadata
 
-Failure metadata is presence-based. `metadata.diagnostics` is present only when
-diagnostic issue-cap truncation occurs:
+Failure metadata is presence-based. `metadata.diagnostics` is present only when diagnostic issue-cap
+truncation occurs:
 
 ```ts
 {
@@ -250,16 +240,16 @@ diagnostic issue-cap truncation occurs:
 }
 ```
 
-When diagnostics are not truncated, `metadata.diagnostics` is absent. The v0.1.0
-core must not emit `diagnostics: { truncated: false }`.
+When diagnostics are not truncated, `metadata.diagnostics` is absent. The v0.1.0 core must not emit
+`diagnostics: { truncated: false }`.
 
-Failure metadata must not expose scanner state, parser phases, token positions,
-omitted issue counts, or recovery internals.
+Failure metadata must not expose scanner state, parser phases, token positions, omitted issue
+counts, or recovery internals.
 
 ## Runtime input behavior
 
-Public functions must check the runtime type of `input` before input length
-limits, parsing, validation, canonicalization, or diagnostic collection.
+Public functions must check the runtime type of `input` before input length limits, parsing,
+validation, canonicalization, or diagnostic collection.
 
 If `input` is not a string, the function throws `TypeError`:
 
@@ -269,16 +259,14 @@ validateVers(undefined); // throws TypeError
 canonicalizeVers(new Uint8Array()); // throws TypeError
 ```
 
-This exception path is limited to JavaScript API misuse. Malformed,
-non-canonical, oversized, or otherwise invalid strings remain normal Result
-failures:
+This exception path is limited to JavaScript API misuse. Malformed, non-canonical, oversized, or
+otherwise invalid strings remain normal Result failures:
 
 ```ts
 parseVers("not-a-vers"); // { ok: false, issues: [...] }
 ```
 
-The implementation must not coerce non-string values with `String(input)` before
-parsing.
+The implementation must not coerce non-string values with `String(input)` before parsing.
 
 ## Package import boundary
 
@@ -297,9 +285,9 @@ import { parseVers } from "@windlass/vers-js/parser";
 import type { VersIssue } from "@windlass/vers-js/errors";
 ```
 
-The package must not publish a CommonJS runtime artifact, `.cjs` entry point,
-`"require"` conditional export, wildcard export, or runtime-specific export
-condition for `"browser"`, `"deno"`, `"bun"`, or `"node"` in v0.1.0.
+The package must not publish a CommonJS runtime artifact, `.cjs` entry point, `"require"`
+conditional export, wildcard export, or runtime-specific export condition for `"browser"`, `"deno"`,
+`"bun"`, or `"node"` in v0.1.0.
 
 ## Package metadata contract
 
@@ -319,33 +307,32 @@ The representative package boundary is:
 }
 ```
 
-The root `"types"` field and `"exports"["."].types` condition must point to the
-same declaration entry point. The `"types"` condition must appear before runtime
-conditions in the root export object.
+The root `"types"` field and `"exports"["."].types` condition must point to the same declaration
+entry point. The `"types"` condition must appear before runtime conditions in the root export
+object.
 
-The exact output directory may be refined in `build-and-test.md`, but the v0.1.0
-package must preserve the ESM-only, root-only, universal runtime entry shape.
+The exact output directory may be refined in `build-and-test.md`, but the v0.1.0 package must
+preserve the ESM-only, root-only, universal runtime entry shape.
 
 ## Named exports only
 
-The package root must provide the three public core functions as named runtime
-exports:
+The package root must provide the three public core functions as named runtime exports:
 
 ```ts
 export { canonicalizeVers, parseVers, validateVers };
 ```
 
-The package root must not provide a JavaScript default export. Users that want a
-namespace-style runtime value can use the standard ESM namespace import form:
+The package root must not provide a JavaScript default export. Users that want a namespace-style
+runtime value can use the standard ESM namespace import form:
 
 ```ts
 import * as vers from "@windlass/vers-js";
 ```
 
-Named exports keep public symbols stable for TypeScript, editor tooling, static
-analysis, and tree-shaking. The package export map may still use the
-`"exports"["."].default` condition for universal runtime entry resolution; that
-package metadata condition does not imply a JavaScript default export.
+Named exports keep public symbols stable for TypeScript, editor tooling, static analysis, and
+tree-shaking. The package export map may still use the `"exports"["."].default` condition for
+universal runtime entry resolution; that package metadata condition does not imply a JavaScript
+default export.
 
 ## Exported public types
 
@@ -370,30 +357,23 @@ The package root should export the types needed to consume public Result values:
 - issue-code namespace unions defined by `diagnostics.md`;
 - `VersReservedIssueCode` and its reserved namespace unions.
 
-The package root must not export implementation-only parser state, scanner token
-types, mutable builders, fixture runner internals, or runtime-specific adapter
-types.
+The package root must not export implementation-only parser state, scanner token types, mutable
+builders, fixture runner internals, or runtime-specific adapter types.
 
 ## Public API invariants
 
 Implementation, tests, and examples must preserve these invariants:
 
-1. The only v0.1.0 parser functions are `parseVers()`, `validateVers()`, and
-   `canonicalizeVers()`.
+1. The only v0.1.0 parser functions are `parseVers()`, `validateVers()`, and `canonicalizeVers()`.
 2. Each parser function accepts exactly one public `string` argument.
-3. Non-string runtime input throws `TypeError` before parsing or diagnostic
-   collection.
-4. Malformed or non-canonical string input returns a Result failure rather than
-   throwing.
+3. Non-string runtime input throws `TypeError` before parsing or diagnostic collection.
+4. Malformed or non-canonical string input returns a Result failure rather than throwing.
 5. `validateVers()` success is `{ ok: true, value: true }`.
-6. `canonicalizeVers()` success returns the same canonical string exposed by a
-   successful parse of the same input.
-7. Failure metadata uses presence-based diagnostic truncation; non-truncated
-   failures omit `metadata.diagnostics`.
-8. Public results expose stable data only, never parser internals or
-   runtime-specific objects.
-9. Package consumers import runtime values and public types from `"@windlass/vers-js"`
-   only.
+6. `canonicalizeVers()` success returns the same canonical string exposed by a successful parse of
+   the same input.
+7. Failure metadata uses presence-based diagnostic truncation; non-truncated failures omit
+   `metadata.diagnostics`.
+8. Public results expose stable data only, never parser internals or runtime-specific objects.
+9. Package consumers import runtime values and public types from `"@windlass/vers-js"` only.
 10. The package remains ESM-only, root-only, and runtime-agnostic in v0.1.0.
-11. The package root provides named runtime exports only and no JavaScript default
-    export.
+11. The package root provides named runtime exports only and no JavaScript default export.

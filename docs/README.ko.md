@@ -20,14 +20,16 @@ docs/
 
 ## 아키텍처 사양
 
-[`architecture/`](architecture/) 디렉터리에는 유효한 아키텍처 의사결정들로부터 산출한 구체적인 구현 명세가 있습니다.
+[`architecture/`](architecture/) 디렉터리에는 유효한 아키텍처 의사결정들로부터 산출한 구체적인 구현
+명세가 있습니다.
 
 핵심 사양:
 
 - **[범위 및 불변 조건](architecture/scope-and-invariants.md)**: v0.1.0 구현 경계
 - **[공개 API](architecture/public-api.md)**: 정확한 함수 시그니처와 Result 형태
 - **[빌드 및 테스트](architecture/build-and-test.md)**: 패키지 스캐폴드 및 검증 아키텍처
-- **[데이터 모델 및 정규 출력](architecture/data-model-and-canonical-output.md)**: 파싱한 구문 메타데이터
+- **[데이터 모델 및 정규 출력](architecture/data-model-and-canonical-output.md)**: 파싱한 구문
+  메타데이터
 - **[문자 인코딩](architecture/character-encoding.md)**: 퍼센트 디코딩 및 UTF-8 처리
 - **[파서 단계](architecture/parser-phases.md)**: 스캐너/파서 실행 계약
 - **[진단](architecture/diagnostics.md)**: 이슈 코드, 범위, 메타데이터
@@ -37,13 +39,14 @@ docs/
 
 ## 릴리즈 절차
 
-[`release.md`](release.md) 런북은 signed Git tag, npm Trusted Publishing,
-provenance, GitHub Release 생성을 포함한 메인테이너 릴리즈 워크플로우를
-정의합니다.
+[`release.md`](release.md) 런북은 signed Git tag, npm Trusted Publishing, provenance, GitHub Release
+생성을 포함한 메인테이너 릴리즈 워크플로우를 정의합니다.
 
 ## 아키텍처 결정 기록
 
-[`decisions/`](decisions/) 디렉터리에는 [MADR 4.0.0](https://adr.github.io/madr/) 형식의 아키텍처 의사결정 기록들(ADRs)이 있습니다. 각 기록은 주요 아키텍처 결정과 그 맥락, 고려한 선택지들, 그리고 결정 결과를 문서화한 것입니다.
+[`decisions/`](decisions/) 디렉터리에는 [MADR 4.0.0](https://adr.github.io/madr/) 형식의 아키텍처
+의사결정 기록들(ADRs)이 있습니다. 각 기록은 주요 아키텍처 결정과 그 맥락, 고려한 선택지들, 그리고
+결정 결과를 문서화한 것입니다.
 
 주요 결정 예시:
 

@@ -6,14 +6,12 @@ nav_order: 9
 
 # Build and Test
 
-This specification defines the v0.1.0 repository scaffolding, package output, and
-verification architecture for `vers-js`. It turns the accepted build, test,
-linting, formatting, runtime, package-boundary, and supply-chain decisions into an
-implementation contract.
+This specification defines the v0.1.0 repository scaffolding, package output, and verification
+architecture for `vers-js`. It turns the accepted build, test, linting, formatting, runtime,
+package-boundary, and supply-chain decisions into an implementation contract.
 
-Primary ADR inputs: ADR-0001, ADR-0002, ADR-0003, ADR-0011, ADR-0012,
-ADR-0013, ADR-0014, ADR-0035, ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050, and
-ADR-0053.
+Primary ADR inputs: ADR-0001, ADR-0002, ADR-0003, ADR-0011, ADR-0012, ADR-0013, ADR-0014, ADR-0035,
+ADR-0036, ADR-0037, ADR-0038, ADR-0039, ADR-0040, ADR-0050, and ADR-0053.
 
 ## Development baseline
 
@@ -31,17 +29,16 @@ The v0.1.0 development baseline is:
 | Formatter                   | Oxfmt.                                                                |
 | Compatibility smoke targets | Node.js 22 LTS or newer, current stable Deno, and current stable Bun. |
 
-The published library must remain runtime-agnostic even though development uses
-Node.js and pnpm. Core source must avoid runtime-specific globals and APIs such as
-`process`, `Buffer`, `Deno`, and `Bun`.
+The published library must remain runtime-agnostic even though development uses Node.js and pnpm.
+Core source must avoid runtime-specific globals and APIs such as `process`, `Buffer`, `Deno`, and
+`Bun`.
 
 ## Package scaffolding
 
-When implementation begins, the repository should add package scaffolding that
-preserves the architecture contracts:
+When implementation begins, the repository should add package scaffolding that preserves the
+architecture contracts:
 
-- `package.json` for package metadata, scripts, and the pnpm
-  `devEngines.packageManager` pin;
+- `package.json` for package metadata, scripts, and the pnpm `devEngines.packageManager` pin;
 - `pnpm-lock.yaml` once dependencies exist;
 - `.npmrc` or `pnpm-workspace.yaml` for dependency cooldown policy;
 - TypeScript configuration for development type-checking;
@@ -50,16 +47,16 @@ preserves the architecture contracts:
 - Oxlint configuration with type-aware linting enabled;
 - Oxfmt configuration if defaults are insufficient;
 - source files under an implementation directory such as `src/`;
-- tests and fixtures under an implementation test directory such as `test/`,
-  `tests/`, or `fixtures/`.
+- tests and fixtures under an implementation test directory such as `test/`, `tests/`, or
+  `fixtures/`.
 
-Exact file names and layout may be refined during implementation, but the public
-package output and verification behavior in this document must remain unchanged.
+Exact file names and layout may be refined during implementation, but the public package output and
+verification behavior in this document must remain unchanged.
 
 ## TypeScript configuration
 
-The TypeScript configuration must support the ESM-only package shape and the Oxc
-toolchain decisions.
+The TypeScript configuration must support the ESM-only package shape and the Oxc toolchain
+decisions.
 
 Package compiler settings should be equivalent to:
 
@@ -74,20 +71,19 @@ Package compiler settings should be equivalent to:
 }
 ```
 
-The implementation should avoid legacy TypeScript options that conflict with
-TypeScript 7 compatibility, `typescript-go`, or Oxlint type-aware linting.
+The implementation should avoid legacy TypeScript options that conflict with TypeScript 7
+compatibility, `typescript-go`, or Oxlint type-aware linting.
 
-`tsc` remains the authoritative tool for type-checking and declaration emission.
-Oxlint may surface type-aware diagnostics, but it does not replace the compiler
-check.
+`tsc` remains the authoritative tool for type-checking and declaration emission. Oxlint may surface
+type-aware diagnostics, but it does not replace the compiler check.
 
 ## Build output
 
-The v0.1.0 build uses `tsc` to emit package JavaScript and declarations. It must
-not use a bundler as the normal package build path.
+The v0.1.0 build uses `tsc` to emit package JavaScript and declarations. It must not use a bundler
+as the normal package build path.
 
-The output must be plain ESM JavaScript plus `.d.ts` declarations. The package
-must not emit or publish:
+The output must be plain ESM JavaScript plus `.d.ts` declarations. The package must not emit or
+publish:
 
 - CommonJS output;
 - `.cjs` entry points;
@@ -97,8 +93,7 @@ must not emit or publish:
 - generated parser artifacts;
 - parser-generator runtime output.
 
-The emitted runtime entry and declaration entry must match `package.json` package
-metadata.
+The emitted runtime entry and declaration entry must match `package.json` package metadata.
 
 ## Package metadata
 
@@ -120,20 +115,18 @@ The representative package boundary is:
 }
 ```
 
-Implementation may choose a different output directory only if all package
-metadata and checks are updated consistently.
+Implementation may choose a different output directory only if all package metadata and checks are
+updated consistently.
 
-The root `"types"` field and `"exports"["."].types` condition must point to the
-same declaration file. The `"types"` condition must appear before runtime
-conditions in the root export object.
+The root `"types"` field and `"exports"["."].types` condition must point to the same declaration
+file. The `"types"` condition must appear before runtime conditions in the root export object.
 
 The v0.1.0 package must not include:
 
 - `"require"` conditional exports;
 - wildcard exports such as `"./*"`;
 - named subpath exports such as `"./parser"` or `"./errors"`;
-- runtime-specific conditions such as `"browser"`, `"deno"`, `"bun"`, or
-  `"node"`;
+- runtime-specific conditions such as `"browser"`, `"deno"`, `"bun"`, or `"node"`;
 - `"typesVersions"` unless a later ADR sets a legacy TypeScript target.
 
 ## Public export checks
@@ -144,15 +137,13 @@ Package boundary tests must verify the package root exports:
 - `validateVers`;
 - `canonicalizeVers`;
 - no JavaScript default export;
-- public Result, metadata, data-model, span, and issue-code types through the root
-  declaration file.
+- public Result, metadata, data-model, span, and issue-code types through the root declaration file.
 
-Package boundary tests must also verify that non-string runtime inputs such as
-`null`, `undefined`, arrays, objects, and byte arrays throw `TypeError` before
-input length checks or parsing.
+Package boundary tests must also verify that non-string runtime inputs such as `null`, `undefined`,
+arrays, objects, and byte arrays throw `TypeError` before input length checks or parsing.
 
-The package root must not export parser internals, issue-code registries, fixture
-helpers, package metadata, or runtime-specific adapters.
+The package root must not export parser internals, issue-code registries, fixture helpers, package
+metadata, or runtime-specific adapters.
 
 Package boundary tests must reject unsupported subpath imports such as:
 
@@ -181,18 +172,17 @@ format:       oxfmt
 format:check: oxfmt --check
 ```
 
-Exact script names may be refined during implementation, but CI and release
-verification must include equivalent checks for type-checking, package build,
-tests, linting, formatting, package boundary, and runtime compatibility.
+Exact script names may be refined during implementation, but CI and release verification must
+include equivalent checks for type-checking, package build, tests, linting, formatting, package
+boundary, and runtime compatibility.
 
-Vitest does not replace `tsc --noEmit`. Oxlint type-aware linting does not replace
-`tsc --noEmit`. Oxfmt does not replace linting or type-checking.
+Vitest does not replace `tsc --noEmit`. Oxlint type-aware linting does not replace `tsc --noEmit`.
+Oxfmt does not replace linting or type-checking.
 
 ## Test architecture
 
-The primary test suite uses Vitest under Node.js. Tests must exercise the public
-package surface unless a test is explicitly scoped to internal implementation
-helpers.
+The primary test suite uses Vitest under Node.js. Tests must exercise the public package surface
+unless a test is explicitly scoped to internal implementation helpers.
 
 The test layers are:
 
@@ -206,41 +196,37 @@ The test layers are:
 | Package boundary tests            | Validate root export metadata, declaration metadata, named exports only, and blocked subpaths.                      |
 | Runtime compatibility smoke tests | Import and exercise the built package root under Node.js, Deno, and Bun.                                            |
 
-Property-based testing policy is specified separately in
-`property-based-testing.md`, including PBT tooling, properties, generators,
-determinism, and CI behavior.
+Property-based testing policy is specified separately in `property-based-testing.md`, including PBT
+tooling, properties, generators, determinism, and CI behavior.
 
-Tests must not assert exact human-readable diagnostic message strings. They may
-assert that messages are non-empty strings.
+Tests must not assert exact human-readable diagnostic message strings. They may assert that messages
+are non-empty strings.
 
-Fixture tests must not parse upstream `expected_failure_reason` values as local
-issue-code expectations.
+Fixture tests must not parse upstream `expected_failure_reason` values as local issue-code
+expectations.
 
 ## Official and project fixture tests
 
-Official fixture tests use the pinned upstream snapshot and local disposition
-rules from `fixtures.md`. Blocking official cases assert only the success or
-failure boundary and local success metadata mapping. Project diagnostic fixtures
-own exact diagnostic expectations.
+Official fixture tests use the pinned upstream snapshot and local disposition rules from
+`fixtures.md`. Blocking official cases assert only the success or failure boundary and local success
+metadata mapping. Project diagnostic fixtures own exact diagnostic expectations.
 
 The v0.1.0 official fixture implementation stores copied upstream artifacts under
 `tests/fixtures/upstream/`, local parse-fixture dispositions in
 `tests/fixtures/vers-canonical-disposition.json`, and the Vitest adapter in
-`tests/official-fixtures.test.ts`. `fixtures.md` is the source of truth for the
-fixture file layout and disposition vocabulary.
+`tests/official-fixtures.test.ts`. `fixtures.md` is the source of truth for the fixture file layout
+and disposition vocabulary.
 
-Project diagnostic fixture tests must cover every active v0.1.0 issue code from
-`diagnostics.md`, including `resource.input_too_long` and diagnostic truncation
-metadata. They must also verify that reserved codes are not emitted by v0.1.0 core
-public functions.
+Project diagnostic fixture tests must cover every active v0.1.0 issue code from `diagnostics.md`,
+including `resource.input_too_long` and diagnostic truncation metadata. They must also verify that
+reserved codes are not emitted by v0.1.0 core public functions.
 
-Fixture runners may use adapters, but those adapters must be deterministic and
-must preserve fixture identity in test output.
+Fixture runners may use adapters, but those adapters must be deterministic and must preserve fixture
+identity in test output.
 
 ## Cross-runtime compatibility checks
 
-Before claiming runtime compatibility, the built package root must be smoke-tested
-under:
+Before claiming runtime compatibility, the built package root must be smoke-tested under:
 
 - Node.js 22 LTS or newer;
 - current stable Deno;
@@ -254,18 +240,17 @@ Each smoke test must import the same built package root and exercise at least:
 4. one normal failure Result path.
 
 The runtime smoke suite uses one shared built-package driver,
-`tests/runtime-smoke/built-package.mjs`. Runtime-specific package scripts for
-Node.js, Deno, and Bun all execute that same driver against `dist/index.js`. The
-driver must not import TypeScript source files, fixture helpers, test-only entry
-points, or runtime-specific package branches.
+`tests/runtime-smoke/built-package.mjs`. Runtime-specific package scripts for Node.js, Deno, and Bun
+all execute that same driver against `dist/index.js`. The driver must not import TypeScript source
+files, fixture helpers, test-only entry points, or runtime-specific package branches.
 
-Cross-runtime smoke tests must use built package output, not TypeScript source
-files or test-only entry points. They must not rely on runtime-specific package
-branches because v0.1.0 publishes one universal `"default"` runtime entry.
+Cross-runtime smoke tests must use built package output, not TypeScript source files or test-only
+entry points. They must not rely on runtime-specific package branches because v0.1.0 publishes one
+universal `"default"` runtime entry.
 
-Browser compatibility may be checked through browser-oriented tooling when a
-release claims browser support, but v0.1.0 must not add a browser-specific export
-condition or browser-specific build artifact.
+Browser compatibility may be checked through browser-oriented tooling when a release claims browser
+support, but v0.1.0 must not add a browser-specific export condition or browser-specific build
+artifact.
 
 ## Runtime-agnostic core checks
 
@@ -281,21 +266,21 @@ Core source must not use unisolated:
 - runtime-specific import conditions;
 - filesystem, network, timer, or environment APIs for parsing behavior.
 
-Test files, build scripts, and fixture-generation scripts may use Node.js APIs when
-they are clearly outside the published runtime core.
+Test files, build scripts, and fixture-generation scripts may use Node.js APIs when they are clearly
+outside the published runtime core.
 
 ## Linting and formatting roles
 
-Oxlint is the JavaScript and TypeScript linter. Type-aware linting must be enabled
-in normal verification. Lint configuration should reject accidental
-runtime-specific globals in core source and should not normalize CommonJS,
-bundler-specific, framework-specific, or runtime-specific package conventions.
+Oxlint is the JavaScript and TypeScript linter. Type-aware linting must be enabled in normal
+verification. Lint configuration should reject accidental runtime-specific globals in core source
+and should not normalize CommonJS, bundler-specific, framework-specific, or runtime-specific package
+conventions.
 
-Oxfmt is the formatter. It owns formatting only. Formatter configuration must not
-silently redefine linting, type-checking, or build behavior.
+Oxfmt is the formatter. It owns formatting only. Formatter configuration must not silently redefine
+linting, type-checking, or build behavior.
 
-Generated package artifacts should not be treated as formatter source inputs unless
-a future implementation decision explicitly includes them.
+Generated package artifacts should not be treated as formatter source inputs unless a future
+implementation decision explicitly includes them.
 
 ## Dependency and CI security
 
@@ -305,10 +290,9 @@ Dependency installation and CI must preserve Windlass supply-chain requirements:
 - pin pnpm through `devEngines.packageManager`;
 - commit `pnpm-lock.yaml` once dependencies exist;
 - use frozen lockfile installs in CI;
-- configure pnpm `minimumReleaseAge` with a default of at least `1440` minutes once
-  dependencies exist;
-- keep dependency cooldown policy in committed `.npmrc` or `pnpm-workspace.yaml`
-  configuration;
+- configure pnpm `minimumReleaseAge` with a default of at least `1440` minutes once dependencies
+  exist;
+- keep dependency cooldown policy in committed `.npmrc` or `pnpm-workspace.yaml` configuration;
 - do not add build or test CI that bypasses organization security checks.
 
 Build and test workflows must coexist with Windlass reusable security workflows:
@@ -321,18 +305,17 @@ New GitHub Actions workflows must follow Windlass workflow hardening guidance:
 
 - explicit minimal permissions;
 - SHA-pinned third-party actions where applicable;
-- Windlass-owned reusable workflows may follow the documented internal workflow
-  exception;
+- Windlass-owned reusable workflows may follow the documented internal workflow exception;
 - `step-security/harden-runner` in audit mode for jobs that run actions;
 - release artifact attestations when release artifacts are produced.
 
-Production release builds must run on hosted CI rather than a developer
-workstation when release provenance or attestations are claimed.
+Production release builds must run on hosted CI rather than a developer workstation when release
+provenance or attestations are claimed.
 
-Build/test CI must run `pnpm run build` before `pnpm run smoke:runtime`. Hosted CI
-may install Deno and Bun through SHA-pinned setup actions before dependency
-installation and verification, but runtime compatibility must remain tied to the
-emitted package artifact rather than development TypeScript source.
+Build/test CI must run `pnpm run build` before `pnpm run smoke:runtime`. Hosted CI may install Deno
+and Bun through SHA-pinned setup actions before dependency installation and verification, but
+runtime compatibility must remain tied to the emitted package artifact rather than development
+TypeScript source.
 
 ## Verification sequence
 
@@ -342,15 +325,14 @@ The implementation-ready verification sequence is:
 2. Check formatting with Oxfmt.
 3. Lint with Oxlint type-aware mode.
 4. Type-check with `tsc --noEmit`.
-5. Run Vitest unit, parser, fixture, diagnostic, resource, and package-boundary
-   tests.
+5. Run Vitest unit, parser, fixture, diagnostic, resource, and package-boundary tests.
 6. Build with `tsc -p tsconfig.build.json` or equivalent.
 7. Validate package metadata points at emitted files.
 8. Smoke-test the built package root under Node.js, Deno, and Bun.
 9. Run or require Windlass supply-chain checks in CI before merge or release.
 
-Implementation may reorder independent checks for CI speed, but release readiness
-requires all equivalent checks to pass.
+Implementation may reorder independent checks for CI speed, but release readiness requires all
+equivalent checks to pass.
 
 ## Invariants
 
@@ -358,22 +340,17 @@ Implementation, tests, and CI must preserve these invariants:
 
 1. Source is authored in TypeScript.
 2. Node.js 22 LTS and newer is the Node.js compatibility baseline.
-3. pnpm is the development package manager and `pnpm-lock.yaml` is committed once
-   dependencies exist.
+3. pnpm is the development package manager and `pnpm-lock.yaml` is committed once dependencies
+   exist.
 4. Package build uses `tsc` without bundling for v0.1.0.
 5. Package output is ESM JavaScript plus `.d.ts` declarations.
-6. Package metadata is ESM-only, root-only, and uses one universal `"default"`
-   runtime entry.
-7. Root declaration metadata appears in both root `"types"` and
-   `"exports"["."].types`.
-8. The package root exposes the three public runtime functions as named exports
-   only and does not provide a JavaScript default export.
+6. Package metadata is ESM-only, root-only, and uses one universal `"default"` runtime entry.
+7. Root declaration metadata appears in both root `"types"` and `"exports"["."].types`.
+8. The package root exposes the three public runtime functions as named exports only and does not
+   provide a JavaScript default export.
 9. Vitest is the primary test runner under Node.js.
-10. Cross-runtime compatibility is proven by built-package smoke tests in Node.js,
-    Deno, and Bun.
+10. Cross-runtime compatibility is proven by built-package smoke tests in Node.js, Deno, and Bun.
 11. Oxlint with type-aware linting is the linter; Oxfmt is the formatter.
-12. Core source remains runtime-agnostic and avoids unisolated runtime-specific
-    globals.
-13. Fixture tests preserve official fixture provenance and project diagnostic
-    contracts.
+12. Core source remains runtime-agnostic and avoids unisolated runtime-specific globals.
+13. Fixture tests preserve official fixture provenance and project diagnostic contracts.
 14. CI build/test workflows do not bypass Windlass security checks.
