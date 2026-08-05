@@ -72,10 +72,10 @@
     "@vitest/coverage-v8": "^4.1.10",
     "fast-check": "^4.9.0",
     "lefthook": "^2.1.10",
-    "markdownlint-cli2": "^0.22.1",
-    "oxfmt": "^0.53.0",
+    "markdownlint-cli2": "^0.23.1",
+    "oxfmt": "^0.60.0",
     "oxlint": "^1.75.0",
-    "oxlint-tsgolint": "^0.23.0",
+    "oxlint-tsgolint": "^0.25.0",
     "typescript": "^7.0.0",
     "vitest": "^4.1.10"
   },
