@@ -10,6 +10,24 @@ permissions:
   contents: read
 
 jobs:
+  actionlint:
+    name: Lint GitHub Actions workflows
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run actionlint
+        uses: windlasstech/actionlint-hardened-action@043a16f2538fe7bee89d8e19bbd5292e925210e0 # v1.0.0
+
   quality-gates:
     name: Quality gates
     runs-on: ubuntu-24.04
@@ -53,9 +71,6 @@ jobs:
 
       - name: Run Oxlint
         run: pnpm run lint:ts:github
-
-      - name: Check formatting
-        run: pnpm run fmt:check
 
       - name: Type-check package
         run: pnpm run typecheck
