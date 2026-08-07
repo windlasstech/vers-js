@@ -27,7 +27,6 @@ jobs:
       bootstrap-with-token: ${{ steps.first-publish.outputs.bootstrap-with-token }}
       tarball-name: ${{ steps.pack.outputs.tarball-name }}
       tarball-sha256: ${{ steps.pack.outputs.tarball-sha256 }}
-      tarball-subjects: ${{ steps.pack.outputs.tarball-subjects }}
     permissions:
       contents: read
 
@@ -132,21 +131,19 @@ jobs:
           if [ "${HAS_NPM_TOKEN}" = "true" ]; then
             cat <<'EOF'
           The npm package does not exist yet, but an NPM_TOKEN secret is present.
-          This workflow will publish the first version using the token and upload SLSA provenance.
-          After this release, configure npm Trusted Publishing and remove the NPM_TOKEN secret.
+          This workflow will publish the first version using the token, without provenance.
+          npm Trusted Publishing is unavailable for a package that has never been published,
+          so this token-based bootstrap is required for the first release.
           EOF
           else
             cat <<'EOF'
-          The npm package does not exist yet, so this workflow will skip npm Trusted Publishing.
-          Publish the first version manually from a maintainer-controlled environment, then configure npm Trusted Publishing for future releases.
+          The npm package does not exist yet and no NPM_TOKEN secret is present, so this workflow will skip npm publication.
+          Publish the first version manually from a maintainer-controlled environment:
 
           Recommended bootstrap command after local release validation:
             pnpm publish --access public
 
-          If a token-based CI bootstrap is explicitly chosen instead, use a temporary granular npm token, publish with provenance, and revoke the token immediately:
-            pnpm publish --provenance --access public
-
-          The GitHub Release, release tarball, checksum, and SLSA provenance will still be created for this signed tag.
+          The GitHub Release, release tarball, and checksum will still be created for this signed tag.
           EOF
           fi
 
@@ -195,21 +192,11 @@ jobs:
           PACK_JSON="$(pnpm pack --json)"
           TARBALL_NAME="$(node --input-type=module -e 'const pack = JSON.parse(process.argv[1]); console.log(pack.filename);' "$PACK_JSON")"
           TARBALL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
-          PACKAGE_PURL="$(node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
-
-          const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
-          const encodedName = encodeURIComponent(packageJson.name).replaceAll("%2F", "/");
-
-          console.log(`pkg:npm/${encodedName}@${packageJson.version}`);
-          NODE
-          )"
 
           sha256sum "$TARBALL_NAME" > "${TARBALL_NAME}.sha256"
 
           echo "tarball-name=${TARBALL_NAME}" >> "$GITHUB_OUTPUT"
           echo "tarball-sha256=${TARBALL_SHA256}" >> "$GITHUB_OUTPUT"
-          echo "tarball-subjects=$(printf '%s  %s\n' "$TARBALL_SHA256" "$PACKAGE_PURL" | base64 -w0)" >> "$GITHUB_OUTPUT"
 
       - name: Upload release tarball artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -221,21 +208,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  generate-slsa-provenance:
-    name: Generate SLSA provenance
-    needs: build-release-artifact
-    permissions:
-      actions: read
-      id-token: write
-      contents: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
-    with:
-      base64-subjects: ${{ needs.build-release-artifact.outputs.tarball-subjects }}
-      draft-release: true
-      provenance-name: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
-      upload-assets: true
-      upload-tag-name: ${{ needs.build-release-artifact.outputs.release-tag }}
-
   publish-npm:
     name: Publish to npm
     if:
@@ -244,12 +216,10 @@ jobs:
       needs.build-release-artifact.outputs.bootstrap-with-token == 'true') }}
     needs:
       - build-release-artifact
-      - generate-slsa-provenance
     runs-on: ubuntu-24.04
     environment: npm
     permissions:
-      contents: write
-      id-token: write
+      contents: read
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -290,17 +260,6 @@ jobs:
             exit 1
           fi
 
-      - name: Download SLSA provenance from draft release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
-          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
-        run: |
-          gh release download "$RELEASE_TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --pattern "$PROVENANCE_NAME" \
-            --dir "$RUNNER_TEMP"
-
       - name: Prepare npm publish inputs
         env:
           TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
@@ -310,19 +269,16 @@ jobs:
         working-directory: ${{ runner.temp }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          PROVENANCE_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}.intoto.jsonl
           TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
-        run: npm publish "./$TARBALL_NAME" --access public --provenance-file "./$PROVENANCE_NAME"
+        run: npm publish "./$TARBALL_NAME" --access public
 
   publish-github-release:
     name: Publish GitHub Release
     if:
       ${{ !cancelled() && needs.build-release-artifact.result == 'success' &&
-      needs.generate-slsa-provenance.result == 'success' && (needs.publish-npm.result == 'success'
-      || needs.publish-npm.result == 'skipped') }}
+      (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
     needs:
       - build-release-artifact
-      - generate-slsa-provenance
       - publish-npm
     runs-on: ubuntu-24.04
     permissions:
@@ -383,23 +339,15 @@ jobs:
           writeFileSync("release-notes.md", `${notes}\n`, "utf8");
           NODE
 
-      - name: Upload release assets
+      - name: Publish GitHub Release with assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
           TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
         run: |
-          gh release upload "$RELEASE_TAG" \
-            "$TARBALL_NAME" \
-            "${TARBALL_NAME}.sha256"
-
-      - name: Publish GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
-        run: |
-          gh release edit "$RELEASE_TAG" \
+          gh release create "$RELEASE_TAG" \
             --verify-tag \
             --title "$RELEASE_TAG" \
             --notes-file release-notes.md \
-            --draft=false
+            "$TARBALL_NAME" \
+            "${TARBALL_NAME}.sha256"
