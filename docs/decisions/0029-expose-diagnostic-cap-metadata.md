@@ -48,8 +48,7 @@ Failure results may include resource metadata equivalent to:
 
 ```ts
 type VersResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
+  { ok: true; value: T } | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
 
 interface VersFailureMetadata {
   diagnostics?: {

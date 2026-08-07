@@ -122,8 +122,7 @@ Reserved codes are exported as future or downstream vocabulary, but they are not
 export type VersReservedIssueCode = VersReservedCanonicalIssueCode | VersSupportIssueCode;
 
 export type VersReservedCanonicalIssueCode =
-  | "canonical.non_canonical_order"
-  | "canonical.invalid_comparator_sequence";
+  "canonical.non_canonical_order" | "canonical.invalid_comparator_sequence";
 
 export type VersSupportIssueCode = "support.unknown_type" | "support.unsupported_semantic";
 ```

@@ -81,8 +81,7 @@ The v0.1.0 reserved-code set is:
 
 ```ts
 export type VersReservedCanonicalIssueCode =
-  | "canonical.non_canonical_order"
-  | "canonical.invalid_comparator_sequence";
+  "canonical.non_canonical_order" | "canonical.invalid_comparator_sequence";
 
 export type VersSupportIssueCode = "support.unknown_type" | "support.unsupported_semantic";
 ```
