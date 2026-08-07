@@ -4,7 +4,6 @@
 
 [![NPM License](https://img.shields.io/npm/l/%40windlass%2Fvers-js)](LICENSE)
 [![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
-[![SLSA Build L3](./docs/slsa-build-l3-badge.svg)](https://slsa.dev/spec/v1.2/build-track-basics#build-l3)
 [![NPM Version](https://img.shields.io/npm/v/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
 [![NPM Last Update](https://img.shields.io/npm/last-update/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
 [![Node Current](https://img.shields.io/node/v/@windlass/vers-js)](package.json)
@@ -126,8 +125,7 @@ All three functions return discriminated Result types:
 
 ```typescript
 type VersResult<T> =
-  | { ok: true; value: T }
-  | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
+  { ok: true; value: T } | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
 ```
 
 Non-string inputs throw `TypeError`:
