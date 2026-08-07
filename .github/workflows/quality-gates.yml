@@ -61,6 +61,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Run tests
+        id: run-tests
         run: pnpm run test:coverage
 
       - name: Upload coverage reports to Codecov
@@ -75,7 +76,8 @@ jobs:
           verbose: true
 
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
+        # Upload on test success or failure; skip when tests never ran (earlier gate failed).
+        if: ${{ !cancelled() && steps.run-tests.conclusion != 'skipped' }}
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           disable_search: true
