@@ -185,7 +185,7 @@ are non-empty strings.
 ## Changelog Management
 
 - Maintain `CHANGELOG.md` according to
-  [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), but use the organization's Human
+  [Keep a Changelog 2.0.0](https://keepachangelog.com/en/2.0.0/), but use the organization's Human
   Era date convention for release headings (for example, `## [0.1.0] - 12026-06-13`).
 - Changelog entries are for users and downstream integrators. Summarize notable upgrade-relevant
   behavior; do not generate changelog entries by dumping commit logs.
