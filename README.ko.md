@@ -166,7 +166,7 @@ validateVers(123); // TypeError 발생
 - **[아키텍처 결정 기록](docs/decisions/)**: 설계 결정 및 근거(MADR 형식)
 - **[릴리즈 절차](docs/release.md)**: signed tag, npm Trusted Publishing, provenance, GitHub Release
   워크플로우
-- **[변경 기록](CHANGELOG.md)**: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 및 인류력
+- **[변경 기록](CHANGELOG.md)**: [Keep a Changelog](https://keepachangelog.com/en/2.0.0/) 및 인류력
   릴리즈 날짜 형식에 따라 유지관리하는, 사용자 대상 릴리즈 노트
 - **[기여 가이드](https://github.com/windlasstech/.github/blob/main/CONTRIBUTING.md)**:
   윈들러스(Windlass) 조직 공통 기여 절차, PR 기대사항, 변경 기록 워크플로우

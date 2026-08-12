@@ -307,7 +307,7 @@ against the same bundle bytes.
 - Windlass slsa-builder: <https://github.com/windlasstech/slsa-builder>
 - Windlass artifact attestations guide:
   <https://github.com/windlasstech/.github/blob/main/docs/security/artifact-attestations.md>
-- Keep a Changelog: <https://keepachangelog.com/en/1.1.0/>
+- Keep a Changelog: <https://keepachangelog.com/en/2.0.0/>
 - Windlass security policy: <https://github.com/windlasstech/.github/blob/main/SECURITY.md>
 - Windlass workflow hardening guide:
   <https://github.com/windlasstech/.github/blob/main/docs/security/workflow-hardening.md>

@@ -185,7 +185,7 @@ are non-empty strings.
 ## Changelog Management
 
 - Maintain `CHANGELOG.md` according to
-  [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), but use the organization's Human
+  [Keep a Changelog 2.0.0](https://keepachangelog.com/en/2.0.0/), but use the organization's Human
   Era date convention for release headings (for example, `## [0.1.0] - 12026-06-13`).
 - Changelog entries are for users and downstream integrators. Summarize notable upgrade-relevant
   behavior; do not generate changelog entries by dumping commit logs.
@@ -193,7 +193,11 @@ are non-empty strings.
   - **Category**: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`, or `None`
   - **User-facing note**: a short impact summary, or why no note is needed
 - Use `None` for changes with no direct user-facing impact, such as test cleanup, internal
-  refactoring, formatting, or CI-only maintenance.
+  refactoring, formatting, CI-only maintenance, or routine development toolchain pin bumps (for
+  example `devEngines.packageManager` and devDependency updates).
+- Record a development toolchain bump only when it changes build-from-source requirements (for
+  example a package-manager major upgrade that changes the lockfile format) or when it is
+  security-driven; use the category that matches the effect (`Changed` or `Security`).
 - During development, update only the `[Unreleased]` section when a PR has user-facing impact. Group
   entries by `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security`; do not create
   empty category sections.
