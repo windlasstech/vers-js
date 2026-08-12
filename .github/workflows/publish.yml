@@ -7,28 +7,23 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Release tag to publish, for example v0.1.1"
+        description:
+          "Existing signed release tag to publish (for example v0.1.2). Dispatch must run from the
+          tag ref itself; the verify job fails closed if release_tag does not match the selected
+          ref."
         required: true
         type: string
 
 permissions: {}
 
 jobs:
-  build-release-artifact:
-    name: Build release artifact
+  verify:
+    name: Verify release
     runs-on: ubuntu-24.04
-    environment: npm
-    outputs:
-      release-tag: ${{ steps.release.outputs.tag }}
-      package-name: ${{ steps.npm-package.outputs.name }}
-      package-version: ${{ steps.npm-package.outputs.version }}
-      package-exists: ${{ steps.npm-package.outputs.exists }}
-      package-version-exists: ${{ steps.npm-package.outputs.version_exists }}
-      bootstrap-with-token: ${{ steps.first-publish.outputs.bootstrap-with-token }}
-      tarball-name: ${{ steps.pack.outputs.tarball-name }}
-      tarball-sha256: ${{ steps.pack.outputs.tarball-sha256 }}
     permissions:
       contents: read
+    outputs:
+      release-tag: ${{ steps.release.outputs.tag }}
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -42,6 +37,20 @@ jobs:
           ref:
             ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
           persist-credentials: false
+
+      - name: Guard workflow_dispatch tag binding
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" != "tag" ] || [ "$RELEASE_TAG" != "$REF_NAME" ]; then
+            echo "workflow_dispatch must run from the tag ref itself, and release_tag must match the selected ref." >&2
+            echo "got ref_type=$REF_TYPE ref_name=$REF_NAME release_tag=$RELEASE_TAG" >&2
+            echo "The called reusable build workflow checks out the caller's github.ref, so a dispatch not originating from the tag ref would bind provenance identity to the wrong ref." >&2
+            exit 1
+          fi
 
       - name: Resolve release tag
         id: release
@@ -99,61 +108,6 @@ jobs:
           }
           NODE
 
-      - name: Check npm package publication state
-        id: npm-package
-        run: |
-          PACKAGE_NAME="$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).name')"
-          PACKAGE_VERSION="$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).version')"
-
-          echo "name=${PACKAGE_NAME}" >> "$GITHUB_OUTPUT"
-          echo "version=${PACKAGE_VERSION}" >> "$GITHUB_OUTPUT"
-
-          if pnpm view "${PACKAGE_NAME}" name --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          if pnpm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry "https://registry.npmjs.org" >/dev/null 2>&1; then
-            echo "version_exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "version_exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Report first-publish bootstrap fallback
-        id: first-publish
-        if: ${{ steps.npm-package.outputs.exists == 'false' }}
-        env:
-          HAS_NPM_TOKEN: ${{ secrets.NPM_TOKEN != '' }}
-        run: |
-          echo "bootstrap-with-token=${HAS_NPM_TOKEN}" >> "$GITHUB_OUTPUT"
-
-          if [ "${HAS_NPM_TOKEN}" = "true" ]; then
-            cat <<'EOF'
-          The npm package does not exist yet, but an NPM_TOKEN secret is present.
-          This workflow will publish the first version using the token, without provenance.
-          npm Trusted Publishing is unavailable for a package that has never been published,
-          so this token-based bootstrap is required for the first release.
-          EOF
-          else
-            cat <<'EOF'
-          The npm package does not exist yet and no NPM_TOKEN secret is present, so this workflow will skip npm publication.
-          Publish the first version manually from a maintainer-controlled environment:
-
-          Recommended bootstrap command after local release validation:
-            pnpm publish --access public
-
-          The GitHub Release, release tarball, and checksum will still be created for this signed tag.
-          EOF
-          fi
-
-      - name: Block already-published version
-        if: ${{ steps.npm-package.outputs.version_exists == 'true' }}
-        run: |
-          echo "${{ steps.npm-package.outputs.name }}@${{ steps.npm-package.outputs.version }} is already published on npm."
-          echo "Stopping before release creation to avoid publishing release artifacts for an already-published version."
-          exit 1
-
       - name: Install dependencies
         run: pnpm ci
 
@@ -184,102 +138,21 @@ jobs:
       - name: Verify runtime smoke tests
         run: pnpm run verify:runtime
 
-      - name: Pack release tarball
-        id: pack
-        run: |
-          set -euo pipefail
-
-          PACK_JSON="$(pnpm pack --json)"
-          TARBALL_NAME="$(node --input-type=module -e 'const pack = JSON.parse(process.argv[1]); console.log(pack.filename);' "$PACK_JSON")"
-          TARBALL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
-
-          sha256sum "$TARBALL_NAME" > "${TARBALL_NAME}.sha256"
-
-          echo "tarball-name=${TARBALL_NAME}" >> "$GITHUB_OUTPUT"
-          echo "tarball-sha256=${TARBALL_SHA256}" >> "$GITHUB_OUTPUT"
-
-      - name: Upload release tarball artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: npm-release-artifacts
-          path: |
-            ${{ steps.pack.outputs.tarball-name }}
-            ${{ steps.pack.outputs.tarball-name }}.sha256
-          if-no-files-found: error
-          retention-days: 7
-
-  publish-npm:
-    name: Publish to npm
-    if:
-      ${{ needs.build-release-artifact.outputs.package-version-exists == 'false' &&
-      (needs.build-release-artifact.outputs.package-exists == 'true' ||
-      needs.build-release-artifact.outputs.bootstrap-with-token == 'true') }}
-    needs:
-      - build-release-artifact
-    runs-on: ubuntu-24.04
-    environment: npm
+  publish:
+    name: Publish to npm via slsa-builder
+    needs: [verify]
     permissions:
       contents: read
+      id-token: write
+    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@4b3edf35c7f38599e30fe17e6ab3a84a6d94a7d2 # main, pre-release
+    with:
+      package-directory: "."
+      access: public
+      dist-tag: latest
 
-    steps:
-      - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
-        with:
-          egress-policy: audit
-
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 22
-          registry-url: "https://registry.npmjs.org"
-          package-manager-cache: false
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Show publish tool versions
-        run: |
-          node --version
-          npm --version
-
-      - name: Download npm release tarball artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: npm-release-artifacts
-
-      - name: Verify npm release tarball checksum
-        env:
-          EXPECTED_SHA256: ${{ needs.build-release-artifact.outputs.tarball-sha256 }}
-          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
-        run: |
-          ACTUAL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
-
-          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
-            echo "Tarball checksum mismatch for $TARBALL_NAME" >&2
-            echo "expected: $EXPECTED_SHA256" >&2
-            echo "actual:   $ACTUAL_SHA256" >&2
-            exit 1
-          fi
-
-      - name: Prepare npm publish inputs
-        env:
-          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
-        run: cp "$TARBALL_NAME" "$RUNNER_TEMP/$TARBALL_NAME"
-
-      - name: Publish to npm
-        working-directory: ${{ runner.temp }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
-        run: npm publish "./$TARBALL_NAME" --access public
-
-  publish-github-release:
+  release:
     name: Publish GitHub Release
-    if:
-      ${{ !cancelled() && needs.build-release-artifact.result == 'success' &&
-      (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
-    needs:
-      - build-release-artifact
-      - publish-npm
+    needs: [verify, publish]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -293,17 +166,93 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.build-release-artifact.outputs.release-tag }}
+          ref: ${{ needs.verify.outputs.release-tag }}
           persist-credentials: false
 
-      - name: Download npm release tarball artifact
+      - name: Download release tarball artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: npm-release-artifacts
+          name: js-ts-npm-package-tarball-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Download provenance bundle artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: js-ts-npm-provenance-bundle-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Verify tarball digests
+        env:
+          TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
+          EXPECTED_SHA256: ${{ needs.publish.outputs.package-tarball-sha256 }}
+          EXPECTED_SHA512: ${{ needs.publish.outputs.package-tarball-sha512 }}
+        run: |
+          ACTUAL_SHA256="$(sha256sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
+          ACTUAL_SHA512="$(sha512sum "$TARBALL_NAME" | cut -d ' ' -f 1)"
+
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ] || [ "$ACTUAL_SHA512" != "$EXPECTED_SHA512" ]; then
+            echo "Tarball digest mismatch for $TARBALL_NAME" >&2
+            echo "sha256 expected: $EXPECTED_SHA256" >&2
+            echo "sha256 actual:   $ACTUAL_SHA256" >&2
+            echo "sha512 expected: $EXPECTED_SHA512" >&2
+            echo "sha512 actual:   $ACTUAL_SHA512" >&2
+            exit 1
+          fi
+
+      - name: Verify provenance bundle subject
+        env:
+          TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
+          PACKAGE_NAME: ${{ needs.publish.outputs.package-name }}
+          PACKAGE_VERSION: ${{ needs.publish.outputs.package-version }}
+          EXPECTED_SHA256: ${{ needs.publish.outputs.package-tarball-sha256 }}
+          EXPECTED_SHA512: ${{ needs.publish.outputs.package-tarball-sha512 }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const tarballName = process.env.TARBALL_NAME;
+          const packageName = process.env.PACKAGE_NAME;
+          const packageVersion = process.env.PACKAGE_VERSION;
+          const expectedSha256 = process.env.EXPECTED_SHA256;
+          const expectedSha512 = process.env.EXPECTED_SHA512;
+
+          const envelopeLine = readFileSync(`${tarballName}.intoto.jsonl`, "utf8").trim();
+          const envelope = JSON.parse(envelopeLine);
+          const payload = JSON.parse(Buffer.from(envelope.payload, "base64").toString("utf8"));
+
+          if (!Array.isArray(payload.subject) || payload.subject.length !== 1) {
+            throw new Error("provenance payload subject must be an array of length 1");
+          }
+
+          const [subject] = payload.subject;
+
+          // slsa-builder names the subject with the npm package PURL (ADR 0064), not the tarball
+          // filename. PURL text passes through unchanged for lowercase alphanumeric and -._~.
+          const expectedSubjectName = packageName.startsWith("@")
+            ? `pkg:npm/%40${packageName.slice(1)}@${packageVersion}`
+            : `pkg:npm/${packageName}@${packageVersion}`;
+
+          if (subject.name !== expectedSubjectName) {
+            throw new Error(`provenance subject name ${subject.name} does not match ${expectedSubjectName}`);
+          }
+
+          if (subject.digest?.sha512 !== expectedSha512) {
+            throw new Error("provenance subject sha512 does not match the verified tarball digest");
+          }
+
+          if (subject.digest?.sha256 !== expectedSha256) {
+            throw new Error("provenance subject sha256 does not match the verified tarball digest");
+          }
+          NODE
+
+      - name: Write checksum sidecars
+        env:
+          TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
+        run: |
+          sha256sum "$TARBALL_NAME" > "${TARBALL_NAME}.sha256"
+          sha512sum "$TARBALL_NAME" > "${TARBALL_NAME}.sha512"
 
       - name: Extract release notes
         env:
-          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
+          RELEASE_TAG: ${{ needs.verify.outputs.release-tag }}
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync, writeFileSync } from "node:fs";
@@ -342,12 +291,14 @@ jobs:
       - name: Publish GitHub Release with assets
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.build-release-artifact.outputs.release-tag }}
-          TARBALL_NAME: ${{ needs.build-release-artifact.outputs.tarball-name }}
+          RELEASE_TAG: ${{ needs.verify.outputs.release-tag }}
+          TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
         run: |
           gh release create "$RELEASE_TAG" \
             --verify-tag \
             --title "$RELEASE_TAG" \
             --notes-file release-notes.md \
             "$TARBALL_NAME" \
-            "${TARBALL_NAME}.sha256"
+            "${TARBALL_NAME}.sha256" \
+            "${TARBALL_NAME}.sha512" \
+            "${TARBALL_NAME}.intoto.jsonl"
