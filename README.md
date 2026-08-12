@@ -4,6 +4,7 @@
 
 [![NPM License](https://img.shields.io/npm/l/%40windlass%2Fvers-js)](LICENSE)
 [![SemVer Versioning](https://img.shields.io/badge/version_scheme-SemVer-0097a7)](https://semver.org/)
+[![SLSA Build L3](./docs/slsa-build-l3-badge.svg)](https://slsa.dev/spec/v1.2/build-track-basics#build-l3)
 [![NPM Version](https://img.shields.io/npm/v/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
 [![NPM Last Update](https://img.shields.io/npm/last-update/@windlass/vers-js)](https://www.npmjs.com/package/@windlass/vers-js)
 [![Node Current](https://img.shields.io/node/v/@windlass/vers-js)](package.json)
@@ -25,6 +26,8 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
 [![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
 [![Tested with fast-check](https://img.shields.io/badge/tested%20with-fast%E2%80%91check%20%F0%9F%90%92-%23282ea9?flat&logoSize=auto&labelColor=%231b1b1d)](https://fast-check.dev/)
+
+[![built with slsa-builder](https://raw.githubusercontent.com/windlasstech/slsa-builder/main/assets/badges/built-with-slsa-builder-for-the-badge.svg)](https://github.com/windlasstech/slsa-builder)
 
 English | [한국어](README.ko.md)
 

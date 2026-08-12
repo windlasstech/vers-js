@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Release pipeline now publishes through the Windlass
+  [slsa-builder](https://github.com/windlasstech/slsa-builder) npm SLSA3 reusable workflow with
+  tokenless npm Trusted Publishing, attaching SLSA v1 provenance as an npm registry attestation;
+  GitHub Releases now carry the signed provenance bundle (`.intoto.jsonl`) alongside the tarball and
+  its SHA-256/SHA-512 checksums. No package behavior change.
+
 ## [0.1.1] - 12026-06-16
 
 ### Changed
