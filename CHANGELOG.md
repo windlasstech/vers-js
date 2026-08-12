@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 12026-08-13
+
 ### Changed
 
 - Release pipeline now publishes through the Windlass
@@ -40,6 +42,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   checks, and runtime smoke tests for Node.js, Deno, and Bun.
 - ESM-only, root-only package publishing with named exports and no runtime dependencies.
 
-[Unreleased]: https://github.com/windlasstech/vers-js/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/windlasstech/vers-js/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/windlasstech/vers-js/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/windlasstech/vers-js/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/windlasstech/vers-js/releases/tag/v0.1.0
