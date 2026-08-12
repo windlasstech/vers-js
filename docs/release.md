@@ -5,14 +5,21 @@ GitHub. It implements
 [ADR-0051](decisions/0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md), which
 documents the trust boundary for release publication.
 
+> [!NOTE]  
+> The pipeline described here uses the Windlass slsa-builder reusable workflow as the provenance
+> producer. That changes the provenance-generation mechanism recorded in ADR-0051's implementation
+> context. Accepted ADR bodies are immutable, so ADR-0051 stays as written; the maintainer should
+> evaluate a short follow-up ADR that records the slsa-builder adoption.
+
 The release model is:
 
 1. prepare a release PR with the version and changelog updates;
 2. merge the release PR into `main` after all required checks pass;
 3. create and push a signed annotated Git tag from the updated `main` commit;
-4. let the tag-triggered GitHub Actions workflow publish to npm with Trusted Publishing when
-   eligible and create the GitHub Release. If the tag workflow needs to be rerun manually before npm
-   publication succeeds, use the workflow's `release_tag` input with the existing signed tag name.
+4. let the tag-triggered GitHub Actions workflow verify the tagged commit, publish to npm through
+   the Windlass slsa-builder reusable workflow with npm Trusted Publishing, and create the GitHub
+   Release. If the tag workflow needs to be rerun manually before npm publication succeeds, use the
+   workflow's `release_tag` input with the existing signed tag name, started from the tag ref.
 
 This keeps the changelog human-curated, the source revision signed, and the npm publication
 tokenless and provenance-backed.
@@ -22,27 +29,44 @@ tokenless and provenance-backed.
 Only a maintainer with repository release permissions and npm package publishing authority may
 perform a release.
 
-Before the first automated npm release, configure npm Trusted Publishing for the `@windlass/vers-js`
-package on npmjs.com:
+npm Trusted Publishing for the `@windlass/vers-js` package is configured on npmjs.com with:
 
 - publisher: GitHub Actions;
 - organization or user: `windlasstech`;
 - repository: `vers-js`;
 - workflow filename: `publish.yml`;
-- environment name: the GitHub environment used by the publish job, for example `npm`;
 - allowed action: `npm publish`.
 
-After Trusted Publishing is verified, use npm package settings that require two-factor
-authentication and disallow traditional publish tokens. Trusted Publishing uses short-lived OIDC
-credentials and does not require an `NPM_TOKEN` secret.
+npm package settings require two-factor authentication and disallow traditional publish tokens.
+Trusted Publishing uses short-lived OIDC credentials and does not require an `NPM_TOKEN` secret.
 
-### First-publish bootstrap exception
+### Trusted Publisher environment model
+
+The release pipeline declares no GitHub environment anywhere:
+
+- Reusable-workflow caller jobs cannot declare `environment`; this is a GitHub platform restriction.
+- The OIDC token is minted inside slsa-builder's internal publish job, which declares no
+  environment, so the token carries no environment claim.
+- For `workflow_call` publishes, npm validates the calling workflow's repository and workflow
+  filename claims. The Trusted Publisher settings above therefore stay valid without an environment
+  name.
+
+> [!WARNING]  
+> The npmjs.com Trusted Publisher environment field for `@windlass/vers-js` must be left blank. If
+> an environment name is still set, for example `npm` from the pre-slsa-builder configuration,
+> publish authentication fails. Clearing the field is a maintainer action item before the first
+> slsa-builder-backed release.
+
+### First-publish bootstrap (historical)
+
+> [!NOTE]  
+> This section is historical. The 0.1.x first-publish bootstrap was completed with v0.1.1
+> (12026-06-16), and npm Trusted Publishing is now configured. The record stays for archaeology; it
+> is not the current release path.
 
 npm Trusted Publishing can only be configured for a package that already exists on the npm registry.
-The `@windlass/vers-js` v0.1.0 first release therefore uses a one-time maintainer-controlled local
-publish before Trusted Publishing is configured.
-
-For v0.1.0 only, before this SLSA-targeted release workflow becomes the normal path:
+The first `@windlass/vers-js` release therefore used a one-time maintainer-controlled local publish
+before Trusted Publishing was configured:
 
 1. complete the release PR and local release preparation steps below;
 2. publish from a maintainer-controlled local environment with npm account 2FA;
@@ -51,29 +75,25 @@ For v0.1.0 only, before this SLSA-targeted release workflow becomes the normal p
    because the version is already published;
 5. use Trusted Publishing for subsequent npm releases.
 
-The local first-publish command is:
+The local first-publish command was:
 
 ```bash
 pnpm publish --access public --no-git-checks
 ```
 
-Do not keep token-based publishing as the normal release path after Trusted Publishing is
-configured. The current release workflow skips only the npm Trusted Publishing job when the package
-cannot be published by automation; the SLSA provenance and GitHub Release jobs still run for the
-signed tag.
+Token-based publishing is retired as a release path. Do not reintroduce publish tokens without an
+explicit maintainer decision and a new ADR.
 
 Release workflows must follow Windlass supply-chain requirements:
 
 - run on GitHub-hosted runners when npm provenance or release attestations are claimed;
-- use explicit minimal permissions, with `id-token: write` only on the npm publish job and SLSA
-  provenance job;
+- use explicit minimal permissions, with `id-token: write` only where OIDC credentials are minted;
 - use SHA-pinned third-party actions, except where Windlass policy documents a specific exception;
 - start jobs with `step-security/harden-runner` in audit mode;
 - avoid dependency caching in release builds;
-- generate SLSA Build L3 provenance for the release npm tarball with the SLSA GitHub Generator
-  generic workflow;
-- stage GitHub Release assets in a draft release before publishing the release, so immutable
-  releases contain the npm tarball, checksum, and provenance assets at publication time.
+- generate SLSA Build L3 provenance for the release npm tarball with the Windlass slsa-builder
+  reusable workflow: a Go-native signer, a Windlass SLSA v1 predicate, and the npm registry
+  attestation as the canonical distribution.
 
 ## Release PR checklist
 
@@ -166,122 +186,72 @@ explicit push option:
 pnpm run release:prepare -- --tag --push
 ```
 
-## Tag-triggered npm publish workflow
+## Tag-triggered publish workflow
 
 The publish workflow is defined in `.github/workflows/publish.yml` and runs for release tags
-matching `v*`. It can also be started manually with the `workflow_dispatch` `release_tag` input,
-which must name the existing signed tag to publish.
+matching `v*`. It can also be started manually with the `workflow_dispatch` `release_tag` input.
 
-The workflow must verify the release before publishing:
+> [!IMPORTANT]  
+> A manual dispatch must be started from the tag ref itself: select the release tag in the dispatch
+> ref picker, then pass the same tag name as `release_tag`. The verify job fails closed unless
+> `release_tag` equals the selected tag ref, because the reusable workflow builds the caller's
+> `github.ref` and the provenance identity must bind to the signed tag.
 
-1. check out the tagged commit and install dependencies from the committed pnpm lockfile;
-2. run formatting, linting, type-checking, tests, coverage, package checks, and runtime smoke
-   checks;
-3. verify that the tag version matches `package.json` and that the matching changelog section
-   exists;
-4. pack the npm release tarball once with `pnpm pack --json`;
-5. generate SLSA Build L3 provenance for the tarball digest and upload it to a draft GitHub Release;
-6. download the SLSA provenance and verify the tarball checksum before npm publication;
-7. publish that exact tarball to npm from outside the repository with
-   `npm publish --provenance-file`, when the package exists;
-8. upload the same tarball and its SHA-256 checksum to the draft GitHub Release;
-9. publish the GitHub Release after npm publish succeeds or is skipped.
+The workflow has three jobs:
 
-> [!WARNING] When passing subjects to the SLSA generic generator for npm publication, keep the
-> digest tied to the exact packed tarball, but name the subject with the npm package purl rather
-> than the tarball filename. The generator expects `sha256sum`-formatted input, so the workflow
-> constructs a line like:
->
-> ```text
-> <tarball-sha256>  pkg:npm/%40windlass/vers-js@X.Y.Z
-> ```
->
-> Do not pass raw `sha256sum windlass-vers-js-X.Y.Z.tgz` output as the provenance subject for
-> `npm publish --provenance-file`. That would name the subject `windlass-vers-js-X.Y.Z.tgz`; npm
-> validates the external provenance against the package identity and rejects that mismatch with a
-> `Provenance subject ... does not match the package` error.
+1. `verify`: runs the full repository verification sequence on the tagged commit (`fmt:check`,
+   `lint:ts:github`, `lint:md`, `typecheck`, `test`, `test:coverage`, `build`, `verify:package`,
+   `verify:runtime`) and checks that the tag name, the `package.json` version, and the
+   `CHANGELOG.md` Human Era version heading agree.
+2. `publish`: calls the slsa-builder reusable workflow
+   `windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml`, pinned by full commit
+   SHA with a `# main, pre-release` comment until slsa-builder cuts releases. Inputs are
+   `package-directory: "."`, `access: public`, and `dist-tag: latest`. The reserved inputs
+   `release-asset-mode`, `release-tag`, `provenance-sidecar`, and `linked-artifact-metadata` are
+   intentionally unset; the reusable workflow fails closed if they are set.
+3. `release`: creates the GitHub Release from the signed tag with the release assets listed below.
 
-The GitHub Release job extracts the matching `CHANGELOG.md` version section into `release-notes.md`
-and passes that file to `gh release edit --verify-tag` when publishing the draft release created by
-the SLSA provenance job.
+### Provenance model
 
-Use
-`npm publish "./windlass-vers-js-X.Y.Z.tgz" --access public --provenance-file "./windlass-vers-js-X.Y.Z.tgz.intoto.jsonl"`
-from `${{ runner.temp }}` in the Trusted Publishing job, where the tarball and SLSA provenance are
-copied outside the repository before publication.
+Provenance is generated and signed by slsa-builder's Go-native sigstore-go DSSE signer using the
+Windlass SLSA v1 predicate. The statement covers the exact packed tarball as one PURL subject
+carrying both sha512 and sha256 digests.
 
-> [!IMPORTANT] This publish step intentionally uses npm rather than pnpm because pnpm does not
-> currently support npm's `--provenance-file` option. npm Trusted Publishing with OIDC automatically
-> creates npm provenance, but that automatic provenance path is not the SLSA Build L3 provenance
-> path for this release artifact. The SLSA GitHub Generator provenance must be passed to npm during
-> the publish transaction to attach that Build L3 provenance to the npm registry artifact. Running
-> npm from outside the repository avoids the development-only `devEngines.packageManager` guard
-> while still publishing the exact pnpm-packed tarball with the SLSA provenance generated earlier in
-> the workflow.
+The bundle is attached to the npm registry attestation with `npm publish --provenance-file` inside
+the reusable workflow. Publication uses npm rather than pnpm because pnpm does not support the
+`--provenance-file` option. GitHub Attestations API storage is disabled on this path; the npm
+registry attestation is the canonical distribution.
 
-The SLSA provenance job uses
-`slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml` referenced by a
-semantic version tag, not a commit SHA. This is the intentional Windlass exception to SHA pinning
-because `slsa-verifier` requires the trusted builder identity to use the SLSA generator tag.
-
-If the package does not yet exist on npm, the workflow skips only the `publish-npm` job and prints
-first-publish bootstrap guidance for the maintainer to review. The GitHub Release still publishes
-after the build and SLSA provenance jobs succeed. If the exact tag version is already published on
-npm, the workflow fails before provenance or GitHub Release publication.
-
-Token-based fallback should be used only as an exception because it requires long-lived credential
-handling, manual rotation, and an explicit maintainer procedure outside the normal pnpm Trusted
-Publishing path.
-
-## GitHub Release creation
-
-Publish the GitHub Release after the SLSA provenance job succeeds and after the npm publish job
-either succeeds or is intentionally skipped because the npm package does not exist yet. The workflow
-does not publish a GitHub Release if npm publish runs and fails, or if the exact version is already
-published.
-
-The release body should come from the matching `CHANGELOG.md` version section. Do not use generated
-commit logs as the release notes.
-
-The final release step should use the already pushed signed tag and publish the draft release
-created by the SLSA provenance job:
-
-> [!NOTE] The workflow does not call `gh release create` in the GitHub Release job because the SLSA
-> provenance job already creates or reuses the draft release when it runs with
-> `upload-assets: true`, `draft-release: true`, and `upload-tag-name` set to the release tag. The
-> later `gh release upload` step adds the tarball and checksum to that existing draft release, and
-> `gh release edit --draft=false` publishes the same release.
-
-```bash
-gh release edit "v${VERSION}" \
-  --verify-tag \
-  --title "v${VERSION}" \
-  --notes-file release-notes.md \
-  --draft=false
-```
-
-Using `--verify-tag` prevents GitHub CLI from referencing a tag that does not exist on the remote.
+### GitHub Release assets
 
 Expected public release assets are:
 
-- `windlass-vers-js-X.Y.Z.tgz` — the exact npm tarball published by CI;
-- `windlass-vers-js-X.Y.Z.tgz.sha256` — SHA-256 checksum for the tarball;
-- `windlass-vers-js-X.Y.Z.tgz.intoto.jsonl` — SLSA Build L3 provenance generated by the SLSA GitHub
-  Generator generic workflow.
+- `windlass-vers-js-X.Y.Z.tgz`: the exact npm tarball published by the workflow;
+- `windlass-vers-js-X.Y.Z.tgz.sha256`: SHA-256 checksum for the tarball;
+- `windlass-vers-js-X.Y.Z.tgz.sha512`: SHA-512 checksum for the tarball;
+- `windlass-vers-js-X.Y.Z.tgz.intoto.jsonl`: the signed SLSA provenance bundle.
 
-After release publication, verify the npm provenance, GitHub release attestation, and SLSA
-provenance:
+The release job downloads the run-scoped provenance-bundle artifact
+(`js-ts-npm-provenance-bundle-<run_id>-<run_attempt>`), verifies that the bundle's single subject is
+named with the npm package PURL (for example `pkg:npm/%40windlass/vers-js@X.Y.Z`) and that its
+digests match the published tarball digests before attaching it, and fails closed on mismatch. The
+`.intoto.jsonl` release asset is the identical bytes, published for offline verification and
+archival. This caller-side asset upload is an interim measure until slsa-builder provides
+first-class release-asset distribution through the reserved `release-asset-mode` and
+`provenance-sidecar` inputs.
 
-```bash
-pnpm audit signatures
-gh release verify "v${VERSION}"
-slsa-verifier verify-artifact "windlass-vers-js-${VERSION}.tgz" \
-  --provenance-path "windlass-vers-js-${VERSION}.tgz.intoto.jsonl" \
-  --source-uri github.com/windlasstech/vers-js \
-  --source-tag "v${VERSION}"
-```
+The release body comes from the matching `CHANGELOG.md` version section. Do not use generated commit
+logs as the release notes.
 
 ## Failure recovery
+
+The slsa-builder publish job converges to one of four states:
+
+1. version absent from the registry: publish once;
+2. same-run retry after a failed publish step: idempotent success without a second publish;
+3. a new run for an already-published version: fail closed with `foreign-conflict`, and the GitHub
+   Release job is skipped because it needs the publish job;
+4. indeterminate registry read-back: fail closed with zero mutations.
 
 Before npm publish succeeds, fix the failed release workflow and rerun it against the same signed
 tag when possible. Do not move or recreate a published release tag without an explicit maintainer
@@ -291,13 +261,36 @@ After npm publish succeeds, the npm version is immutable for normal release purp
 Release creation fails after npm publish:
 
 1. keep the npm package version as published;
-2. rerun only the GitHub Release creation step, or create the release manually from the existing
-   signed tag;
+2. recreate the release from the existing signed tag;
 3. use the matching `CHANGELOG.md` section as the release body.
 
 If npm publish succeeds with a serious release-blocking defect, follow npm and Windlass security
 policies for deprecation, advisory publication, or a follow-up patch release. Do not assume the
 published version can be reused.
+
+## Post-release verification
+
+After release publication, verify the npm registry attestation and package signatures.
+
+Inspect the registry attestation for the published version:
+
+```bash
+npm view "@windlass/vers-js@${VERSION}" dist attestations --json
+```
+
+> [!WARNING]  
+> Run this npm command outside the repository checkout. The repository's `devEngines.packageManager`
+> guard allows pnpm only, so the npm CLI fails inside the project.
+
+Verify package signatures with pnpm:
+
+```bash
+pnpm audit signatures
+```
+
+Consumers can fetch and verify the registry attestation for the exact tarball digest with pacote or
+`npm audit signatures`. The `.intoto.jsonl` release asset enables equivalent offline verification
+against the same bundle bytes.
 
 ## References
 
@@ -309,7 +302,7 @@ published version can be reused.
   <https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-tags>
 - GitHub Releases:
   <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository>
-- SLSA GitHub Generator: <https://github.com/slsa-framework/slsa-github-generator>
+- Windlass slsa-builder: <https://github.com/windlasstech/slsa-builder>
 - Windlass artifact attestations guide:
   <https://github.com/windlasstech/.github/blob/main/docs/security/artifact-attestations.md>
 - Keep a Changelog: <https://keepachangelog.com/en/1.1.0/>
