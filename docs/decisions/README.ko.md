@@ -88,23 +88,29 @@ ADR은 중요한 아키텍처 결정과 그 맥락, 결과를 담은 문서입�
 | [0039](0039-use-oxfmt-for-v1-formatting.md)                                 | v1 포맷팅용으로 Oxfmt 사용                            | accepted |
 | [0040](0040-use-node-22-lts-and-oxc-aligned-typescript-baselines.md)        | Node 22 LTS 및 Oxc에 적합한 TypeScript 기준선 사용    | accepted |
 
-### 최종 사양 고정(ADR-0041–0053)
+### 최종 사양 고정(ADR-0041–0050, 0052–0053)
 
-| ADR                                                                           | 제목                                              | 상태     |
-| ----------------------------------------------------------------------------- | ------------------------------------------------- | -------- |
-| [0041](0041-pin-v0-1-0-vers-spec-snapshot.md)                                 | v0.1.0 VERS 사양 스냅샷 고정                      | accepted |
-| [0042](0042-separate-core-and-reserved-issue-codes.md)                        | 핵심 및 예약 이슈 코드 분리                       | accepted |
-| [0043](0043-use-resource-input-too-long-issue-code.md)                        | resource.input_too_long 이슈 코드 사용            | accepted |
-| [0044](0044-use-presence-based-diagnostic-truncation-metadata.md)             | 존재 기반 진단 잘라내기 메타데이터 사용           | accepted |
-| [0045](0045-use-v0-1-0-resource-limit-values.md)                              | v0.1.0 리소스 제한 값 사용                        | accepted |
-| [0046](0046-separate-official-conformance-and-project-diagnostic-fixtures.md) | 공식 적합성 및 프로젝트 진단 픽스처 분리          | accepted |
-| [0047](0047-use-vitest-v8-coverage-and-codecov-reporting.md)                  | Vitest V8 커버리지 및 Codecov 리포팅 사용         | accepted |
-| [0048](0048-use-separated-vitest-test-files.md)                               | 분리된 Vitest 테스트 파일 사용                    | accepted |
-| [0049](0049-use-devengines-package-manager-for-pnpm-pinning.md)               | pnpm 고정에 devEngines.packageManager 사용        | accepted |
-| [0050](0050-use-named-exports-only.md)                                        | named export만 사용                               | accepted |
-| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)       | 릴리즈에 signed tag와 npm Trusted Publishing 사용 | accepted |
-| [0052](0052-use-fast-check-for-property-based-testing.md)                     | 속성 기반 테스트에 fast-check 사용                | accepted |
-| [0053](0053-typescript-7-toolchain-migration.md)                              | TypeScript 7 도구 체인 마이그레이션               | accepted |
+| ADR                                                                           | 제목                                       | 상태     |
+| ----------------------------------------------------------------------------- | ------------------------------------------ | -------- |
+| [0041](0041-pin-v0-1-0-vers-spec-snapshot.md)                                 | v0.1.0 VERS 사양 스냅샷 고정               | accepted |
+| [0042](0042-separate-core-and-reserved-issue-codes.md)                        | 핵심 및 예약 이슈 코드 분리                | accepted |
+| [0043](0043-use-resource-input-too-long-issue-code.md)                        | resource.input_too_long 이슈 코드 사용     | accepted |
+| [0044](0044-use-presence-based-diagnostic-truncation-metadata.md)             | 존재 기반 진단 잘라내기 메타데이터 사용    | accepted |
+| [0045](0045-use-v0-1-0-resource-limit-values.md)                              | v0.1.0 리소스 제한 값 사용                 | accepted |
+| [0046](0046-separate-official-conformance-and-project-diagnostic-fixtures.md) | 공식 적합성 및 프로젝트 진단 픽스처 분리   | accepted |
+| [0047](0047-use-vitest-v8-coverage-and-codecov-reporting.md)                  | Vitest V8 커버리지 및 Codecov 리포팅 사용  | accepted |
+| [0048](0048-use-separated-vitest-test-files.md)                               | 분리된 Vitest 테스트 파일 사용             | accepted |
+| [0049](0049-use-devengines-package-manager-for-pnpm-pinning.md)               | pnpm 고정에 devEngines.packageManager 사용 | accepted |
+| [0050](0050-use-named-exports-only.md)                                        | named export만 사용                        | accepted |
+| [0052](0052-use-fast-check-for-property-based-testing.md)                     | 속성 기반 테스트에 fast-check 사용         | accepted |
+| [0053](0053-typescript-7-toolchain-migration.md)                              | TypeScript 7 도구 체인 마이그레이션        | accepted |
+
+### 릴리스와 발행(ADR-0051, 0054–)
+
+| ADR                                                                     | 제목                                              | 상태     |
+| ----------------------------------------------------------------------- | ------------------------------------------------- | -------- |
+| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md) | 릴리즈에 signed tag와 npm Trusted Publishing 사용 | accepted |
+| [0054](0054-use-slsa-builder-as-release-provenance-producer.md)         | 릴리스 provenance 생성기로 slsa-builder 사용      | accepted |
 
 ## 새 ADR 추가하기
 

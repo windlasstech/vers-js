@@ -7,9 +7,11 @@ documents the trust boundary for release publication.
 
 > [!NOTE]  
 > The pipeline described here uses the Windlass slsa-builder reusable workflow as the provenance
-> producer. That changes the provenance-generation mechanism recorded in ADR-0051's implementation
-> context. Accepted ADR bodies are immutable, so ADR-0051 stays as written; the maintainer should
-> evaluate a short follow-up ADR that records the slsa-builder adoption.
+> producer. That changes the provenance-generation mechanism assumed when
+> [ADR-0051](decisions/0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md) was written.
+> Accepted ADR bodies are immutable, so ADR-0051 stays as written; the slsa-builder adoption is
+> recorded separately in
+> [ADR-0054](decisions/0054-use-slsa-builder-as-release-provenance-producer.md).
 
 The release model is:
 
