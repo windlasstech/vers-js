@@ -193,7 +193,11 @@ are non-empty strings.
   - **Category**: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`, or `None`
   - **User-facing note**: a short impact summary, or why no note is needed
 - Use `None` for changes with no direct user-facing impact, such as test cleanup, internal
-  refactoring, formatting, or CI-only maintenance.
+  refactoring, formatting, CI-only maintenance, or routine development toolchain pin bumps (for
+  example `devEngines.packageManager` and devDependency updates).
+- Record a development toolchain bump only when it changes build-from-source requirements (for
+  example a package-manager major upgrade that changes the lockfile format) or when it is
+  security-driven; use the category that matches the effect (`Changed` or `Security`).
 - During development, update only the `[Unreleased]` section when a PR has user-facing impact. Group
   entries by `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security`; do not create
   empty category sections.
