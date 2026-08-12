@@ -17,6 +17,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   GitHub Releases now carry the signed provenance bundle (`.intoto.jsonl`) alongside the tarball and
   its SHA-256/SHA-512 checksums. No package behavior change.
 
+### Security
+
+- CVE-2026-59195: raised the pinned development pnpm toolchain to a version not affected by the
+  `configDependencies` lockfile path traversal (fixed upstream in pnpm 10.34.4 and 11.8.0). The pin
+  is development-only; consumers of the published package are not affected.
+
 ## [0.1.1] - 12026-06-16
 
 ### Changed
