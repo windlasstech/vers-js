@@ -8,9 +8,9 @@ on:
     inputs:
       release_tag:
         description:
-          "Existing signed release tag to publish (for example v0.1.2). Dispatch must run from the
-          tag ref itself; the verify job fails closed if release_tag does not match the selected
-          ref."
+          "Existing signed release tag to publish (for example v0.1.2). The reusable workflow builds
+          the tag content via its source-ref input regardless of the dispatch ref, and provenance
+          binds to the tag commit."
         required: true
         type: string
 
@@ -38,17 +38,14 @@ jobs:
             ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
           persist-credentials: false
 
-      - name: Guard workflow_dispatch tag binding
+      - name: Guard workflow_dispatch release tag shape
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
-          REF_TYPE: ${{ github.ref_type }}
-          REF_NAME: ${{ github.ref_name }}
         run: |
-          if [ "$REF_TYPE" != "tag" ] || [ "$RELEASE_TAG" != "$REF_NAME" ]; then
-            echo "workflow_dispatch must run from the tag ref itself, and release_tag must match the selected ref." >&2
-            echo "got ref_type=$REF_TYPE ref_name=$REF_NAME release_tag=$RELEASE_TAG" >&2
-            echo "The called reusable build workflow checks out the caller's github.ref, so a dispatch not originating from the tag ref would bind provenance identity to the wrong ref." >&2
+          if ! [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "release_tag must name an existing signed release tag (for example v0.1.2), got: $RELEASE_TAG" >&2
+            echo "The reusable workflow builds the tag content via its source-ref input and fails closed if the tag does not resolve." >&2
             exit 1
           fi
 
@@ -144,9 +141,12 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@f7a164409a13906effabcab4141f6a0a6ede7374 # main, pre-release
+    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@496e40e5ea983cd6933de0dec6b2658c6ccb4db6 # main, pre-release
     with:
       package-directory: "."
+      source-ref:
+        ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.release_tag)
+        || '' }}
       access: public
       dist-tag: latest
 
