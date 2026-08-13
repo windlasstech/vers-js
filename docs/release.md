@@ -20,8 +20,9 @@ The release model is:
 3. create and push a signed annotated Git tag from the updated `main` commit;
 4. let the tag-triggered GitHub Actions workflow verify the tagged commit, publish to npm through
    the Windlass slsa-builder reusable workflow with npm Trusted Publishing, and create the GitHub
-   Release. If the tag workflow needs to be rerun manually before npm publication succeeds, use the
-   workflow's `release_tag` input with the existing signed tag name, started from the tag ref.
+   Release. If the tag workflow needs to be rerun manually before npm publication succeeds, dispatch
+   it from any ref (for example `main`, to pick up pipeline fixes) with the `release_tag` input
+   naming the existing signed tag; the reusable workflow still builds the tag's content.
 
 This keeps the changelog human-curated, the source revision signed, and the npm publication
 tokenless and provenance-backed.
@@ -194,10 +195,14 @@ The publish workflow is defined in `.github/workflows/publish.yml` and runs for 
 matching `v*`. It can also be started manually with the `workflow_dispatch` `release_tag` input.
 
 > [!IMPORTANT]  
-> A manual dispatch must be started from the tag ref itself: select the release tag in the dispatch
-> ref picker, then pass the same tag name as `release_tag`. The verify job fails closed unless
-> `release_tag` equals the selected tag ref, because the reusable workflow builds the caller's
-> `github.ref` and the provenance identity must bind to the signed tag.
+> A manual dispatch may run from any ref, but `release_tag` must name the existing signed release
+> tag (for example `v0.1.2`). The caller passes `refs/tags/<release_tag>` as the reusable workflow's
+> `source-ref` input: slsa-builder resolves and peels the tag in isolation, pins the package
+> checkout to the resolved commit, and binds the signed provenance to that built tag identity while
+> recording the dispatch ref and revision as signed invocation members. Tag existence and version
+> agreement fail closed downstream (caller checkout, slsa-builder's `source-ref-invalid` resolution,
+> and the tag/version/changelog agreement check). Dispatching from `main` is the expected rerun path
+> when the pipeline itself was fixed after tagging.
 
 The workflow has three jobs:
 
@@ -208,16 +213,21 @@ The workflow has three jobs:
 2. `publish`: calls the slsa-builder reusable workflow
    `windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml`, pinned by full commit
    SHA with a `# main, pre-release` comment until slsa-builder cuts releases. Inputs are
-   `package-directory: "."`, `access: public`, and `dist-tag: latest`. The reserved inputs
-   `release-asset-mode`, `release-tag`, `provenance-sidecar`, and `linked-artifact-metadata` are
-   intentionally unset; the reusable workflow fails closed if they are set.
+   `package-directory: "."`, `access: public`, `dist-tag: latest`, and `source-ref`: tag pushes pass
+   the exact empty string (preserving the default byte-compatible behavior), while manual dispatches
+   pass `refs/tags/<release_tag>` so the build resolves and checks out the signed tag commit
+   regardless of the dispatch ref. The reserved inputs `release-asset-mode`, `release-tag`,
+   `provenance-sidecar`, and `linked-artifact-metadata` are intentionally unset; the reusable
+   workflow fails closed if they are set.
 3. `release`: creates the GitHub Release from the signed tag with the release assets listed below.
 
 ### Provenance model
 
 Provenance is generated and signed by slsa-builder's Go-native sigstore-go DSSE signer using the
 Windlass SLSA v1 predicate. The statement covers the exact packed tarball as one PURL subject
-carrying both sha512 and sha256 digests.
+carrying both sha512 and sha256 digests. The predicate's source identity is the built tag commit; on
+manual dispatch retries it additionally records the dispatch ref and revision as signed invocation
+members.
 
 The bundle is attached to the npm registry attestation with `npm publish --provenance-file` inside
 the reusable workflow. Publication uses npm rather than pnpm because pnpm does not support the
@@ -258,6 +268,11 @@ The slsa-builder publish job converges to one of four states:
 Before npm publish succeeds, fix the failed release workflow and rerun it against the same signed
 tag when possible. Do not move or recreate a published release tag without an explicit maintainer
 decision.
+
+If the failure was in the release pipeline itself, for example a builder defect fixed after the tag
+was pushed, fix the pipeline on `main` and rerun with `workflow_dispatch` using `release_tag`. The
+`source-ref` input keeps the build and the signed provenance bound to the signed tag commit, so the
+tag does not need to be recreated.
 
 After npm publish succeeds, the npm version is immutable for normal release purposes. If GitHub
 Release creation fails after npm publish:
