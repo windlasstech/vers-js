@@ -23,9 +23,9 @@ import {
   validOrderedConstraintDeclarationArbitrary,
 } from "./arbitraries/vers.ts";
 
-const MAX_INPUT_LENGTH = 1024;
-const MAX_ISSUES = 16;
-const SINGLE_CONSTRAINT_COUNT = 1;
+const MAX_INPUT_LENGTH = 1024,
+  MAX_ISSUES = 16,
+  SINGLE_CONSTRAINT_COUNT = 1;
 
 interface OrderedConstraintFixture {
   comparators: readonly string[];
@@ -66,9 +66,9 @@ function assertConstraintAtIndex(
     return;
   }
 
-  const comparator = fixture.comparators[index];
-  const version = fixture.versions[index];
-  const constraint = result.value.constraints[index];
+  const comparator = fixture.comparators[index],
+    version = fixture.versions[index],
+    constraint = result.value.constraints[index];
 
   if (comparator !== undefined && version !== undefined && constraint !== undefined) {
     expect(constraint).toBeDefined();
@@ -143,8 +143,8 @@ describe("property-based VERS invariants", (): void => {
     test.prop([anyVersInputArbitrary])(
       "parseVers and validateVers agree on the success boundary",
       (input) => {
-        const parseResult = parseVers(input);
-        const validateResult = validateVers(input);
+        const parseResult = parseVers(input),
+          validateResult = validateVers(input);
 
         expect(parseResult.ok).toBe(validateResult.ok);
       },
@@ -153,9 +153,9 @@ describe("property-based VERS invariants", (): void => {
     test.prop([broadUnicodeInputArbitrary])(
       "all public operations accept arbitrary strings without throwing",
       (input) => {
-        const parseResult = parseVers(input);
-        const validateResult = validateVers(input);
-        const canonicalResult = canonicalizeVers(input);
+        const parseResult = parseVers(input),
+          validateResult = validateVers(input),
+          canonicalResult = canonicalizeVers(input);
 
         expect(validateResult.ok).toBe(parseResult.ok);
         expect(canonicalResult.ok).toBe(parseResult.ok);
@@ -169,8 +169,8 @@ describe("property-based VERS invariants", (): void => {
     test.prop([mixedVersInputArbitrary])(
       "canonicalizeVers matches parseVers canonical projection",
       (input) => {
-        const parseResult = parseVers(input);
-        const canonicalResult = canonicalizeVers(input);
+        const parseResult = parseVers(input),
+          canonicalResult = canonicalizeVers(input);
 
         expect(canonicalResult.ok).toBe(parseResult.ok);
 
