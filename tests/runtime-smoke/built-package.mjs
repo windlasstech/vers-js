@@ -1,7 +1,7 @@
 import { canonicalizeVers, parseVers, validateVers } from "../../dist/index.js";
 
-const minimumIssueCount = 1;
-const runtimeExports = await import("../../dist/index.js");
+const minimumIssueCount = 1,
+  runtimeExports = await import("../../dist/index.js");
 
 function assert(condition, message) {
   if (!condition) {

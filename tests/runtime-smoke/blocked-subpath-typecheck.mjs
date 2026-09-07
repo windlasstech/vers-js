@@ -4,10 +4,10 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const JSON_INDENT = 2;
-const SUCCESS_STATUS = 0;
-const repositoryRoot = fileURLToPath(new URL("../..", import.meta.url));
-const workspace = path.join(repositoryRoot, ".temp", "blocked-subpath-typecheck");
+const JSON_INDENT = 2,
+  SUCCESS_STATUS = 0,
+  repositoryRoot = fileURLToPath(new URL("../..", import.meta.url)),
+  workspace = path.join(repositoryRoot, ".temp", "blocked-subpath-typecheck");
 
 rmSync(workspace, { force: true, recursive: true });
 mkdirSync(workspace, { recursive: true });

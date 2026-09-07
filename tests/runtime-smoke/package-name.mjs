@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 
 import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
 
-const EMPTY_LENGTH = 0;
-const vers = await import("@windlass/vers-js");
+const EMPTY_LENGTH = 0,
+  vers = await import("@windlass/vers-js");
 
 async function assertBlockedSubpath(specifier) {
   await assert.rejects(

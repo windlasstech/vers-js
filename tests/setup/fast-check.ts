@@ -1,9 +1,9 @@
 import { configureGlobal } from "fast-check";
 
-const DEFAULT_NUM_RUNS = 100;
-const CI_NUM_RUNS = 100;
-const FUZZ_INTERRUPT_MS = 10_000;
-const CI_INTERRUPT_MS = 5000;
+const DEFAULT_NUM_RUNS = 100,
+  CI_NUM_RUNS = 100,
+  FUZZ_INTERRUPT_MS = 10_000,
+  CI_INTERRUPT_MS = 5000;
 
 declare const process: {
   readonly env: {
@@ -14,8 +14,8 @@ declare const process: {
   };
 };
 
-const isCi = process.env.CI === "true";
-const isFuzzMode = process.env.VERS_PBT_MODE === "fuzz";
+const isCi = process.env.CI === "true",
+  isFuzzMode = process.env.VERS_PBT_MODE === "fuzz";
 
 function parseSeed(value: string | undefined): number | undefined {
   if (value === undefined) {
@@ -31,12 +31,11 @@ function parseSeed(value: string | undefined): number | undefined {
   return seed;
 }
 
-const seed = parseSeed(process.env.VERS_PBT_SEED);
-const path = process.env.VERS_PBT_PATH;
-
-const seedConfig = seed === undefined ? {} : { seed };
-const pathConfig = path === undefined ? {} : { path };
-const baseConfig = { ...seedConfig, ...pathConfig };
+const seed = parseSeed(process.env.VERS_PBT_SEED),
+  path = process.env.VERS_PBT_PATH,
+  seedConfig = seed === undefined ? {} : { seed },
+  pathConfig = path === undefined ? {} : { path },
+  baseConfig = { ...seedConfig, ...pathConfig };
 
 if (isFuzzMode) {
   configureGlobal({

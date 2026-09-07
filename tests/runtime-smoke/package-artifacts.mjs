@@ -4,17 +4,16 @@ import { existsSync } from "node:fs";
 import packageJson from "../../package.json" with { type: "json" };
 
 const expectedArtifacts = [
-  "dist/index.js",
-  "dist/index.js.map",
-  "dist/index.d.ts",
-  "dist/index.d.ts.map",
-  "dist/parser.js",
-  "dist/parser.d.ts",
-  "dist/types.js",
-  "dist/types.d.ts",
-];
-
-const expectedPackageFiles = ["dist", "CHANGELOG.md", "LICENSE", "README.md", "README.ko.md"];
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/parser.js",
+    "dist/parser.d.ts",
+    "dist/types.js",
+    "dist/types.d.ts",
+  ],
+  expectedPackageFiles = ["dist", "CHANGELOG.md", "LICENSE", "README.md", "README.ko.md"];
 
 for (const path of expectedArtifacts) {
   assert(existsSync(path), `${path} must exist after package build`);
