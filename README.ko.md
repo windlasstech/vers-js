@@ -126,14 +126,14 @@ VERS 선언문을 검증하고 정규화한 VERS 문자열을 반환합니다.
 
 ### 오류 처리
 
-세 함수 모두 판별 결과를 VersResult 타입으로 반환합니다:
+세 함수 모두 판별 결과를 VersResult 타입으로 반환합니다.
 
 ```typescript
 type VersResult<T> =
   { ok: true; value: T } | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
 ```
 
-문자열이 아닌 입력은 `TypeError`를 발생시킵니다:
+문자열이 아닌 입력은 `TypeError`를 발생시킵니다.
 
 ```typescript
 parseVers(null); // TypeError 발생
