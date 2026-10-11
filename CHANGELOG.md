@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Combined consecutive `const` declarations in the parser source to comply with the `one-var` rule
+  introduced by the upgraded oxlint development toolchain. No behavior or public API change.
+
 ## [0.1.2] - 12026-08-13
 
 ### Changed
