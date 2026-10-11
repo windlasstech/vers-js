@@ -32,144 +32,32 @@ const argumentOffset = 2,
     ["pnpm", ["run", "build"]],
     ["pnpm", ["run", "verify:package"]],
     ["pnpm", ["run", "smoke:runtime:node"]],
-  ],
-  options = parseArguments(process.argv.slice(argumentOffset));
+  ];
 
-if (options.help) {
-  printHelp();
-  process.exit(helpExitCode);
-}
-
-try {
-  await main(options);
-} catch (error) {
-  console.error(`\nrelease preparation failed: ${error.message}`);
-  process.exit(failureExitCode);
-}
-
-async function main(currentOptions) {
-  process.chdir(repositoryRoot);
-
-  const release = readReleaseContext();
-
-  if (!currentOptions.skipChecks) {
-    runQualityChecks();
-  }
-
-  const packSummary = currentOptions.skipPack ? undefined : inspectPackageContents(),
-    notesPath = writeReleaseNotes(release.tagName, release.notes);
-
-  printPreparationSummary(release.tagName, notesPath, packSummary);
-  await maybeCreateTag(
-    release.tagName,
-    buildTagAnnotation(release.tagName, release.notes),
-    currentOptions,
-  );
-}
-
-function readReleaseContext() {
-  const version = readPackageVersion(),
-    tagName = `v${version}`,
-    changelog = readFileSync("CHANGELOG.md", "utf8");
-
-  assertCleanWorkingTree();
-  assertCurrentBranchIsMain();
-  assertVersion(version);
-  assertTagDoesNotExist(tagName);
-  assertUnreleasedCompareLink(changelog, tagName);
-
-  return {
-    notes: extractReleaseNotes(changelog, version),
-    tagName,
-  };
-}
-
-function printPreparationSummary(tagName, notesPath, packSummary) {
-  console.log(`\nPrepared ${tagName}`);
-  console.log(`Release notes: ${notesPath}`);
-
-  if (packSummary) {
-    console.log(`Package dry run: ${packSummary.name}@${packSummary.version}`);
-    console.log(`Package files: ${packSummary.entryCount}`);
-  }
-}
-
-async function maybeCreateTag(tagName, tagAnnotation, currentOptions) {
-  if (!currentOptions.createTag) {
-    console.log(
-      "Tag not created. Re-run with --tag to create and verify the signed annotated tag.",
-    );
-    return;
-  }
-
-  const annotationPath = writeTagAnnotation(tagName, tagAnnotation),
-    finalAnnotation = await reviewTagAnnotation(annotationPath);
-  writeFileSync(annotationPath, finalAnnotation, "utf8");
-
-  runCommand("git", ["tag", "-s", "-a", tagName, "-F", annotationPath]);
-  runCommand("git", ["tag", "-v", tagName]);
-  console.log(`Signed tag verified: ${tagName}`);
-  maybePushTag(tagName, currentOptions);
-}
-
-function buildTagAnnotation(tagName, releaseNotes) {
-  return `${tagName}\n\n${releaseNotes.trimEnd()}\n`;
-}
-
-async function reviewTagAnnotation(annotationPath) {
-  let tagAnnotation = readFileSync(annotationPath, "utf8");
-  printTagAnnotation(tagAnnotation, "Generated signed tag annotation");
-
-  if (!(await shouldEditTagAnnotation())) {
-    return tagAnnotation;
-  }
-
-  openEditor(annotationPath);
-  tagAnnotation = readFileSync(annotationPath, "utf8");
-  assertTagAnnotationNotEmpty(tagAnnotation);
-  printTagAnnotation(tagAnnotation, "Edited signed tag annotation");
-
-  return tagAnnotation;
-}
-
-function printTagAnnotation(tagAnnotation, heading) {
-  console.log(`\n${heading}`);
-  console.log("=".repeat(heading.length));
-  console.log(tagAnnotation.trimEnd());
-}
-
-async function shouldEditTagAnnotation() {
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
+function captureCommand(command, arguments_, commandOptions = {}) {
+  return execFileSync(command, arguments_, {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    stdio: commandOptions.inheritStderr
+      ? ["ignore", "pipe", "inherit"]
+      : ["ignore", "pipe", "pipe"],
   });
-
-  try {
-    const answer = await readline.question(
-        "\nEdit tag annotation before creating the signed tag? [y/N] ",
-      ),
-      normalizedAnswer = answer.trim().toLowerCase();
-
-    return normalizedAnswer === "y" || normalizedAnswer === "yes";
-  } finally {
-    readline.close();
-  }
 }
 
-function openEditor(annotationPath) {
-  const editor = process.env.GIT_EDITOR || process.env.VISUAL || process.env.EDITOR || "vi",
-    [command, ...editorArguments] = parseEditorCommand(editor),
-    result = spawnSync(command, [...editorArguments, annotationPath], {
-      cwd: repositoryRoot,
-      stdio: "inherit",
-    });
+function runCommand(command, arguments_) {
+  console.log(`\n$ ${[command, ...arguments_].join(" ")}`);
+
+  const result = spawnSync(command, arguments_, {
+    cwd: repositoryRoot,
+    stdio: "inherit",
+  });
 
   if (result.error) {
     throw result.error;
   }
 
   if (result.status !== commandSuccess) {
-    throw new Error(`editor failed: ${editor}`);
+    throw new Error(`command failed: ${[command, ...arguments_].join(" ")}`);
   }
 }
 
@@ -183,32 +71,145 @@ function parseEditorCommand(editor) {
   return editorParts.map((part) => part.replace(/^(?<quote>["'])(?<body>.*)\k<quote>$/, "$<body>"));
 }
 
+function printTagAnnotation(tagAnnotation, heading) {
+  console.log(`\n${heading}`);
+  console.log("=".repeat(heading.length));
+  console.log(tagAnnotation.trimEnd());
+}
+
+function printHelp() {
+  console.log(`Usage: pnpm run release:prepare -- [options]
+
+Validates the local checkout for a @windlass/vers-js release, extracts the matching
+CHANGELOG.md section to .release/release-notes-<tag>.md, and optionally previews,
+edits, creates, verifies, and pushes the signed annotated release tag.
+
+Options:
+  --tag          Preview CHANGELOG-based annotation, then create and verify tag
+  --push         Push the tag to origin after --tag verification
+  --skip-checks  Skip the project quality and runtime verification commands
+  --skip-pack    Skip pnpm pack --json --dry-run
+  -h, --help     Show this help
+
+Default behavior validates and writes release notes, but does not create a tag.`);
+}
+
+function readPackageVersion() {
+  const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
+  return packageJson.version;
+}
+
 function assertTagAnnotationNotEmpty(tagAnnotation) {
   if (tagAnnotation.trim() === "") {
     throw new Error("signed tag annotation must not be empty");
   }
 }
 
-function maybePushTag(tagName, currentOptions) {
-  if (!currentOptions.pushTag) {
-    console.log(`Next step: git push origin ${tagName}`);
-    return;
-  }
+function assertCleanWorkingTree() {
+  const status = captureCommand("git", ["status", "--porcelain=v1"]);
 
-  runCommand("git", ["push", "origin", tagName]);
-  console.log(`Pushed tag: ${tagName}`);
+  if (status.trim() !== "") {
+    throw new Error("working tree must be clean before preparing a release");
+  }
 }
 
-function parseArguments(arguments_) {
-  const parsed = defaultOptions();
+function assertCurrentBranchIsMain() {
+  const branch = captureCommand("git", ["branch", "--show-current"]).trim();
 
-  for (const argument of arguments_) {
-    applyOption(parsed, argument);
+  if (branch !== "main") {
+    throw new Error(`release tags must be created from main, not ${branch || "detached HEAD"}`);
+  }
+}
+
+function assertVersion(version) {
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+$/.test(version)) {
+    throw new Error(`package.json version must be x.y.z, got ${JSON.stringify(version)}`);
+  }
+}
+
+function assertTagDoesNotExist(tagName) {
+  const matchingTag = captureCommand("git", ["tag", "--list", tagName]).trim();
+
+  if (matchingTag !== "") {
+    throw new Error(`tag already exists: ${tagName}`);
+  }
+}
+
+function assertUnreleasedCompareLink(changelog, tagName) {
+  const expectedLink = `[Unreleased]: https://github.com/windlasstech/vers-js/compare/${tagName}...HEAD`;
+
+  if (!changelog.includes(expectedLink)) {
+    throw new Error(`CHANGELOG.md must include latest Unreleased comparison link: ${expectedLink}`);
+  }
+}
+
+function assertReleaseNotesNotEmpty(notes, version) {
+  if (notes === "") {
+    throw new Error(`CHANGELOG.md section for ${version} must not be empty`);
+  }
+}
+
+function firstSectionTerminatorIndex(markdown) {
+  const nextHeadingIndex = markdown.search(/^## /m),
+    linkReferenceIndex = markdown.search(/^\[[^\]]+\]: /m);
+
+  if (nextHeadingIndex === noHeadingFound) {
+    return linkReferenceIndex;
   }
 
-  assertCompatibleOptions(parsed);
+  if (linkReferenceIndex === noHeadingFound) {
+    return nextHeadingIndex;
+  }
 
-  return parsed;
+  return Math.min(nextHeadingIndex, linkReferenceIndex);
+}
+
+function releaseSectionBody(changelog, sectionStart) {
+  const remainingChangelog = changelog.slice(sectionStart),
+    sectionEndIndex = firstSectionTerminatorIndex(remainingChangelog);
+
+  if (sectionEndIndex === noHeadingFound) {
+    return remainingChangelog;
+  }
+
+  return remainingChangelog.slice(0, sectionEndIndex);
+}
+
+function findReleaseHeading(changelog, version) {
+  const expectedPrefix = `## [${version}] - `;
+  let lineStart = 0;
+
+  for (const rawLine of changelog.split("\n")) {
+    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
+
+    if (line.startsWith(expectedPrefix)) {
+      const releaseDate = line.slice(expectedPrefix.length);
+
+      if (releaseDatePattern.test(releaseDate)) {
+        return { index: lineStart, text: rawLine };
+      }
+    }
+
+    lineStart += rawLine.length + 1;
+  }
+
+  return undefined;
+}
+
+function extractReleaseNotes(changelog, version) {
+  const headingMatch = findReleaseHeading(changelog, version);
+
+  if (!headingMatch) {
+    throw new Error(`CHANGELOG.md must contain a Human Era section for ${version}`);
+  }
+
+  const sectionStart = headingMatch.index + headingMatch.text.length,
+    sectionBody = releaseSectionBody(changelog, sectionStart),
+    notes = sectionBody.trim();
+
+  assertReleaseNotesNotEmpty(notes, version);
+
+  return `${notes}\n`;
 }
 
 function defaultOptions() {
@@ -243,150 +244,16 @@ function assertCompatibleOptions(parsed) {
   }
 }
 
-function printHelp() {
-  console.log(`Usage: pnpm run release:prepare -- [options]
+function parseArguments(arguments_) {
+  const parsed = defaultOptions();
 
-Validates the local checkout for a @windlass/vers-js release, extracts the matching
-CHANGELOG.md section to .release/release-notes-<tag>.md, and optionally previews,
-edits, creates, verifies, and pushes the signed annotated release tag.
-
-Options:
-  --tag          Preview CHANGELOG-based annotation, then create and verify tag
-  --push         Push the tag to origin after --tag verification
-  --skip-checks  Skip the project quality and runtime verification commands
-  --skip-pack    Skip pnpm pack --json --dry-run
-  -h, --help     Show this help
-
-Default behavior validates and writes release notes, but does not create a tag.`);
-}
-
-function readPackageVersion() {
-  const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
-  return packageJson.version;
-}
-
-function assertCleanWorkingTree() {
-  const status = captureCommand("git", ["status", "--porcelain=v1"]);
-
-  if (status.trim() !== "") {
-    throw new Error("working tree must be clean before preparing a release");
-  }
-}
-
-function assertCurrentBranchIsMain() {
-  const branch = captureCommand("git", ["branch", "--show-current"]).trim();
-
-  if (branch !== "main") {
-    throw new Error(`release tags must be created from main, not ${branch || "detached HEAD"}`);
-  }
-}
-
-function assertVersion(version) {
-  if (typeof version !== "string" || !/^\d+\.\d+\.\d+$/.test(version)) {
-    throw new Error(`package.json version must be x.y.z, got ${JSON.stringify(version)}`);
-  }
-}
-
-function assertTagDoesNotExist(tagName) {
-  const matchingTag = captureCommand("git", ["tag", "--list", tagName]).trim();
-
-  if (matchingTag !== "") {
-    throw new Error(`tag already exists: ${tagName}`);
-  }
-}
-
-function extractReleaseNotes(changelog, version) {
-  const headingMatch = findReleaseHeading(changelog, version);
-
-  if (!headingMatch) {
-    throw new Error(`CHANGELOG.md must contain a Human Era section for ${version}`);
+  for (const argument of arguments_) {
+    applyOption(parsed, argument);
   }
 
-  const sectionStart = headingMatch.index + headingMatch.text.length,
-    sectionBody = releaseSectionBody(changelog, sectionStart),
-    notes = sectionBody.trim();
+  assertCompatibleOptions(parsed);
 
-  assertReleaseNotesNotEmpty(notes, version);
-
-  return `${notes}\n`;
-}
-
-function findReleaseHeading(changelog, version) {
-  const expectedPrefix = `## [${version}] - `;
-  let lineStart = 0;
-
-  for (const rawLine of changelog.split("\n")) {
-    const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
-
-    if (line.startsWith(expectedPrefix)) {
-      const releaseDate = line.slice(expectedPrefix.length);
-
-      if (releaseDatePattern.test(releaseDate)) {
-        return { index: lineStart, text: rawLine };
-      }
-    }
-
-    lineStart += rawLine.length + 1;
-  }
-
-  return undefined;
-}
-
-function assertReleaseNotesNotEmpty(notes, version) {
-  if (notes === "") {
-    throw new Error(`CHANGELOG.md section for ${version} must not be empty`);
-  }
-}
-
-function releaseSectionBody(changelog, sectionStart) {
-  const remainingChangelog = changelog.slice(sectionStart),
-    sectionEndIndex = firstSectionTerminatorIndex(remainingChangelog);
-
-  if (sectionEndIndex === noHeadingFound) {
-    return remainingChangelog;
-  }
-
-  return remainingChangelog.slice(0, sectionEndIndex);
-}
-
-function firstSectionTerminatorIndex(markdown) {
-  const nextHeadingIndex = markdown.search(/^## /m),
-    linkReferenceIndex = markdown.search(/^\[[^\]]+\]: /m);
-
-  if (nextHeadingIndex === noHeadingFound) {
-    return linkReferenceIndex;
-  }
-
-  if (linkReferenceIndex === noHeadingFound) {
-    return nextHeadingIndex;
-  }
-
-  return Math.min(nextHeadingIndex, linkReferenceIndex);
-}
-
-function assertUnreleasedCompareLink(changelog, tagName) {
-  const expectedLink = `[Unreleased]: https://github.com/windlasstech/vers-js/compare/${tagName}...HEAD`;
-
-  if (!changelog.includes(expectedLink)) {
-    throw new Error(`CHANGELOG.md must include latest Unreleased comparison link: ${expectedLink}`);
-  }
-}
-
-function runQualityChecks() {
-  for (const [command, arguments_] of qualityCommands) {
-    runCommand(command, arguments_);
-  }
-}
-
-function inspectPackageContents() {
-  const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true }),
-    packResult = JSON.parse(output);
-
-  return {
-    entryCount: packResult.files.length,
-    name: packResult.name,
-    version: packResult.version,
-  };
+  return parsed;
 }
 
 function writeReleaseNotes(tagName, releaseNotes) {
@@ -409,29 +276,163 @@ function writeTagAnnotation(tagName, tagAnnotation) {
   return annotationPath;
 }
 
-function runCommand(command, arguments_) {
-  console.log(`\n$ ${[command, ...arguments_].join(" ")}`);
+function printPreparationSummary(tagName, notesPath, packSummary) {
+  console.log(`\nPrepared ${tagName}`);
+  console.log(`Release notes: ${notesPath}`);
 
-  const result = spawnSync(command, arguments_, {
-    cwd: repositoryRoot,
-    stdio: "inherit",
-  });
+  if (packSummary) {
+    console.log(`Package dry run: ${packSummary.name}@${packSummary.version}`);
+    console.log(`Package files: ${packSummary.entryCount}`);
+  }
+}
+
+function runQualityChecks() {
+  for (const [command, arguments_] of qualityCommands) {
+    runCommand(command, arguments_);
+  }
+}
+
+function inspectPackageContents() {
+  const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true }),
+    packResult = JSON.parse(output);
+
+  return {
+    entryCount: packResult.files.length,
+    name: packResult.name,
+    version: packResult.version,
+  };
+}
+
+function maybePushTag(tagName, currentOptions) {
+  if (!currentOptions.pushTag) {
+    console.log(`Next step: git push origin ${tagName}`);
+    return;
+  }
+
+  runCommand("git", ["push", "origin", tagName]);
+  console.log(`Pushed tag: ${tagName}`);
+}
+
+function openEditor(annotationPath) {
+  const editor = process.env.GIT_EDITOR || process.env.VISUAL || process.env.EDITOR || "vi",
+    [command, ...editorArguments] = parseEditorCommand(editor),
+    result = spawnSync(command, [...editorArguments, annotationPath], {
+      cwd: repositoryRoot,
+      stdio: "inherit",
+    });
 
   if (result.error) {
     throw result.error;
   }
 
   if (result.status !== commandSuccess) {
-    throw new Error(`command failed: ${[command, ...arguments_].join(" ")}`);
+    throw new Error(`editor failed: ${editor}`);
   }
 }
 
-function captureCommand(command, arguments_, commandOptions = {}) {
-  return execFileSync(command, arguments_, {
-    cwd: repositoryRoot,
-    encoding: "utf8",
-    stdio: commandOptions.inheritStderr
-      ? ["ignore", "pipe", "inherit"]
-      : ["ignore", "pipe", "pipe"],
+async function shouldEditTagAnnotation() {
+  const readline = createInterface({
+    input: process.stdin,
+    output: process.stdout,
   });
+
+  try {
+    const answer = await readline.question(
+        "\nEdit tag annotation before creating the signed tag? [y/N] ",
+      ),
+      normalizedAnswer = answer.trim().toLowerCase();
+
+    return normalizedAnswer === "y" || normalizedAnswer === "yes";
+  } finally {
+    readline.close();
+  }
+}
+
+async function reviewTagAnnotation(annotationPath) {
+  let tagAnnotation = readFileSync(annotationPath, "utf8");
+  printTagAnnotation(tagAnnotation, "Generated signed tag annotation");
+
+  if (!(await shouldEditTagAnnotation())) {
+    return tagAnnotation;
+  }
+
+  openEditor(annotationPath);
+  tagAnnotation = readFileSync(annotationPath, "utf8");
+  assertTagAnnotationNotEmpty(tagAnnotation);
+  printTagAnnotation(tagAnnotation, "Edited signed tag annotation");
+
+  return tagAnnotation;
+}
+
+function buildTagAnnotation(tagName, releaseNotes) {
+  return `${tagName}\n\n${releaseNotes.trimEnd()}\n`;
+}
+
+async function maybeCreateTag(tagName, tagAnnotation, currentOptions) {
+  if (!currentOptions.createTag) {
+    console.log(
+      "Tag not created. Re-run with --tag to create and verify the signed annotated tag.",
+    );
+    return;
+  }
+
+  const annotationPath = writeTagAnnotation(tagName, tagAnnotation),
+    finalAnnotation = await reviewTagAnnotation(annotationPath);
+  writeFileSync(annotationPath, finalAnnotation, "utf8");
+
+  runCommand("git", ["tag", "-s", "-a", tagName, "-F", annotationPath]);
+  runCommand("git", ["tag", "-v", tagName]);
+  console.log(`Signed tag verified: ${tagName}`);
+  maybePushTag(tagName, currentOptions);
+}
+
+function readReleaseContext() {
+  const version = readPackageVersion(),
+    tagName = `v${version}`,
+    changelog = readFileSync("CHANGELOG.md", "utf8");
+
+  assertCleanWorkingTree();
+  assertCurrentBranchIsMain();
+  assertVersion(version);
+  assertTagDoesNotExist(tagName);
+  assertUnreleasedCompareLink(changelog, tagName);
+
+  return {
+    notes: extractReleaseNotes(changelog, version),
+    tagName,
+  };
+}
+
+async function main(currentOptions) {
+  process.chdir(repositoryRoot);
+
+  const release = readReleaseContext();
+
+  if (!currentOptions.skipChecks) {
+    runQualityChecks();
+  }
+
+  const packSummary = currentOptions.skipPack ? undefined : inspectPackageContents(),
+    notesPath = writeReleaseNotes(release.tagName, release.notes);
+
+  printPreparationSummary(release.tagName, notesPath, packSummary);
+  await maybeCreateTag(
+    release.tagName,
+    buildTagAnnotation(release.tagName, release.notes),
+    currentOptions,
+  );
+}
+
+const options = parseArguments(process.argv.slice(argumentOffset));
+
+if (options.help) {
+  printHelp();
+  process.exit(helpExitCode);
+}
+
+try {
+  await main(options);
+} catch (error) {
+  console.error(`\nrelease preparation failed: ${error.message}`);
+  process.exit(failureExitCode);
 }
