@@ -4,7 +4,7 @@ Compact guidance for AI assistants working in this repository.
 
 ## Project Identity
 
-- **vers-js** — Runtime-agnostic TypeScript library for parsing and validating VERS (VErsion Range
+- **vers-js**: Runtime-agnostic TypeScript library for parsing and validating VERS (VErsion Range
   Specifier) declarations.
 - Current scope is v0.1: canonical syntax validation, parsed declaration metadata, and canonical
   string projection. It is a conforming parser, not a full semantic engine.
@@ -21,7 +21,7 @@ Compact guidance for AI assistants working in this repository.
   (`TypeScriptTeam.native-preview`) to use the TypeScript 7 native language server. Repository
   builds and type checks remain authoritative via the workspace `tsc` through pnpm scripts.
 - **Toolchain** (decided, see ADR-0036 through ADR-0040, ADR-0049, and ADR-0053):
-  - **Build**: `tsc` only — no bundler. Build script: `tsc -p tsconfig.build.json`.
+  - **Build**: `tsc` only, no bundler. Build script: `tsc -p tsconfig.build.json`.
   - **Typecheck**: `tsc --noEmit` (authoritative; Oxlint does not replace this).
   - **Test**: Vitest. Run: `vitest run`. Watch: `vitest`.
   - **Lint**: Oxlint with type-aware linting (configured in `.oxlintrc.json`).
@@ -73,9 +73,9 @@ CI uses `pnpm ci` for reproducible installs. For local development, `pnpm instal
 
 `lefthook.yml` enforces auto-fix on commit:
 
-1. `lint:md:fix` — auto-fix markdown issues and stage
-2. `lint:ts:fix` — auto-fix TS lint issues and stage
-3. `fmt` — run Oxfmt and stage
+1. `lint:md:fix`: auto-fix markdown issues and stage
+2. `lint:ts:fix`: auto-fix TS lint issues and stage
+3. `fmt`: run Oxfmt and stage
 
 Commit-msg hook enforces DCO sign-off. If you bypass hooks, CI will still catch violations.
 
@@ -93,15 +93,15 @@ Start with `docs/architecture/index.md` when returning to the project.
 
 When drafting or reviewing architecture specs, follow this sequence:
 
-1. `scope-and-invariants.md` — boundary first
-2. `public-api.md` — callable surface
-3. `data-model-and-canonical-output.md` — success values
-4. `character-encoding.md` — input processing rules
-5. `parser-phases.md` — execution order
-6. `diagnostics.md` — failure values
-7. `fixtures.md` — test expectations
-8. `resource-limits.md` — resource boundaries
-9. `build-and-test.md` — scaffolding and verification
+1. `scope-and-invariants.md`: boundary first
+2. `public-api.md`: callable surface
+3. `data-model-and-canonical-output.md`: success values
+4. `character-encoding.md`: input processing rules
+5. `parser-phases.md`: execution order
+6. `diagnostics.md`: failure values
+7. `fixtures.md`: test expectations
+8. `resource-limits.md`: resource boundaries
+9. `build-and-test.md`: scaffolding and verification
 10. Add new documents as needed.
 
 ## Architecture Invariants
@@ -133,16 +133,16 @@ These invariants are defined in `docs/architecture/scope-and-invariants.md` and
 
 When implementing or validating changes, run checks in this order:
 
-1. `pnpm run fmt:check` — formatting
-2. `pnpm run lint:ts` — linting (type-aware via `.oxlintrc.json`)
-3. `pnpm run lint:md` — markdown linting
-4. `pnpm run typecheck` — type-checking (authoritative)
-5. `pnpm run test` — tests (unit, parser, fixture, diagnostic, resource, package-boundary)
-6. `pnpm run test:coverage` — coverage (also exercised in CI)
-7. `pnpm run build` — package build
-8. `pnpm run verify:package` — package artifact, consumer type, blocked subpath, and package-name
+1. `pnpm run fmt:check`: formatting
+2. `pnpm run lint:ts`: linting (type-aware via `.oxlintrc.json`)
+3. `pnpm run lint:md`: markdown linting
+4. `pnpm run typecheck`: type-checking (authoritative)
+5. `pnpm run test`: tests (unit, parser, fixture, diagnostic, resource, package-boundary)
+6. `pnpm run test:coverage`: coverage (also exercised in CI)
+7. `pnpm run build`: package build
+8. `pnpm run verify:package`: package artifact, consumer type, blocked subpath, and package-name
    smoke checks
-9. `pnpm run verify:runtime` — built package smoke under Node.js, Deno, and Bun
+9. `pnpm run verify:runtime`: built package smoke under Node.js, Deno, and Bun
 10. Windlass supply-chain checks (Scorecard, OSV Scanner, Dependency Review)
 
 Independent checks may be reordered for CI speed, but release readiness requires all to pass.
@@ -172,6 +172,18 @@ are non-empty strings.
 - **Dates in documents**: Use Holocene Era / Human Era year format (e.g., `12026-06-07`).
 - **Bilingual README updates**: When editing any `README.md`, update the corresponding
   `README.ko.md` in the same directory as part of the same change.
+- **Language-specific typography**: Each language version of a document must respect that language's
+  orthographic and grammatical norms. Korean has no em-dash (`—`) grammar and does not use the
+  semicolon (`;`) as a prose connector, so never use either in Korean prose. Modern Korean
+  orthography limits the colon (`:`) largely to list-style (개조식) usage: after a heading or label
+  to introduce items or attach an explanation (labels such as `예:`, `참고:`, and `명세:` are valid
+  usage). Do not use the English-style colon in Korean prose to introduce a command or elaboration
+  after a verb clause. For example, ending a Korean sentence with `…해시합니다:` and then an inline
+  `curl` command is invalid: end the sentence with a period and present the command as a separate
+  block, or attach it in parentheses. In English prose the em dash is grammatically valid: prefer an
+  alternative construction (comma, parentheses, colon, or a sentence split) when the em dash offers
+  no clear readability advantage, but keep the em dash where it is genuinely clearer, such as around
+  an interjection that already contains parentheses or a comma-heavy list.
 - **Dependency policy**: `minimumReleaseAge` cooldown configured in `pnpm-workspace.yaml` (4320
   minutes / 3 days). Security updates bypass cooldown per Dependabot config.
 - **CodeGraph MCP**: `opencode.jsonc` configures a local CodeGraph MCP server. Other AI tool configs
@@ -199,7 +211,7 @@ are non-empty strings.
   example a package-manager major upgrade that changes the lockfile format) or when it is
   security-driven; use the category that matches the effect (`Changed` or `Security`).
 - When fixing a dependency vulnerability, record it under `Security` if the vulnerable package is a
-  production dependency, or — even for `devDependencies` — if its exploitation could theoretically
+  production dependency, or (even for `devDependencies`) if its exploitation could theoretically
   affect build or release artifacts (for example, code execution inside the test or release
   pipeline). Lead each entry with its CVE identifier when one is assigned, per Keep a Changelog
   2.0.0 guidance (`- CVE-XXXX-YYYY: ...`); use the GHSA identifier when no CVE exists.
@@ -295,7 +307,7 @@ return structural information grep cannot.
 
 ### When to prefer codegraph over native search
 
-Use codegraph for **structural** questions — what calls what, what would break, where is X defined,
+Use codegraph for **structural** questions: what calls what, what would break, where is X defined,
 what is X's signature. Use native grep/read only for **literal text** queries (string contents,
 comments, log messages) or after you already have a specific file open.
 
@@ -314,21 +326,21 @@ comments, log messages) or after you already have a specific file open.
 
 ### Rules of thumb
 
-- **Answer directly — don't delegate exploration.** For "how does X work" / architecture questions,
+- **Answer directly: don't delegate exploration.** For "how does X work" / architecture questions,
   answer with 2-3 codegraph calls: `codegraph_context` first, then ONE `codegraph_explore` for the
   source of the symbols it surfaces. For a specific **flow** ("how does X reach Y") start with
-  `codegraph_trace` from→to — one call returns the whole path with dynamic hops bridged — then ONE
+  `codegraph_trace` from→to (one call returns the whole path with dynamic hops bridged), then ONE
   `codegraph_explore` for the bodies; don't rebuild the path with `codegraph_search` +
   `codegraph_callers`. Codegraph IS the pre-built index, so spawning a separate file-reading
-  sub-task/agent — or running a grep + read loop — repeats work codegraph already did and costs more
+  sub-task/agent, or running a grep + read loop, repeats work codegraph already did and costs more
   for the same answer.
-- **Trust codegraph results.** They come from a full AST parse. Do NOT re-verify them with grep —
+- **Trust codegraph results.** They come from a full AST parse. Do NOT re-verify them with grep:
   that's slower, less accurate, and wastes context.
 - **Don't grep first** when looking up a symbol by name. `codegraph_search` is faster and returns
   kind + location + signature in one call.
-- **Don't chain `codegraph_search` + `codegraph_node`** when you just want context —
+- **Don't chain `codegraph_search` + `codegraph_node`** when you just want context:
   `codegraph_context` is one call.
-- **Don't loop `codegraph_node` over many symbols** — one `codegraph_explore` call returns several
+- **Don't loop `codegraph_node` over many symbols**: one `codegraph_explore` call returns several
   symbols' source grouped in a single capped call, while each separate node/Read call re-reads the
   whole context and costs far more.
 - **Index lag**: the file watcher debounces ~500ms behind writes; don't re-query immediately after
