@@ -72,6 +72,7 @@
     "no-ternary": "off",
     "no-undefined": "off",
     "no-use-before-define": "error",
+    "one-var": ["warn", { "const": "consecutive", "uninitialized": "never" }],
     "sort-imports": "off"
   },
   "overrides": [
