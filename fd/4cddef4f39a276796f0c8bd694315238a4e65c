@@ -1,0 +1,14 @@
+.github/workflows/dependency-review.yml
+  h_495200fbbeca45 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fd4cddef4f39a276796f0c8bd694315238a4e65c",
+  "prompts": {},
+  "humans": {
+    "h_495200fbbeca45": {
+      "author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
