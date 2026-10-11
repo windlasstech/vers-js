@@ -336,6 +336,14 @@ CodeGraph initialized. Want me to run `codegraph init -i` to build the index?"_
 
 <!-- CODEGRAPH_END -->
 
+## cubic review workflow
+
+Before committing, run `cubic review` to review uncommitted changes. Fix the validated issues and
+run the local review again. Repeat until the local review is clean or only disputed issues remain.
+
+After pushing, wait for cubic's GitHub review and check its comments. Fix the validated issues and
+push the changes. Use GitHub review as the final pass; it may find issues the local review misses.
+
 ## Useful References
 
 - VERS introduction: <https://www.packageurl.org/docs/vers/introduction>
