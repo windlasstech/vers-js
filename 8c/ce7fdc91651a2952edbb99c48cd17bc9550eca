@@ -1,0 +1,18 @@
+.github/workflows/autofix.yml
+  h_495200fbbeca45 31,33
+.github/workflows/publish.yml
+  h_495200fbbeca45 60,62,77
+.github/workflows/quality-gates.yml
+  h_495200fbbeca45 47,49,64,83,96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8cce7fdc91651a2952edbb99c48cd17bc9550eca",
+  "prompts": {},
+  "humans": {
+    "h_495200fbbeca45": {
+      "author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
