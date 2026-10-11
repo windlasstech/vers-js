@@ -1,0 +1,19 @@
+scripts/prepare-release.mjs
+  s_98eebbfb478a46::t_774dc17fa725b5 35,37-44,47-48,50-52,60,74-77,102-107,138-139,141-142,144,146-150,152-154,156-175,199-203,206-208,210,212,215-223,225-227,230-233,236,239-243,247-251,254,256,279-281,283-322,329,333-336,338-437
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "01d23cfd9a6ed70b02de45892a6b1cb9b8e300a0",
+  "prompts": {},
+  "sessions": {
+    "s_98eebbfb478a46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_ed555f133ffeM2KbEJIaqN12bS",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
