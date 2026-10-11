@@ -1,0 +1,19 @@
+tests/fixtures/project-diagnostics.json
+  s_98eebbfb478a46::t_dd16189c775978 25-28,43-46,52-69,79-82,97-100,115-118,133-136,151-154,169-172,187-190,205-208,223-226,232-235,250-253,268-271,286-289,304-307,322-325,340-343
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e4831bc398ef3ed3bd6f84ee16af78c7d8eaee6f",
+  "prompts": {},
+  "sessions": {
+    "s_98eebbfb478a46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_ed555f133ffeM2KbEJIaqN12bS",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
