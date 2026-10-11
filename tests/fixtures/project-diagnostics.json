@@ -22,7 +22,10 @@
         {
           "code": "lexical.ascii_whitespace",
           "severity": "error",
-          "span": { "start": 16, "end": 17 },
+          "span": {
+            "start": 16,
+            "end": 17
+          },
           "fatality": "whole-input"
         }
       ]
@@ -37,8 +40,29 @@
         {
           "code": "lexical.invalid_character",
           "severity": "error",
-          "span": { "start": 14, "end": 15 },
+          "span": {
+            "start": 14,
+            "end": 15
+          },
           "fatality": "per-constraint"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lexical-invalid-type-character",
+    "input": "vers:my_pkg/1.0.0",
+    "operations": ["parseVers", "validateVers", "canonicalizeVers"],
+    "expected": {
+      "issues": [
+        {
+          "code": "lexical.invalid_character",
+          "severity": "error",
+          "span": {
+            "start": 7,
+            "end": 8
+          },
+          "fatality": "whole-input"
         }
       ]
     }
@@ -52,7 +76,10 @@
         {
           "code": "syntax.missing_scheme_separator",
           "severity": "error",
-          "span": { "start": 4, "end": 4 },
+          "span": {
+            "start": 4,
+            "end": 4
+          },
           "fatality": "whole-input"
         }
       ]
@@ -67,7 +94,10 @@
         {
           "code": "syntax.invalid_scheme",
           "severity": "error",
-          "span": { "start": 0, "end": 4 },
+          "span": {
+            "start": 0,
+            "end": 4
+          },
           "fatality": "whole-input"
         }
       ]
@@ -82,7 +112,10 @@
         {
           "code": "syntax.missing_type",
           "severity": "error",
-          "span": { "start": 5, "end": 5 },
+          "span": {
+            "start": 5,
+            "end": 5
+          },
           "fatality": "whole-input"
         }
       ]
@@ -97,7 +130,10 @@
         {
           "code": "syntax.invalid_type_case",
           "severity": "error",
-          "span": { "start": 5, "end": 6 },
+          "span": {
+            "start": 5,
+            "end": 6
+          },
           "fatality": "whole-input"
         }
       ]
@@ -112,7 +148,10 @@
         {
           "code": "syntax.missing_constraint_separator",
           "severity": "error",
-          "span": { "start": 8, "end": 8 },
+          "span": {
+            "start": 8,
+            "end": 8
+          },
           "fatality": "whole-input"
         }
       ]
@@ -127,7 +166,10 @@
         {
           "code": "constraint.missing_constraints",
           "severity": "error",
-          "span": { "start": 9, "end": 9 },
+          "span": {
+            "start": 9,
+            "end": 9
+          },
           "fatality": "constraint-list"
         }
       ]
@@ -142,7 +184,10 @@
         {
           "code": "constraint.leading_pipe",
           "severity": "error",
-          "span": { "start": 9, "end": 10 },
+          "span": {
+            "start": 9,
+            "end": 10
+          },
           "fatality": "constraint-list"
         }
       ]
@@ -157,7 +202,10 @@
         {
           "code": "constraint.trailing_pipe",
           "severity": "error",
-          "span": { "start": 14, "end": 15 },
+          "span": {
+            "start": 14,
+            "end": 15
+          },
           "fatality": "constraint-list"
         }
       ]
@@ -172,13 +220,19 @@
         {
           "code": "constraint.consecutive_pipe",
           "severity": "error",
-          "span": { "start": 15, "end": 16 },
+          "span": {
+            "start": 15,
+            "end": 16
+          },
           "fatality": "constraint-list"
         },
         {
           "code": "constraint.empty_constraint",
           "severity": "error",
-          "span": { "start": 15, "end": 15 },
+          "span": {
+            "start": 15,
+            "end": 15
+          },
           "fatality": "constraint-list"
         }
       ]
@@ -193,7 +247,10 @@
         {
           "code": "constraint.empty_version",
           "severity": "error",
-          "span": { "start": 11, "end": 11 },
+          "span": {
+            "start": 11,
+            "end": 11
+          },
           "fatality": "per-constraint"
         }
       ]
@@ -208,7 +265,10 @@
         {
           "code": "constraint.invalid_comparator",
           "severity": "error",
-          "span": { "start": 9, "end": 11 },
+          "span": {
+            "start": 9,
+            "end": 11
+          },
           "fatality": "per-constraint"
         }
       ]
@@ -223,7 +283,10 @@
         {
           "code": "constraint.invalid_star_constraint",
           "severity": "error",
-          "span": { "start": 11, "end": 12 },
+          "span": {
+            "start": 11,
+            "end": 12
+          },
           "fatality": "per-constraint"
         }
       ]
@@ -238,7 +301,10 @@
         {
           "code": "constraint.invalid_percent_encoding",
           "severity": "error",
-          "span": { "start": 13, "end": 16 },
+          "span": {
+            "start": 13,
+            "end": 16
+          },
           "fatality": "per-constraint"
         }
       ]
@@ -253,7 +319,10 @@
         {
           "code": "constraint.invalid_utf8",
           "severity": "error",
-          "span": { "start": 13, "end": 19 },
+          "span": {
+            "start": 13,
+            "end": 19
+          },
           "fatality": "per-constraint"
         }
       ]
@@ -268,7 +337,10 @@
         {
           "code": "canonical.duplicate_version",
           "severity": "error",
-          "span": { "start": 16, "end": 21 },
+          "span": {
+            "start": 16,
+            "end": 21
+          },
           "fatality": "canonical"
         }
       ]
