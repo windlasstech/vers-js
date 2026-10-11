@@ -6,37 +6,34 @@ import path from "node:path";
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
-const argumentOffset = 2;
-const commandSuccess = 0;
-const helpExitCode = 0;
-const failureExitCode = 1;
-const noHeadingFound = -1;
-const releaseDatePattern = /^12\d{3}-\d{2}-\d{2}$/;
-const optionAssignments = {
-  "--help": "help",
-  "--push": "pushTag",
-  "--skip-checks": "skipChecks",
-  "--skip-pack": "skipPack",
-  "--tag": "createTag",
-  "-h": "help",
-};
-
-const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
-const repositoryRoot = path.join(scriptDirectory, "..");
-
-const qualityCommands = [
-  ["pnpm", ["run", "fmt:check"]],
-  ["pnpm", ["run", "lint:ts"]],
-  ["pnpm", ["run", "lint:md"]],
-  ["pnpm", ["run", "typecheck"]],
-  ["pnpm", ["run", "test"]],
-  ["pnpm", ["run", "test:coverage"]],
-  ["pnpm", ["run", "build"]],
-  ["pnpm", ["run", "verify:package"]],
-  ["pnpm", ["run", "smoke:runtime:node"]],
-];
-
-const options = parseArguments(process.argv.slice(argumentOffset));
+const argumentOffset = 2,
+  commandSuccess = 0,
+  helpExitCode = 0,
+  failureExitCode = 1,
+  noHeadingFound = -1,
+  releaseDatePattern = /^12\d{3}-\d{2}-\d{2}$/,
+  optionAssignments = {
+    "--help": "help",
+    "--push": "pushTag",
+    "--skip-checks": "skipChecks",
+    "--skip-pack": "skipPack",
+    "--tag": "createTag",
+    "-h": "help",
+  },
+  scriptDirectory = path.dirname(fileURLToPath(import.meta.url)),
+  repositoryRoot = path.join(scriptDirectory, ".."),
+  qualityCommands = [
+    ["pnpm", ["run", "fmt:check"]],
+    ["pnpm", ["run", "lint:ts"]],
+    ["pnpm", ["run", "lint:md"]],
+    ["pnpm", ["run", "typecheck"]],
+    ["pnpm", ["run", "test"]],
+    ["pnpm", ["run", "test:coverage"]],
+    ["pnpm", ["run", "build"]],
+    ["pnpm", ["run", "verify:package"]],
+    ["pnpm", ["run", "smoke:runtime:node"]],
+  ],
+  options = parseArguments(process.argv.slice(argumentOffset));
 
 if (options.help) {
   printHelp();
@@ -59,8 +56,8 @@ async function main(currentOptions) {
     runQualityChecks();
   }
 
-  const packSummary = currentOptions.skipPack ? undefined : inspectPackageContents();
-  const notesPath = writeReleaseNotes(release.tagName, release.notes);
+  const packSummary = currentOptions.skipPack ? undefined : inspectPackageContents(),
+    notesPath = writeReleaseNotes(release.tagName, release.notes);
 
   printPreparationSummary(release.tagName, notesPath, packSummary);
   await maybeCreateTag(
@@ -71,9 +68,9 @@ async function main(currentOptions) {
 }
 
 function readReleaseContext() {
-  const version = readPackageVersion();
-  const tagName = `v${version}`;
-  const changelog = readFileSync("CHANGELOG.md", "utf8");
+  const version = readPackageVersion(),
+    tagName = `v${version}`,
+    changelog = readFileSync("CHANGELOG.md", "utf8");
 
   assertCleanWorkingTree();
   assertCurrentBranchIsMain();
@@ -105,8 +102,8 @@ async function maybeCreateTag(tagName, tagAnnotation, currentOptions) {
     return;
   }
 
-  const annotationPath = writeTagAnnotation(tagName, tagAnnotation);
-  const finalAnnotation = await reviewTagAnnotation(annotationPath);
+  const annotationPath = writeTagAnnotation(tagName, tagAnnotation),
+    finalAnnotation = await reviewTagAnnotation(annotationPath);
   writeFileSync(annotationPath, finalAnnotation, "utf8");
 
   runCommand("git", ["tag", "-s", "-a", tagName, "-F", annotationPath]);
@@ -149,9 +146,9 @@ async function shouldEditTagAnnotation() {
 
   try {
     const answer = await readline.question(
-      "\nEdit tag annotation before creating the signed tag? [y/N] ",
-    );
-    const normalizedAnswer = answer.trim().toLowerCase();
+        "\nEdit tag annotation before creating the signed tag? [y/N] ",
+      ),
+      normalizedAnswer = answer.trim().toLowerCase();
 
     return normalizedAnswer === "y" || normalizedAnswer === "yes";
   } finally {
@@ -160,12 +157,12 @@ async function shouldEditTagAnnotation() {
 }
 
 function openEditor(annotationPath) {
-  const editor = process.env.GIT_EDITOR || process.env.VISUAL || process.env.EDITOR || "vi";
-  const [command, ...editorArguments] = parseEditorCommand(editor);
-  const result = spawnSync(command, [...editorArguments, annotationPath], {
-    cwd: repositoryRoot,
-    stdio: "inherit",
-  });
+  const editor = process.env.GIT_EDITOR || process.env.VISUAL || process.env.EDITOR || "vi",
+    [command, ...editorArguments] = parseEditorCommand(editor),
+    result = spawnSync(command, [...editorArguments, annotationPath], {
+      cwd: repositoryRoot,
+      stdio: "inherit",
+    });
 
   if (result.error) {
     throw result.error;
@@ -305,9 +302,9 @@ function extractReleaseNotes(changelog, version) {
     throw new Error(`CHANGELOG.md must contain a Human Era section for ${version}`);
   }
 
-  const sectionStart = headingMatch.index + headingMatch.text.length;
-  const sectionBody = releaseSectionBody(changelog, sectionStart);
-  const notes = sectionBody.trim();
+  const sectionStart = headingMatch.index + headingMatch.text.length,
+    sectionBody = releaseSectionBody(changelog, sectionStart),
+    notes = sectionBody.trim();
 
   assertReleaseNotesNotEmpty(notes, version);
 
@@ -342,8 +339,8 @@ function assertReleaseNotesNotEmpty(notes, version) {
 }
 
 function releaseSectionBody(changelog, sectionStart) {
-  const remainingChangelog = changelog.slice(sectionStart);
-  const sectionEndIndex = firstSectionTerminatorIndex(remainingChangelog);
+  const remainingChangelog = changelog.slice(sectionStart),
+    sectionEndIndex = firstSectionTerminatorIndex(remainingChangelog);
 
   if (sectionEndIndex === noHeadingFound) {
     return remainingChangelog;
@@ -353,8 +350,8 @@ function releaseSectionBody(changelog, sectionStart) {
 }
 
 function firstSectionTerminatorIndex(markdown) {
-  const nextHeadingIndex = markdown.search(/^## /m);
-  const linkReferenceIndex = markdown.search(/^\[[^\]]+\]: /m);
+  const nextHeadingIndex = markdown.search(/^## /m),
+    linkReferenceIndex = markdown.search(/^\[[^\]]+\]: /m);
 
   if (nextHeadingIndex === noHeadingFound) {
     return linkReferenceIndex;
@@ -382,8 +379,8 @@ function runQualityChecks() {
 }
 
 function inspectPackageContents() {
-  const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true });
-  const packResult = JSON.parse(output);
+  const output = captureCommand("pnpm", ["pack", "--json", "--dry-run"], { inheritStderr: true }),
+    packResult = JSON.parse(output);
 
   return {
     entryCount: packResult.files.length,

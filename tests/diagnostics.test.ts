@@ -10,10 +10,10 @@ import type {
 } from "../src/types.ts";
 import diagnosticFixture from "./fixtures/project-diagnostics.json" with { type: "json" };
 
-const MAX_INPUT_LENGTH = 1024;
-const OVER_MAX_INPUT_LENGTH = 1025;
-const ISSUE_CAP_EXCEEDING_PIPE_COUNT = 18;
-const EMPTY_LENGTH = 0;
+const MAX_INPUT_LENGTH = 1024,
+  OVER_MAX_INPUT_LENGTH = 1025,
+  ISSUE_CAP_EXCEEDING_PIPE_COUNT = 18,
+  EMPTY_LENGTH = 0;
 
 type PublicResult = VersCanonicalizeResult | VersParseResult | VersValidationResult;
 
@@ -140,21 +140,21 @@ describe("project diagnostic fixtures", (): void => {
   });
 
   it("does not reject inputs at exactly 1024 UTF-16 code units solely for length", (): void => {
-    const prefix = "vers:generic/";
-    const input = `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
+    const prefix = "vers:generic/",
+      input = `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
 
     expect(input.length).toBe(MAX_INPUT_LENGTH);
     expect(parseVers(input).ok).toBe(true);
   });
 
   it.each(fixtures)("applies $id to each declared public operation", (fixture): void => {
-    const input = inputFor(fixture);
-    const failures = fixture.operations.map((operation): VersFailure => {
-      const result = runOperation(operation, input);
-      assertExpectedFailure(result, fixture.expected);
-      return result;
-    });
-    const [firstFailure] = failures;
+    const input = inputFor(fixture),
+      failures = fixture.operations.map((operation): VersFailure => {
+        const result = runOperation(operation, input);
+        assertExpectedFailure(result, fixture.expected);
+        return result;
+      }),
+      [firstFailure] = failures;
 
     expect(firstFailure).toBeDefined();
 
