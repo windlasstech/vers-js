@@ -10,7 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Security
 
 - CVE-2026-104848: prototype pollution in tinypool's worker options (`execArgv`/`env`) allowed code
-  execution inside every pool worker of the test and formatting toolchain; combined with a separate
+  execution inside every pool worker of the formatting toolchain (oxfmt); combined with a separate
   prototype-pollution source, exploitation in CI could theoretically have reached the build and
   release pipeline. Resolved by the oxfmt 0.71.0 upgrade pulling in tinypool 2.2.0.
 - CVE-2026-104849: prototype pollution of tinypool's `run()` options (`filename`) could redirect
