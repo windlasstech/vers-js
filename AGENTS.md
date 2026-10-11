@@ -6,7 +6,7 @@ Compact guidance for AI assistants working in this repository.
 
 - **vers-js** — Runtime-agnostic TypeScript library for parsing and validating VERS (VErsion Range
   Specifier) declarations.
-- Current scope is v0.1.0: canonical syntax validation, parsed declaration metadata, and canonical
+- Current scope is v0.1: canonical syntax validation, parsed declaration metadata, and canonical
   string projection. It is a conforming parser, not a full semantic engine.
 - Apache 2.0 licensed, owned by Windlass.
 
@@ -14,7 +14,7 @@ Compact guidance for AI assistants working in this repository.
 
 - **Runtime**: Node.js 22 LTS for development only. The published library must remain
   runtime-agnostic (Node.js, Deno, Bun).
-- **Package manager**: pnpm 11.17.0, pinned via `devEngines.packageManager` in `package.json`.
+- **Package manager**: pnpm 12, pinned via `devEngines.packageManager` in `package.json`.
 - **Language**: TypeScript 7 (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI via `pnpm ci`).
 - **Editor (VS Code)**: Install and enable the official TypeScript 7 VS Code extension
