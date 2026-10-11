@@ -1,0 +1,29 @@
+.github/workflows/osv-scanner.yml
+  s_98eebbfb478a46::t_fb4c8033b3b8f6 13
+  s_98eebbfb478a46::t_449a418baee4cf 25
+  s_f4fb98ff44ac5a::t_d1a808fc991179 26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ded8f253ede1297a915aae55a871d61b884908d4",
+  "prompts": {},
+  "sessions": {
+    "s_98eebbfb478a46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_ed555f133ffeM2KbEJIaqN12bS",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_f4fb98ff44ac5a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ed555f133ffeM2KbEJIaqN12bS",
+        "model": "k3"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
