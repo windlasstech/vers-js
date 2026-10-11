@@ -1,0 +1,19 @@
+AGENTS.md
+  s_e13af043624b9b::t_2f2c0db3d95310 175-186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "65691ae0e79162232f9a84d3caffe0083c249cff",
+  "prompts": {},
+  "sessions": {
+    "s_e13af043624b9b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ed4a32b36ffeIX3MIoN8muuqED",
+        "model": "k3"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
