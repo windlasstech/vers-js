@@ -2,26 +2,26 @@ import { describe, expect, it } from "vitest";
 
 import { canonicalizeVers, parseVers, validateVers } from "../src/index.ts";
 
-const MAX_INPUT_LENGTH = 1024;
-const OVER_MAX_INPUT_LENGTH = 1025;
-const MAX_ISSUES = 16;
-const SINGLE_ISSUE_COUNT = 1;
-const ISSUE_CAP_EXCEEDING_PIPE_COUNT = 18;
-const EMPTY_LENGTH = 0;
+const MAX_INPUT_LENGTH = 1024,
+  OVER_MAX_INPUT_LENGTH = 1025,
+  MAX_ISSUES = 16,
+  SINGLE_ISSUE_COUNT = 1,
+  ISSUE_CAP_EXCEEDING_PIPE_COUNT = 18,
+  EMPTY_LENGTH = 0;
 
 describe("resource limits", (): void => {
   it("does not reject inputs at exactly 1024 UTF-16 code units solely for length", (): void => {
-    const prefix = "vers:generic/";
-    const input = `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
+    const prefix = "vers:generic/",
+      input = `${prefix}${"a".repeat(MAX_INPUT_LENGTH - prefix.length)}`;
 
     expect(input.length).toBe(MAX_INPUT_LENGTH);
     expect(parseVers(input).ok).toBe(true);
   });
 
   it("rejects inputs above 1024 UTF-16 code units before normal parsing", (): void => {
-    const prefix = "vers:generic/";
-    const input = `${prefix}${"a".repeat(OVER_MAX_INPUT_LENGTH - prefix.length)}`;
-    const result = parseVers(input);
+    const prefix = "vers:generic/",
+      input = `${prefix}${"a".repeat(OVER_MAX_INPUT_LENGTH - prefix.length)}`,
+      result = parseVers(input);
 
     expect(input.length).toBe(OVER_MAX_INPUT_LENGTH);
     expect(result.ok).toBe(false);

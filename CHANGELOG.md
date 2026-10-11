@@ -7,6 +7,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Security
+
+- CVE-2026-104848: prototype pollution in tinypool's worker options (`execArgv`/`env`) allowed code
+  execution inside every pool worker of the formatting toolchain (oxfmt); combined with a separate
+  prototype-pollution source, exploitation in CI could theoretically have reached the build and
+  release pipeline. Resolved by the oxfmt 0.71.0 upgrade pulling in tinypool 2.2.0.
+- CVE-2026-104849: prototype pollution of tinypool's `run()` options (`filename`) could redirect
+  execution to an attacker-controlled worker module. Resolved by the same tinypool 2.2.0 upgrade.
+- Also raised other transitive development-only dependencies past OSV-flagged versions via pnpm
+  overrides: katex (CVE-2026-103923), nanoid (CVE-2026-67213, CVE-2026-67214), postcss
+  (CVE-2026-69153, CVE-2026-73646), smol-toml (GHSA-r4xh-jqrq-34v2, no CVE assigned), and
+  source-map-js (CVE-2026-93749) — denial-of-service or input-channel-limited issues with no path to
+  release artifacts. braces (CVE-2026-93687) remains unresolved because it has no fixed version. All
+  affected packages are development-only; the published package has no runtime dependencies and
+  consumers are not affected.
+
+### Changed
+
+- Combined consecutive `const` declarations in the parser source to comply with the `one-var` rule
+  introduced by the upgraded oxlint development toolchain. No behavior or public API change.
+
 ## [0.1.2] - 12026-08-13
 
 ### Changed

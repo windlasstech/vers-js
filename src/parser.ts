@@ -8,36 +8,36 @@ import type {
   VersVersionComparator,
 } from "./types.ts";
 
-const MAX_INPUT_LENGTH = 1024;
-const MAX_ISSUES = 16;
-const SCHEME = "vers";
-const SCHEME_PREFIX = "vers:";
-const ASCII_TAB = 9;
-const ASCII_LINE_FEED = 10;
-const ASCII_VERTICAL_TAB = 11;
-const ASCII_FORM_FEED = 12;
-const ASCII_CARRIAGE_RETURN = 13;
-const ASCII_SPACE = 32;
-const ASCII_PERCENT = 37;
-const LOWERCASE_A = 97;
-const LOWERCASE_F = 102;
-const LOWERCASE_Z = 122;
-const UPPERCASE_A = 65;
-const UPPERCASE_F = 70;
-const UPPERCASE_Z = 90;
-const DIGIT_ZERO = 48;
-const DIGIT_NINE = 57;
-const ASCII_DASH = 45;
-const ASCII_DOT = 46;
-const ASCII_UNDERSCORE = 95;
-const ASCII_TILDE = 126;
-const HEX_RADIX = 16;
-const HEX_ESCAPE_WIDTH = 2;
-const ESCAPE_WIDTH = 3;
-const FIRST_INDEX = 0;
-const NOT_FOUND = -1;
-const FIRST_ESCAPE_HEX_INDEX = 1;
-const SECOND_ESCAPE_HEX_INDEX = 2;
+const MAX_INPUT_LENGTH = 1024,
+  MAX_ISSUES = 16,
+  SCHEME = "vers",
+  SCHEME_PREFIX = "vers:",
+  ASCII_TAB = 9,
+  ASCII_LINE_FEED = 10,
+  ASCII_VERTICAL_TAB = 11,
+  ASCII_FORM_FEED = 12,
+  ASCII_CARRIAGE_RETURN = 13,
+  ASCII_SPACE = 32,
+  ASCII_PERCENT = 37,
+  LOWERCASE_A = 97,
+  LOWERCASE_F = 102,
+  LOWERCASE_Z = 122,
+  UPPERCASE_A = 65,
+  UPPERCASE_F = 70,
+  UPPERCASE_Z = 90,
+  DIGIT_ZERO = 48,
+  DIGIT_NINE = 57,
+  ASCII_DASH = 45,
+  ASCII_DOT = 46,
+  ASCII_UNDERSCORE = 95,
+  ASCII_TILDE = 126,
+  HEX_RADIX = 16,
+  HEX_ESCAPE_WIDTH = 2,
+  ESCAPE_WIDTH = 3,
+  FIRST_INDEX = 0,
+  NOT_FOUND = -1,
+  FIRST_ESCAPE_HEX_INDEX = 1,
+  SECOND_ESCAPE_HEX_INDEX = 2;
 
 interface ParseSuccess {
   ok: true;
@@ -181,8 +181,8 @@ class Parser {
   }
 
   private static compareIssues(left: VersIssue, right: VersIssue): number {
-    const leftStart = left.span?.start ?? Number.POSITIVE_INFINITY;
-    const rightStart = right.span?.start ?? Number.POSITIVE_INFINITY;
+    const leftStart = left.span?.start ?? Number.POSITIVE_INFINITY,
+      rightStart = right.span?.start ?? Number.POSITIVE_INFINITY;
 
     if (leftStart !== rightStart) {
       return leftStart - rightStart;
@@ -353,10 +353,10 @@ class Parser {
   }
 
   #addTypeIssue(type: string, offset: number, index: number): void {
-    const codeUnit = type.charCodeAt(index);
-    const code = Parser.isUppercaseLetter(codeUnit)
-      ? "syntax.invalid_type_case"
-      : "lexical.invalid_character";
+    const codeUnit = type.charCodeAt(index),
+      code = Parser.isUppercaseLetter(codeUnit)
+        ? "syntax.invalid_type_case"
+        : "lexical.invalid_character";
     this.#add({ code, span: { end: offset + index + 1, start: offset + index } });
   }
 

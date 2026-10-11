@@ -198,6 +198,11 @@ are non-empty strings.
 - Record a development toolchain bump only when it changes build-from-source requirements (for
   example a package-manager major upgrade that changes the lockfile format) or when it is
   security-driven; use the category that matches the effect (`Changed` or `Security`).
+- When fixing a dependency vulnerability, record it under `Security` if the vulnerable package is a
+  production dependency, or — even for `devDependencies` — if its exploitation could theoretically
+  affect build or release artifacts (for example, code execution inside the test or release
+  pipeline). Lead each entry with its CVE identifier when one is assigned, per Keep a Changelog
+  2.0.0 guidance (`- CVE-XXXX-YYYY: ...`); use the GHSA identifier when no CVE exists.
 - During development, update only the `[Unreleased]` section when a PR has user-facing impact. Group
   entries by `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security`; do not create
   empty category sections.

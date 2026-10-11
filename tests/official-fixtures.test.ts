@@ -5,8 +5,8 @@ import type { VersConstraint, VersParseResult, VersVersionComparator } from "../
 import upstreamFixture from "./fixtures/upstream/vers_canonical_parse_test.json" with { type: "json" };
 import dispositionFixture from "./fixtures/vers-canonical-disposition.json" with { type: "json" };
 
-const VERSION_CONSTRAINT_TUPLE_LENGTH = 2;
-const NON_EMPTY_LENGTH = 0;
+const VERSION_CONSTRAINT_TUPLE_LENGTH = 2,
+  NON_EMPTY_LENGTH = 0;
 
 interface DispositionRecord {
   disposition: string;
@@ -40,8 +40,8 @@ interface PublicResults {
   validated: ReturnType<typeof validateVers>;
 }
 
-const upstream: UpstreamFixture = upstreamFixture;
-const dispositions: DispositionRecord[] = dispositionFixture;
+const upstream: UpstreamFixture = upstreamFixture,
+  dispositions: DispositionRecord[] = dispositionFixture;
 
 function findDisposition(testCase: UpstreamCase): DispositionRecord {
   const disposition = dispositions.find(

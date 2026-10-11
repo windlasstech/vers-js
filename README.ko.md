@@ -21,7 +21,7 @@
 
 [![Quality Gates](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/quality-gates.yml)
 [![CodeQL](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/github-code-scanning/codeql)
-[![OSV Scanner Full](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner-full.yml)
+[![OSV Scanner](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/osv-scanner.yml)
 [![Dependency Review](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/windlasstech/vers-js/actions/workflows/dependency-review.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/windlasstech/vers-js/badge)](https://scorecard.dev/viewer/?uri=github.com/windlasstech/vers-js)
 [![codecov](https://codecov.io/gh/windlasstech/vers-js/graph/badge.svg)](https://codecov.io/gh/windlasstech/vers-js)
