@@ -1,0 +1,55 @@
+tests/property-based.test.ts
+  s_98eebbfb478a46::t_c05175468f0328 27-28,70-71,147,157-158,173
+  s_98eebbfb478a46::t_fa1d23c60a4ace 26,69,146,156,172
+scripts/prepare-release.mjs
+  s_98eebbfb478a46::t_c05175468f0328 10-36,60,72-73,106,149-151,161-165,306-307,343,354,383
+  s_98eebbfb478a46::t_fa1d23c60a4ace 9,59,71,105,160,305,342,353,382
+tests/setup/fast-check.ts
+  s_98eebbfb478a46::t_c05175468f0328 4-6,18,35-38
+  s_98eebbfb478a46::t_fa1d23c60a4ace 3,17,34
+tests/runtime-smoke/package-name.mjs
+  s_98eebbfb478a46::t_c05175468f0328 6
+  s_98eebbfb478a46::t_fa1d23c60a4ace 5
+tests/resource-and-package.test.ts
+  s_98eebbfb478a46::t_c05175468f0328 6-10,15,23-24
+  s_98eebbfb478a46::t_fa1d23c60a4ace 5,14,22
+tests/types/package-consumer.ts
+  s_98eebbfb478a46::t_c05175468f0328 31-67,72,76
+  s_98eebbfb478a46::t_fa1d23c60a4ace 30,71,75
+tests/runtime-smoke/blocked-subpath-typecheck.mjs
+  s_98eebbfb478a46::t_fa1d23c60a4ace 7
+  s_98eebbfb478a46::t_c05175468f0328 8-10
+tests/runtime-smoke/package-artifacts.mjs
+  s_98eebbfb478a46::t_c05175468f0328 7-16
+tests/diagnostics.test.ts
+  s_98eebbfb478a46::t_fa1d23c60a4ace 13,143,151
+  s_98eebbfb478a46::t_c05175468f0328 14-16,144,152-157
+src/parser.ts
+  s_98eebbfb478a46::t_c05175468f0328 12-40,185,357-359
+  s_98eebbfb478a46::t_fa1d23c60a4ace 11,184,356
+tests/official-fixtures.test.ts
+  s_98eebbfb478a46::t_c05175468f0328 9,44
+  s_98eebbfb478a46::t_fa1d23c60a4ace 8,43
+tests/arbitraries/vers.ts
+  s_98eebbfb478a46::t_c05175468f0328 14-76,139-192,194-211,213-217,219-233,235-237,255-267,270-294
+  s_98eebbfb478a46::t_fa1d23c60a4ace 13,138,234
+tests/runtime-smoke/built-package.mjs
+  s_98eebbfb478a46::t_c05175468f0328 4
+  s_98eebbfb478a46::t_fa1d23c60a4ace 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f9a5a0a6947fde4b406ee0e2206afccf63f7b323",
+  "prompts": {},
+  "sessions": {
+    "s_98eebbfb478a46": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_ed555f133ffeM2KbEJIaqN12bS",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
