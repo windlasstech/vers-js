@@ -128,7 +128,8 @@ All three functions return discriminated Result types:
 
 ```typescript
 type VersResult<T> =
-  { ok: true; value: T } | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
+  | { ok: true; value: T }
+  | { ok: false; issues: VersIssue[]; metadata?: VersFailureMetadata };
 ```
 
 Non-string inputs throw `TypeError`:
