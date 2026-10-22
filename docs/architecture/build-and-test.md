@@ -148,8 +148,8 @@ metadata, or runtime-specific adapters.
 Package boundary tests must reject unsupported subpath imports such as:
 
 ```ts
-import { parseVers } from "@windlass/vers-js/parser";
 import type { VersIssue } from "@windlass/vers-js/errors";
+import { parseVers } from "@windlass/vers-js/parser";
 ```
 
 ## Package scripts
