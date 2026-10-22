@@ -281,8 +281,8 @@ import { canonicalizeVers, parseVers, validateVers } from "@windlass/vers-js";
 The package must not support public subpath imports such as:
 
 ```ts
-import { parseVers } from "@windlass/vers-js/parser";
 import type { VersIssue } from "@windlass/vers-js/errors";
+import { parseVers } from "@windlass/vers-js/parser";
 ```
 
 The package must not publish a CommonJS runtime artifact, `.cjs` entry point, `"require"`
