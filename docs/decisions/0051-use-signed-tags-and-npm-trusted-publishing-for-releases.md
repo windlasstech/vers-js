@@ -4,6 +4,9 @@ nav_order: 51
 status: accepted
 date: 12026-06-13
 decision-makers: Yunseo Kim
+relations:
+  - type: see-also
+    target: ADR-0055
 ---
 
 # Use Signed Tags and npm Trusted Publishing for Releases

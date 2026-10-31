@@ -107,10 +107,11 @@ ADR은 중요한 아키텍처 결정과 그 맥락, 결과를 담은 문서입�
 
 ### 릴리스와 발행(ADR-0051, 0054–)
 
-| ADR                                                                     | 제목                                              | 상태     |
-| ----------------------------------------------------------------------- | ------------------------------------------------- | -------- |
-| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md) | 릴리즈에 signed tag와 npm Trusted Publishing 사용 | accepted |
-| [0054](0054-use-slsa-builder-as-release-provenance-producer.md)         | 릴리스 provenance 생성기로 slsa-builder 사용      | accepted |
+| ADR                                                                             | 제목                                                      | 상태     |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------- | -------- |
+| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)         | 릴리즈에 signed tag와 npm Trusted Publishing 사용         | accepted |
+| [0054](0054-use-slsa-builder-as-release-provenance-producer.md)                 | 릴리스 provenance 생성기로 slsa-builder 사용              | accepted |
+| [0055](0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md) | 릴리스 재시도를 위한 dispatch ref와 build source ref 분리 | accepted |
 
 ## 새 ADR 추가하기
 
