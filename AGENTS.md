@@ -177,7 +177,7 @@ are non-empty strings.
 - **ADR atomicity**: One ADR decides exactly one decision axis or topic. Because accepted ADRs are
   immutable, write each ADR as small and focused as possible: decide only the question at hand,
   defer sibling questions to follow-on ADRs, and do not bake in premature specifics (e.g., a
-  particular vendor, plan, or parameter) that belong to a later decision — record such candidates in
+  particular vendor, plan, or parameter) that belong to a later decision. Record such candidates in
   More Information as investigated-but-undecided notes instead.
 - **ADR immutability**: Existing accepted ADRs are immutable. Never edit the body of an accepted ADR
   after the fact. The only permitted post-acceptance change is updating the `status` field (e.g., to
