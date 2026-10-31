@@ -9,9 +9,9 @@
 
 # Install-time dependency cooldown.
 # ADR-0003 requires a minimum of 1440 minutes (1 day).
-# Set to 4320 minutes (3 days) to align with the lower bound of the
-# Windlass production-dependency cooldown recommendation (patch: 3–7 days).
-minimumReleaseAge: 4320
+# Set to 10080 minutes (7 days) to align with the
+# Windlass uniform minimum release-age policy.
+minimumReleaseAge: 10080
 
 # Require registry publish-time metadata for age-gate enforcement.
 # When a package's registry metadata lacks the time field, fail resolution

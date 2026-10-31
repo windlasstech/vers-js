@@ -4,6 +4,15 @@ nav_order: 54
 status: accepted
 date: 12026-08-12
 decision-makers: Yunseo Kim
+relations:
+  - type: partially-superseded-by
+    target: ADR-0055
+    scope:
+      "the manual-rerun dispatch coupling for release retries (a manual workflow_dispatch must run
+      on the release tag ref itself and release_tag must match the selected ref), including the
+      corresponding dispatch-from-tag confirmation clause; builder selection, full-SHA pinning,
+      tokenless publication, provenance distribution, the blank-environment model, reserved-input
+      handling, and publish convergence remain in force"
 ---
 
 # Use slsa-builder as the Release Provenance Producer

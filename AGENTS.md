@@ -79,13 +79,21 @@ CI uses `pnpm ci` for reproducible installs. For local development, `pnpm instal
 
 Commit-msg hook enforces DCO sign-off. If you bypass hooks, CI will still catch violations.
 
-## Spec-Driven Development (SDD)
+## Decision-Driven Software Engineering & Spec-Driven Development (SDD)
 
-This project follows SDD methodology. Do not implement before reading the specs.
+Do not implement before reading the specs.
 
 1. **ADRs first** (`docs/decisions/`): understand _why_ architecture was chosen
 2. **Specs second** (`docs/architecture/`): define _exact observable behavior_
 3. **Implementation third**: build against the specifications
+
+- **ADR authority**: ADRs are the human operator's exclusive decision records. An agent may
+  recommend a new ADR with supporting grounds; it may draft an ADR only with the operator's explicit
+  permission or direction, and it may finalize and commit an ADR body only with the operator's
+  explicit permission or direction. Never begin, conclude, or finalize an ADR autonomously.
+- **Evidence-bound claims**: when asserting that a document — an ADR, a spec, a runbook, or an
+  external source — contains specific content, read the source and quote it accurately. Never assert
+  the contents of an unread document by inference.
 
 Start with `docs/architecture/index.md` when returning to the project.
 
@@ -166,6 +174,11 @@ are non-empty strings.
 
 - **ADRs**: Use MADR 4.0.0 format. Store in `docs/decisions/` with sequential numbering
   (`0001-title.md`).
+- **ADR atomicity**: One ADR decides exactly one decision axis or topic. Because accepted ADRs are
+  immutable, write each ADR as small and focused as possible: decide only the question at hand,
+  defer sibling questions to follow-on ADRs, and do not bake in premature specifics (e.g., a
+  particular vendor, plan, or parameter) that belong to a later decision. Record such candidates in
+  More Information as investigated-but-undecided notes instead.
 - **ADR immutability**: Existing accepted ADRs are immutable. Never edit the body of an accepted ADR
   after the fact. The only permitted post-acceptance change is updating the `status` field (e.g., to
   `superseded`, `deprecated`). If a decision changes, write a new ADR rather than rewriting history.
@@ -184,8 +197,8 @@ are non-empty strings.
   alternative construction (comma, parentheses, colon, or a sentence split) when the em dash offers
   no clear readability advantage, but keep the em dash where it is genuinely clearer, such as around
   an interjection that already contains parentheses or a comma-heavy list.
-- **Dependency policy**: `minimumReleaseAge` cooldown configured in `pnpm-workspace.yaml` (4320
-  minutes / 3 days). Security updates bypass cooldown per Dependabot config.
+- **Dependency policy**: `minimumReleaseAge` cooldown configured in `pnpm-workspace.yaml` (10080
+  minutes / 7 days). Security updates bypass cooldown per Dependabot config.
 - **CodeGraph MCP**: `opencode.jsonc` configures a local CodeGraph MCP server. Other AI tool configs
   (`.cursor/`, `.claude/`, `.kiro/`, `.gemini/`) also reference CodeGraph.
 
@@ -193,28 +206,35 @@ are non-empty strings.
 
 - **DCO sign-off required**: Every commit must include a `Signed-off-by:` line. Use `git commit -s`
   (or `git commit --signoff`) for all commits. Lefthook enforces this in the commit-msg hook.
+- **Commit message body format**: When a commit needs a multi-line body, prefer
+  `git commit -s -F - <<'EOF'` (heredoc) over repeating `-m`. Repeating `-m` inserts blank lines
+  between each argument and hurts readability; use heredoc unless the blank lines are intentional
+  paragraph breaks.
 
 ## Changelog Management
 
-- Maintain `CHANGELOG.md` according to
-  [Keep a Changelog 2.0.0](https://keepachangelog.com/en/2.0.0/), but use the organization's Human
-  Era date convention for release headings (for example, `## [0.1.0] - 12026-06-13`).
+- Maintain `CHANGELOG.md` according to [Keep a Changelog](https://keepachangelog.com/en/2.0.0/), but
+  use the organization's Holocene Era date convention for release headings (for example,
+  `## [0.1.0] - 12026-06-13`).
+- Changelog categories describe changes relative to a previous release. While the project is
+  pre-release and no earlier version exists, do not add categories that presuppose previously
+  released behavior, such as `Fixed`: correcting unreleased behavior revises the relevant
+  `[Unreleased]` entry text instead, and PRs whose changes are not user-facing use `None`.
 - Changelog entries are for users and downstream integrators. Summarize notable upgrade-relevant
   behavior; do not generate changelog entries by dumping commit logs.
 - For every PR, complete the organization PR template's `Changelog` section with:
   - **Category**: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`, or `None`
   - **User-facing note**: a short impact summary, or why no note is needed
 - Use `None` for changes with no direct user-facing impact, such as test cleanup, internal
-  refactoring, formatting, CI-only maintenance, or routine development toolchain pin bumps (for
-  example `devEngines.packageManager` and devDependency updates).
-- Record a development toolchain bump only when it changes build-from-source requirements (for
-  example a package-manager major upgrade that changes the lockfile format) or when it is
-  security-driven; use the category that matches the effect (`Changed` or `Security`).
+  refactoring, formatting, or CI-only maintenance.
 - When fixing a dependency vulnerability, record it under `Security` if the vulnerable package is a
   production dependency, or (even for `devDependencies`) if its exploitation could theoretically
   affect build or release artifacts (for example, code execution inside the test or release
   pipeline). Lead each entry with its CVE identifier when one is assigned, per Keep a Changelog
-  2.0.0 guidance (`- CVE-XXXX-YYYY: ...`); use the GHSA identifier when no CVE exists.
+  2.0.0 guidance (`- CVE-XXXX-YYYY: ...`); when no CVE exists, lead with the applicable alternative
+  identifier instead, such as a GHSA or a Go vulnerability database ID
+  (`- GHSA-XXXX-XXXX-XXXX: ...`, `- GO-XXXX-YYYY: ...`). Link each leading identifier to its OSV
+  entry (`https://osv.dev/vulnerability/<ID>`).
 - During development, update only the `[Unreleased]` section when a PR has user-facing impact. Group
   entries by `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, and `Security`; do not create
   empty category sections.

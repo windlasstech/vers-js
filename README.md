@@ -60,6 +60,8 @@ npm install @windlass/vers-js
 pnpm add @windlass/vers-js
 # or
 yarn add @windlass/vers-js
+# or
+bun add @windlass/vers-js
 ```
 
 ## Quick Start

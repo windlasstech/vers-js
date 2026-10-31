@@ -108,10 +108,11 @@ Each ADR follows the MADR 4.0.0 template:
 
 ### Release and Publishing (ADR-0051, 0054–)
 
-| ADR                                                                     | Title                                                   | Status   |
-| ----------------------------------------------------------------------- | ------------------------------------------------------- | -------- |
-| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md) | Use signed tags and npm Trusted Publishing for releases | accepted |
-| [0054](0054-use-slsa-builder-as-release-provenance-producer.md)         | Use slsa-builder as the release provenance producer     | accepted |
+| ADR                                                                             | Title                                                           | Status   |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------- |
+| [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)         | Use signed tags and npm Trusted Publishing for releases         | accepted |
+| [0054](0054-use-slsa-builder-as-release-provenance-producer.md)                 | Use slsa-builder as the release provenance producer             | accepted |
+| [0055](0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md) | Separate Dispatch Ref from Build Source Ref for Release Retries | accepted |
 
 ## Adding a New ADR
 

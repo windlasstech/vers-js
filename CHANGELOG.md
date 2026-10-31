@@ -9,47 +9,42 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Security
 
-- CVE-2026-104848: prototype pollution in tinypool's worker options (`execArgv`/`env`) allowed code
-  execution inside every pool worker of the formatting toolchain (oxfmt); combined with a separate
-  prototype-pollution source, exploitation in CI could theoretically have reached the build and
-  release pipeline. Resolved by the oxfmt 0.71.0 upgrade pulling in tinypool 2.2.0.
-- CVE-2026-104849: prototype pollution of tinypool's `run()` options (`filename`) could redirect
-  execution to an attacker-controlled worker module. Resolved by the same tinypool 2.2.0 upgrade.
-- Also raised other transitive development-only dependencies past OSV-flagged versions via pnpm
-  overrides: katex (CVE-2026-103923), nanoid (CVE-2026-67213, CVE-2026-67214), postcss
-  (CVE-2026-69153, CVE-2026-73646), smol-toml (GHSA-r4xh-jqrq-34v2, no CVE assigned), and
-  source-map-js (CVE-2026-93749) — denial-of-service or input-channel-limited issues with no path to
-  release artifacts. braces (CVE-2026-93687) remains unresolved because it has no fixed version. All
-  affected packages are development-only; the published package has no runtime dependencies and
-  consumers are not affected.
-
-### Changed
-
-- Combined consecutive `const` declarations in the parser source to comply with the `one-var` rule
-  introduced by the upgraded oxlint development toolchain. No behavior or public API change.
+- [CVE-2026-104848](https://osv.dev/vulnerability/CVE-2026-104848): prototype pollution in
+  tinypool's worker options (`execArgv`/`env`) allowed code execution inside every pool worker of
+  the formatting toolchain (oxfmt). Combined with a separate prototype-pollution source,
+  exploitation in CI could theoretically have reached the build and release pipeline. Resolved by
+  upgrading oxfmt to 0.71.0 or later, which pulls in tinypool 2.2.0.
+- [CVE-2026-104849](https://osv.dev/vulnerability/CVE-2026-104849): prototype pollution of
+  tinypool's `run()` options (`filename`) could redirect execution to an attacker-controlled worker
+  module. Resolved by the same tinypool 2.2.0 upgrade. Tinypool is a transitive development-only
+  dependency reached through the formatting toolchain, and the published package has no runtime
+  dependencies, so consumers are not affected.
 
 ## [0.1.2] - 12026-08-13
 
 ### Changed
 
-- Release pipeline now publishes through the Windlass
+- The release pipeline now publishes through the Windlass
   [slsa-builder](https://github.com/windlasstech/slsa-builder) npm SLSA3 reusable workflow with
-  tokenless npm Trusted Publishing, attaching SLSA v1 provenance as an npm registry attestation;
+  tokenless npm Trusted Publishing, attaching SLSA v1 provenance as an npm registry attestation.
   GitHub Releases now carry the signed provenance bundle (`.intoto.jsonl`) alongside the tarball and
   its SHA-256/SHA-512 checksums. No package behavior change.
 
 ### Security
 
-- CVE-2026-59195: raised the pinned development pnpm toolchain to a version not affected by the
-  `configDependencies` lockfile path traversal (fixed upstream in pnpm 10.34.4 and 11.8.0). The pin
-  is development-only; consumers of the published package are not affected.
+- [CVE-2026-59195](https://osv.dev/vulnerability/CVE-2026-59195): raised the pinned development pnpm
+  toolchain to a version not affected by the `configDependencies` lockfile path traversal (fixed
+  upstream in pnpm 10.34.4 and 11.8.0). This development-only fix is recorded under Security because
+  pnpm itself executes inside the build and release pipeline, so exploiting the traversal during a
+  pipeline install could theoretically have affected release artifacts. Consumers of the published
+  package are not affected.
 
 ## [0.1.1] - 12026-06-16
 
 ### Changed
 
-- Published package name changed from unscoped `vers-js` to scoped `@windlass/vers-js` after npm
-  registry name-similarity rejection.
+- The published package name changed from unscoped `vers-js` to scoped `@windlass/vers-js` after an
+  npm registry name-similarity rejection.
 
 ## [0.1.0] - 12026-06-13
 
