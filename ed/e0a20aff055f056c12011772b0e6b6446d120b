@@ -1,0 +1,21 @@
+pnpm-workspace.yaml
+  s_7bfdad7cdf9baf::t_06246c7eeb3a06 12-14
+.github/dependabot.yml
+  s_7bfdad7cdf9baf::t_06246c7eeb3a06 46,90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ede0a20aff055f056c12011772b0e6b6446d120b",
+  "prompts": {},
+  "sessions": {
+    "s_7bfdad7cdf9baf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e71df6479ffdVu0sfwpruz1KTt",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
