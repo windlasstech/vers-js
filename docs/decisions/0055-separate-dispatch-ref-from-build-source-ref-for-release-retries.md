@@ -198,11 +198,12 @@ read-back, remains unchanged and is not re-specified here. Splitting the refs do
 recovery path that republishes an immutable npm version or creates a GitHub Release after a failed
 publish prerequisite.
 
-This decision partially supersedes only the ADR-0054 manual-rerun dispatch coupling at lines 91-93
-and the corresponding dispatch-from-tag portion of the confirmation bullet at lines 123-124. Every
-other ADR-0054 decision remains unchanged, including builder selection, full-SHA pinning, tokenless
-publication, provenance distribution, the blank-environment model, reserved-input handling, and
-publish convergence.
+This decision partially supersedes only the ADR-0054 manual-rerun dispatch coupling, recorded in the
+supporting-rule bullet beginning "Manual reruns must dispatch the workflow from the release tag ref
+itself", and the corresponding dispatch-from-tag portion of the `docs/release.md` confirmation
+bullet. Every other ADR-0054 decision remains unchanged, including builder selection, full-SHA
+pinning, tokenless publication, provenance distribution, the blank-environment model, reserved-input
+handling, and publish convergence.
 
 This decision does not redesign pnpm and builder compatibility, including the existing npm
 `--provenance-file` publication path, and does not redesign GitHub protected environments. It does
@@ -307,8 +308,9 @@ the builder source independently of the release tag.
 - [ADR-0051: Use Signed Tags and npm Trusted Publishing for Releases](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)
   defines the signed-tag and hosted-publication trust boundary retained by this proposal.
 - [ADR-0054: Use slsa-builder as the Release Provenance Producer](0054-use-slsa-builder-as-release-provenance-producer.md)
-  remains authoritative except for the manual-rerun coupling at lines 91-93 and the corresponding
-  dispatch-from-tag confirmation text at lines 123-124.
+  remains authoritative except for the manual-rerun coupling in the "Manual reruns must dispatch the
+  workflow from the release tag ref itself" supporting-rule bullet and the corresponding
+  dispatch-from-tag text in the `docs/release.md` confirmation bullet.
 - [slsa-builder ADR-0079: Support a Tags-Only Caller-Specified Build Source Ref for Release Retries Across Profiles](https://github.com/windlasstech/slsa-builder/blob/main/docs/decisions/0079-support-tags-only-caller-specified-build-source-ref-for-release-retries-across-profiles.md)
   (accepted 12026-08-13) decides the builder-side contract this caller decision relies on: the
   optional tags-only `source-ref` input, built-ref runtime guards, and fail-closed tag resolution.
