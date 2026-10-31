@@ -1,0 +1,19 @@
+README.md
+  s_5daf2feae4f3a9::t_2491db9c0096cf 63-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4c86729d0e929289b48f4ef680f6e031da840d23",
+  "prompts": {},
+  "sessions": {
+    "s_5daf2feae4f3a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e7241da78ffet3IArtgob6iWFo",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
