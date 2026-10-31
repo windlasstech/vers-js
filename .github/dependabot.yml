@@ -43,7 +43,7 @@ updates:
       default-days: 7
       semver-major-days: 21
       semver-minor-days: 7
-      semver-patch-days: 3
+      semver-patch-days: 7
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -87,4 +87,4 @@ updates:
       - "github-actions"
     # GitHub Actions supports default cooldown only, not SemVer cooldown keys.
     cooldown:
-      default-days: 3
+      default-days: 7
