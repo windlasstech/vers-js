@@ -11,7 +11,9 @@ documents the trust boundary for release publication.
 > [ADR-0051](decisions/0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md) was written.
 > Accepted ADR bodies are immutable, so ADR-0051 stays as written; the slsa-builder adoption is
 > recorded separately in
-> [ADR-0054](decisions/0054-use-slsa-builder-as-release-provenance-producer.md).
+> [ADR-0054](decisions/0054-use-slsa-builder-as-release-provenance-producer.md), and the
+> manual-retry separation of the dispatch ref from the build source ref is recorded in
+> [ADR-0055](decisions/0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md).
 
 The release model is:
 
