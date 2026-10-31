@@ -1,0 +1,61 @@
+docs/decisions/README.md
+  s_5daf2feae4f3a9::t_a0ef9e4f4795de 111-114
+  s_5daf2feae4f3a9::t_f8bda608237c54 115
+docs/decisions/0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md
+  s_5daf2feae4f3a9::t_1e40793347da0e 7-9
+docs/decisions/0054-use-slsa-builder-as-release-provenance-producer.md
+  s_5daf2feae4f3a9::t_56821558e7e6d4 7-15
+docs/decisions/README.ko.md
+  s_5daf2feae4f3a9::t_43f14f343e7057 114
+  s_5daf2feae4f3a9::t_a0ef9e4f4795de 110-113
+docs/decisions/0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md
+  s_5daf2feae4f3a9::t_9d2cc4218e8137 316-323
+  s_5daf2feae4f3a9::t_1115bed6de2d52 39-47
+  s_5daf2feae4f3a9::t_561a398e43dda2 7-17
+  s_5daf2feae4f3a9::t_446b0de731993f 159-167
+  s_5daf2feae4f3a9::t_e8c209e018bb2f 328-331
+  s_5daf2feae4f3a9::t_f2525fb0181fc5 243-244,332-334
+  s_5daf2feae4f3a9::t_2656883c486ea6 130-132
+  s_5daf2feae4f3a9::t_1633bbcd9906da 96-97,100-101
+  s_5daf2feae4f3a9::t_fc0ebf1ed40398 315
+  s_5daf2feae4f3a9::t_a0ef9e4f4795de 91-92,98-99,141-142,228-229,271-272,287-288
+  s_5daf2feae4f3a9::t_e23719da121bac 70-71
+  s_5daf2feae4f3a9::t_7fc92ce6150be5 252-258
+  s_5daf2feae4f3a9::t_fb364911071076 201-205,235-236
+  s_5daf2feae4f3a9::t_ec960f5e7e9dda 240-241,247-249,259-261
+  s_5daf2feae4f3a9::t_1f56cb113e9ebc 208-211
+  s_5daf2feae4f3a9::t_810c69844b6877 4-5
+  s_5daf2feae4f3a9::t_e53076fc326a40 128-129
+  s_5daf2feae4f3a9::t_e7da2c4e03d608 72-73,76-78
+  s_5daf2feae4f3a9::t_2f6d91dabf5d2e 169-191
+  s_5daf2feae4f3a9::t_3367e6bee37b6e 48-50
+  s_5daf2feae4f3a9::t_afd6ea1f419a58 312-314
+  s_5daf2feae4f3a9::t_711b8aab5c00ef 51-69,79
+  s_5daf2feae4f3a9::t_1f1b70226dede8 74-75
+  s_3bf35d06652685::t_ede09c2e92fef7 1-3,6,18-38,80-90,93-95,102-127,133-140,143-158,168,192-194,200,206-207,212-227,230-234,237-239,242,245-246,250-251,262-270,273-286,289-311,324-327,335-336
+  s_5daf2feae4f3a9::t_bb23fdee011b49 195-199
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c45bc2783ab68b4b6a4940fc7ee4a240c7a9bce4",
+  "prompts": {},
+  "sessions": {
+    "s_3bf35d06652685": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e6dbc03e3ffe5aD6emMnwtFx5H",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_5daf2feae4f3a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e7241da78ffet3IArtgob6iWFo",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
