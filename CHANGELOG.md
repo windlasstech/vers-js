@@ -13,12 +13,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   tinypool's worker options (`execArgv`/`env`) allowed code execution inside every pool worker of
   the formatting toolchain (oxfmt). Combined with a separate prototype-pollution source,
   exploitation in CI could theoretically have reached the build and release pipeline. Resolved by
-  the oxfmt 0.71.0 upgrade pulling in tinypool 2.2.0.
+  upgrading oxfmt to 0.71.0 or later, which pulls in tinypool 2.2.0.
 - [CVE-2026-104849](https://osv.dev/vulnerability/CVE-2026-104849): prototype pollution of
   tinypool's `run()` options (`filename`) could redirect execution to an attacker-controlled worker
-  module. Resolved by the same tinypool 2.2.0 upgrade.
-- tinypool is a transitive development-only dependency reached through the formatting toolchain. The
-  published package has no runtime dependencies, so consumers are not affected.
+  module. Resolved by the same tinypool 2.2.0 upgrade. Tinypool is a transitive development-only
+  dependency reached through the formatting toolchain, and the published package has no runtime
+  dependencies, so consumers are not affected.
 
 ## [0.1.2] - 12026-08-13
 
