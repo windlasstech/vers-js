@@ -1,0 +1,29 @@
+docs/decisions/0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md
+  s_5daf2feae4f3a9::t_90ccf9f4fdc95a 205-206
+  s_5daf2feae4f3a9::t_1251d01e07ac85 311-313
+  s_10abd2e7cf040b::t_dd7ca636f93e56 201-204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e9061aba7556ffab5b762c7462eecbbe4bf90fdc",
+  "prompts": {},
+  "sessions": {
+    "s_10abd2e7cf040b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7241da78ffet3IArtgob6iWFo",
+        "model": "k3.1-pro"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_5daf2feae4f3a9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e7241da78ffet3IArtgob6iWFo",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
