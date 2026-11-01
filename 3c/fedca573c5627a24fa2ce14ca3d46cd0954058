@@ -1,0 +1,19 @@
+scripts/prepare-release.mjs
+  s_0894c979bab1d3::t_13fdf9781829a0 383
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3cfedca573c5627a24fa2ce14ca3d46cd0954058",
+  "prompts": {},
+  "sessions": {
+    "s_0894c979bab1d3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e68abe2a5ffebI13HmBwt41IjV",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
