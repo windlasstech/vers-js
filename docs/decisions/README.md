@@ -113,6 +113,7 @@ Each ADR follows the MADR 4.0.0 template:
 | [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)         | Use signed tags and npm Trusted Publishing for releases         | accepted |
 | [0054](0054-use-slsa-builder-as-release-provenance-producer.md)                 | Use slsa-builder as the release provenance producer             | accepted |
 | [0055](0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md) | Separate Dispatch Ref from Build Source Ref for Release Retries | accepted |
+| [0056](0056-pin-development-pnpm-to-slsa-builder-support-window.md)             | Pin Development pnpm to the slsa-builder Support Window         | accepted |
 
 ## Adding a New ADR
 
