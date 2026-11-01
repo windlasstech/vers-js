@@ -28,6 +28,15 @@ minimumReleaseAgeStrict: true
 # Helps detect account-takeover or publish-configuration regressions.
 trustPolicy: no-downgrade
 
+# Exceptions to the trust policy for versions whose downgrade was verified
+# to be a release-workflow change rather than a compromise.
+# lefthook@2.2.2 lost its provenance attestation relative to 2.2.1 when the
+# project changed its release workflow; signatures are still present.
+# Removal condition: when upgrading lefthook past 2.2.2, re-verify the newer
+# release's trust evidence and drop this entry if the downgrade is gone.
+trustPolicyExclude:
+  - "lefthook@2.2.2"
+
 # Only direct dependencies may use exotic sources (git repos, tarballs).
 # Transitive deps must resolve from the configured registry or workspace.
 # Default since pnpm v10.26.0 is true; pinned here for explicit policy.
@@ -66,7 +75,4 @@ allowBuilds:
 # the published package ships no runtime dependencies.
 overrides:
   katex: ^0.18.2 # GHSA-238p-pmpm-9mq7 (via markdownlint-cli2)
-  nanoid: ^3.3.18 # GHSA-28wg-ghj8-5hjv, GHSA-2v37-7h3g-55p8 (via postcss/vite)
-  postcss: ^8.5.23 # GHSA-fxqj-rqcc-2cmp, GHSA-r28c-9q8g-f849 (via vite)
-  smol-toml: ^1.9.0 # GHSA-r4xh-jqrq-34v2 (via markdownlint-cli2)
-  source-map-js: ^1.2.2 # GHSA-68fv-2mgg-jv7q (via magicast)
+  markdownlint@0.42.0>re2js: ^2.8.7 # GHSA-gg6h-894w-4m9c (via markdownlint-cli2; markdownlint pins 2.8.6 exactly)
