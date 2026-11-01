@@ -141,7 +141,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@e044243a5cffb8f2cd2bc1bdb685b28edb8c5cfd # main, pre-release
+    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@b2b0d7af1493035346168ae7fdc83f70672ac50e # main, pre-release
     with:
       package-directory: "."
       source-ref:
