@@ -1,0 +1,19 @@
+.github/workflows/probe-runner-image.yml
+  s_f2a7ec4f903a33::t_78cad9735641ed 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "467c9e75f468b20e6d7aff10201b59c33e750e8d",
+  "prompts": {},
+  "sessions": {
+    "s_f2a7ec4f903a33": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e68d2cec4ffepqKNeP7QN2CqQv",
+        "model": "k3"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
