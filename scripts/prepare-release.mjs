@@ -380,7 +380,7 @@ async function maybeCreateTag(tagName, tagAnnotation, currentOptions) {
     finalAnnotation = await reviewTagAnnotation(annotationPath);
   writeFileSync(annotationPath, finalAnnotation, "utf8");
 
-  runCommand("git", ["tag", "-s", "-a", tagName, "-F", annotationPath]);
+  runCommand("git", ["tag", "-s", "-a", "--cleanup=verbatim", tagName, "-F", annotationPath]);
   runCommand("git", ["tag", "-v", tagName]);
   console.log(`Signed tag verified: ${tagName}`);
   maybePushTag(tagName, currentOptions);
