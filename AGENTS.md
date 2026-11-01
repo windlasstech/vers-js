@@ -14,7 +14,8 @@ Compact guidance for AI assistants working in this repository.
 
 - **Runtime**: Node.js 22 LTS for development only. The published library must remain
   runtime-agnostic (Node.js, Deno, Bun).
-- **Package manager**: pnpm 12, pinned via `devEngines.packageManager` in `package.json`.
+- **Package manager**: pnpm 11.x, pinned via `devEngines.packageManager` in `package.json` (version
+  line constrained by ADR-0056).
 - **Language**: TypeScript 7 (ES2023 target, ESM-only, `"moduleResolution": "Bundler"`).
 - **Lockfile**: `pnpm-lock.yaml` (frozen installs in CI via `pnpm ci`).
 - **Editor (VS Code)**: Install and enable the official TypeScript 7 VS Code extension

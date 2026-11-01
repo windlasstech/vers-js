@@ -59,7 +59,7 @@ jobs:
       - name: Install pnpm
         uses: step-security/action-setup@8beec6731697ff7a074963eaa56f6d8e02e1c399 # v6.1.0
         with:
-          version: 12.10.1
+          version: 11.28.8
           run_install: false
 
       - name: Set up Node.js
@@ -141,7 +141,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@5964b19c5e4fa704595acbbe2ae30cc99fcbeb41 # main, pre-release
+    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@e044243a5cffb8f2cd2bc1bdb685b28edb8c5cfd # main, pre-release
     with:
       package-directory: "."
       source-ref:

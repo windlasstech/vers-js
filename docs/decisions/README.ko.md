@@ -112,6 +112,7 @@ ADR은 중요한 아키텍처 결정과 그 맥락, 결과를 담은 문서입�
 | [0051](0051-use-signed-tags-and-npm-trusted-publishing-for-releases.md)         | 릴리즈에 signed tag와 npm Trusted Publishing 사용         | accepted |
 | [0054](0054-use-slsa-builder-as-release-provenance-producer.md)                 | 릴리스 provenance 생성기로 slsa-builder 사용              | accepted |
 | [0055](0055-separate-dispatch-ref-from-build-source-ref-for-release-retries.md) | 릴리스 재시도를 위한 dispatch ref와 build source ref 분리 | accepted |
+| [0056](0056-pin-development-pnpm-to-slsa-builder-support-window.md)             | 개발용 pnpm을 slsa-builder 지원 창으로 고정               | accepted |
 
 ## 새 ADR 추가하기
 
