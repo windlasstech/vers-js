@@ -14,12 +14,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The release pipeline's slsa-builder provenance producer was updated to a newer pinned revision.
   Release provenance now records the pinned Node.js runtime used by the build, and the publish stage
   uses a pinned, digest-verified npm CLI (11.21.1) that carries the upstream fix for
-  [npm/cli#9882](https://github.com/npm/cli/pull/9882): under npm trusted publishing, the CLI
-  auto-generated its own provenance and silently discarded the bundle supplied via
-  `--provenance-file` (fixed in npm 12.1.0 and 11.20.0). Consequently, the v0.1.3 npm registry
-  attestation carries the Windlass-signed SLSA provenance statement, with both SHA-256 and SHA-512
-  subject digests and the signed `source.*` build identity, whereas the v0.1.2 registry attestation
-  was an npm-generated statement because of that upstream defect
+  [npm/cli#9879](https://github.com/npm/cli/issues/9879) (fixed by
+  [npm/cli#9882](https://github.com/npm/cli/pull/9882), shipped in npm 12.1.0 and 11.20.0): under
+  npm trusted publishing, the CLI auto-generated its own provenance and silently discarded the
+  bundle supplied via `--provenance-file`. Consequently, the v0.1.3 npm registry attestation carries
+  the Windlass-signed SLSA provenance statement, with both SHA-256 and SHA-512 subject digests and
+  the signed `source.*` build identity, whereas the v0.1.2 registry attestation was an npm-generated
+  statement because of that upstream defect
   ([windlasstech/slsa-builder#97](https://github.com/windlasstech/slsa-builder/issues/97)). The
   builder now also enforces the consumer manifest's package-manager version window before install.
   No package behavior change.
