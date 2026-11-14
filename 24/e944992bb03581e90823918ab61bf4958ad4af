@@ -1,0 +1,19 @@
+.github/workflows/publish.yml
+  s_3be4e5ee7951c4::t_a64ca804b1a14d 144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "24e944992bb03581e90823918ab61bf4958ad4af",
+  "prompts": {},
+  "sessions": {
+    "s_3be4e5ee7951c4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e672fa32affeYgXw1TplxIYxCT",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
