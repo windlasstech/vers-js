@@ -141,7 +141,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@18611e2d610266fbf9ce2dfd8c382b49ed46a0b5 # main, pre-release
+    uses: windlasstech/slsa-builder/.github/workflows/js-ts-npm-package-slsa3.yml@db22df1b2bd63c37bc56bf5b94dc83586ff53224 # main, pre-release
     with:
       package-directory: "."
       source-ref:
@@ -163,23 +163,33 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout repository
+      - name: Checkout pipeline tooling
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: pipeline
+          persist-credentials: false
+
+      - name: Checkout release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.verify.outputs.release-tag }}
+          path: release-source
           persist-credentials: false
 
       - name: Download release tarball artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: js-ts-npm-package-tarball-${{ github.run_id }}-${{ github.run_attempt }}
+          path: release-assets
 
       - name: Download provenance bundle artifact
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: js-ts-npm-provenance-bundle-${{ github.run_id }}-${{ github.run_attempt }}
+          path: release-assets
 
       - name: Verify tarball digests
+        working-directory: release-assets
         env:
           TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
           EXPECTED_SHA256: ${{ needs.publish.outputs.package-tarball-sha256 }}
@@ -198,52 +208,17 @@ jobs:
           fi
 
       - name: Verify provenance bundle subject
+        working-directory: release-assets
         env:
           TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
           PACKAGE_NAME: ${{ needs.publish.outputs.package-name }}
           PACKAGE_VERSION: ${{ needs.publish.outputs.package-version }}
           EXPECTED_SHA256: ${{ needs.publish.outputs.package-tarball-sha256 }}
           EXPECTED_SHA512: ${{ needs.publish.outputs.package-tarball-sha512 }}
-        run: |
-          node --input-type=module <<'NODE'
-          import { readFileSync } from "node:fs";
-
-          const tarballName = process.env.TARBALL_NAME;
-          const packageName = process.env.PACKAGE_NAME;
-          const packageVersion = process.env.PACKAGE_VERSION;
-          const expectedSha256 = process.env.EXPECTED_SHA256;
-          const expectedSha512 = process.env.EXPECTED_SHA512;
-
-          const envelopeLine = readFileSync(`${tarballName}.intoto.jsonl`, "utf8").trim();
-          const envelope = JSON.parse(envelopeLine);
-          const payload = JSON.parse(Buffer.from(envelope.payload, "base64").toString("utf8"));
-
-          if (!Array.isArray(payload.subject) || payload.subject.length !== 1) {
-            throw new Error("provenance payload subject must be an array of length 1");
-          }
-
-          const [subject] = payload.subject;
-
-          // slsa-builder names the subject with the npm package PURL (ADR 0064), not the tarball
-          // filename. PURL text passes through unchanged for lowercase alphanumeric and -._~.
-          const expectedSubjectName = packageName.startsWith("@")
-            ? `pkg:npm/%40${packageName.slice(1)}@${packageVersion}`
-            : `pkg:npm/${packageName}@${packageVersion}`;
-
-          if (subject.name !== expectedSubjectName) {
-            throw new Error(`provenance subject name ${subject.name} does not match ${expectedSubjectName}`);
-          }
-
-          if (subject.digest?.sha512 !== expectedSha512) {
-            throw new Error("provenance subject sha512 does not match the verified tarball digest");
-          }
-
-          if (subject.digest?.sha256 !== expectedSha256) {
-            throw new Error("provenance subject sha256 does not match the verified tarball digest");
-          }
-          NODE
+        run: node ../pipeline/scripts/verify-release-provenance.mjs
 
       - name: Write checksum sidecars
+        working-directory: release-assets
         env:
           TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
         run: |
@@ -264,7 +239,7 @@ jobs:
             throw new Error("RELEASE_TAG must contain the release tag");
           }
 
-          const changelog = readFileSync("CHANGELOG.md", "utf8");
+          const changelog = readFileSync("release-source/CHANGELOG.md", "utf8");
           const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
           const headingPattern = new RegExp(`^## \\[${escapedVersion}\\] - 12\\d{3}-\\d{2}-\\d{2}\\s*$`, "m");
           const headingMatch = headingPattern.exec(changelog);
@@ -285,20 +260,14 @@ jobs:
             throw new Error(`CHANGELOG.md section for ${version} must not be empty`);
           }
 
-          writeFileSync("release-notes.md", `${notes}\n`, "utf8");
+          writeFileSync("release-assets/release-notes.md", `${notes}\n`, "utf8");
           NODE
 
       - name: Publish GitHub Release with assets
+        working-directory: release-assets
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ needs.verify.outputs.release-tag }}
           TARBALL_NAME: ${{ needs.publish.outputs.package-tarball-name }}
-        run: |
-          gh release create "$RELEASE_TAG" \
-            --verify-tag \
-            --title "$RELEASE_TAG" \
-            --notes-file release-notes.md \
-            "$TARBALL_NAME" \
-            "${TARBALL_NAME}.sha256" \
-            "${TARBALL_NAME}.sha512" \
-            "${TARBALL_NAME}.intoto.jsonl"
+        run: node ../pipeline/scripts/converge-github-release.mjs

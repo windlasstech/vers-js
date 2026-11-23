@@ -108,6 +108,15 @@
       "rules": {
         "import/no-nodejs-modules": "off"
       }
+    },
+    {
+      "files": ["tests/*.test.mjs"],
+      "rules": {
+        "import/no-nodejs-modules": "off",
+        "no-console": "off",
+        "no-magic-numbers": "off",
+        "no-restricted-globals": "off"
+      }
     }
   ],
   "options": {

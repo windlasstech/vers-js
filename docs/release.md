@@ -206,6 +206,14 @@ matching `v*`. It can also be started manually with the `workflow_dispatch` `rel
 > and the tag/version/changelog agreement check). Dispatching from `main` is the expected rerun path
 > when the pipeline itself was fixed after tagging.
 
+The `release` job separates pipeline tooling from release authority with two checkouts. `pipeline/`
+uses the default event or dispatch ref, so the caller scripts in `scripts/` come from the same ref
+as the executing workflow. `release-source/` checks out the signed release tag and is the authority
+for release content, including the `CHANGELOG.md` section used for release notes. Downloaded
+artifacts, generated checksum sidecars, and `release-notes.md` are staged in `release-assets/`. This
+boundary lets a maintainer dispatch current pipeline tooling from `main` for an old tag, such as the
+pending `v0.1.3` retry, while release content and provenance remain bound to the signed tag.
+
 The workflow has three jobs:
 
 1. `verify`: runs the full repository verification sequence on the tagged commit (`fmt:check`,
@@ -221,7 +229,11 @@ The workflow has three jobs:
    regardless of the dispatch ref. The reserved inputs `release-asset-mode`, `release-tag`,
    `provenance-sidecar`, and `linked-artifact-metadata` are intentionally unset; the reusable
    workflow fails closed if they are set.
-3. `release`: creates the GitHub Release from the signed tag with the release assets listed below.
+3. `release`: verifies the downloaded tarball against both expected digests, strictly validates the
+   complete serialized Sigstore bundle and its release subject, extracts release notes only from
+   `release-source/`, and converges the GitHub Release non-destructively. Convergence creates a
+   draft first, adds only missing assets to a compatible draft, succeeds without mutations for a
+   complete matching published release, and fails closed on conflicts or unreadable state.
 
 ### Provenance model
 
@@ -230,6 +242,22 @@ Windlass SLSA v1 predicate. The statement covers the exact packed tarball as one
 carrying both sha512 and sha256 digests. The predicate's source identity is the built tag commit; on
 manual dispatch retries it additionally records the dispatch ref and revision as signed invocation
 members.
+
+The producer-to-caller handoff file is the exact serialized Sigstore bundle. The caller release job
+strict-parses the complete bundle and the in-toto Statement decoded from `dsseEnvelope.payload`,
+rejecting duplicate JSON members at every nesting level in both documents. It also rejects a legacy
+top-level `payload` member.
+
+The caller requires bundle media type `application/vnd.dev.sigstore.bundle.v0.3+json`, DSSE payload
+type `application/vnd.in-toto+json`, exactly one signature, a canonical base64 payload, and fatal
+UTF-8 decoding of the payload bytes. The decoded Statement must have `_type`
+`https://in-toto.io/Statement/v1`, predicate type `https://slsa.dev/provenance/v1`, and exactly one
+subject. That subject's name must equal the expected `pkg:npm` PURL, and its sha256 and sha512
+digests must exactly match the published tarball digests.
+
+These caller checks are structural and release-consistency validation, not cryptographic
+verification. Cryptographic signature and signer-identity verification remain the responsibilities
+of the slsa-builder producer and the npm registry.
 
 The bundle is attached to the npm registry attestation with `npm publish --provenance-file` inside
 the reusable workflow. Publication uses npm rather than pnpm because pnpm does not support the
@@ -246,16 +274,47 @@ Expected public release assets are:
 - `windlass-vers-js-X.Y.Z.tgz.intoto.jsonl`: the signed SLSA provenance bundle.
 
 The release job downloads the run-scoped provenance-bundle artifact
-(`js-ts-npm-provenance-bundle-<run_id>-<run_attempt>`), verifies that the bundle's single subject is
-named with the npm package PURL (for example `pkg:npm/%40windlass/vers-js@X.Y.Z`) and that its
-digests match the published tarball digests before attaching it, and fails closed on mismatch. The
-`.intoto.jsonl` release asset is the identical bytes, published for offline verification and
-archival. This caller-side asset upload is an interim measure until slsa-builder provides
-first-class release-asset distribution through the reserved `release-asset-mode` and
+(`js-ts-npm-provenance-bundle-<run_id>-<run_attempt>`) into `release-assets/`. The
+`Verify provenance bundle subject` step runs
+`node ../pipeline/scripts/verify-release-provenance.mjs` from that directory with `TARBALL_NAME`,
+`PACKAGE_NAME`, `PACKAGE_VERSION`, `EXPECTED_SHA256`, and `EXPECTED_SHA512` from the publish job's
+outputs. Any structural, subject, or digest mismatch fails closed. The `.intoto.jsonl` release asset
+contains the exact signer-emitted bundle bytes, published without reserialization for offline
+verification and archival. This caller-side asset upload is an interim measure until slsa-builder
+provides first-class release-asset distribution through the reserved `release-asset-mode` and
 `provenance-sidecar` inputs.
 
-The release body comes from the matching `CHANGELOG.md` version section. Do not use generated commit
-logs as the release notes.
+The release body comes only from the matching `release-source/CHANGELOG.md` version section. Do not
+use generated commit logs as the release notes.
+
+### GitHub Release convergence
+
+The `Publish GitHub Release with assets` step runs
+`node ../pipeline/scripts/converge-github-release.mjs` from `release-assets/`, using the `GH_TOKEN`,
+`GH_REPO`, `RELEASE_TAG`, and `TARBALL_NAME` environment inputs. `GH_REPO` is required because
+`release-assets/` is not a git checkout: without it, `gh` cannot resolve the target repository. Its
+non-destructive state machine handles remote state as follows:
+
+- If the release is confirmed absent, create a draft with `gh release create <tag>`, using
+  `--draft`, `--verify-tag`, `--title <tag>`, and `--notes-file release-notes.md`. The create call
+  attaches no assets. Upload the four expected assets individually, never with `--clobber`. Read
+  back after mutations, download each remote asset to a fresh temporary directory, and compare its
+  SHA-256 digest with the local bytes. Publish the complete verified draft with
+  `gh release edit <tag> --draft=false --verify-tag`.
+- If a published release has the expected tag, title, and body, is neither draft nor prerelease, has
+  exactly the four expected assets, and all remote asset bytes match, return read-only success with
+  zero mutations.
+- If a matching draft already has some assets, verify all existing remote bytes, upload only missing
+  assets, and publish after the complete draft passes read-back verification.
+- If a published release is incomplete, any metadata or asset bytes differ, unexpected or duplicate
+  assets exist, or remote state is unreadable, fail closed before making any mutation.
+
+After an ambiguous mutation failure, convergence performs exactly one read-back. It continues only
+from a proven-compatible observed state and never retries a mutation whose effect is uncertain.
+
+Regression coverage lives in `tests/release-provenance.test.mjs` (89 tests) and
+`tests/github-release-convergence.test.mjs` (37 tests), with fixtures in `tests/fixtures/release/`.
+Both test files run in the normal Vitest suite.
 
 ## Failure recovery
 
@@ -268,20 +327,29 @@ The slsa-builder publish job converges to one of four states:
 4. indeterminate registry read-back: fail closed with zero mutations.
 
 Before npm publish succeeds, fix the failed release workflow and rerun it against the same signed
-tag when possible. Do not move or recreate a published release tag without an explicit maintainer
-decision.
+tag when possible. Do not move or recreate the signed release tag.
 
 If the failure was in the release pipeline itself, for example a builder defect fixed after the tag
 was pushed, fix the pipeline on `main` and rerun with `workflow_dispatch` using `release_tag`. The
-`source-ref` input keeps the build and the signed provenance bound to the signed tag commit, so the
-tag does not need to be recreated.
+`source-ref` input keeps the build and the signed provenance bound to the signed tag commit, while
+the release job's `pipeline/` and `release-source/` checkouts apply current caller tooling to the
+same signed release content. The tag does not need to be recreated.
 
-After npm publish succeeds, the npm version is immutable for normal release purposes. If GitHub
-Release creation fails after npm publish:
+After npm publish succeeds, the npm version is immutable for normal release purposes. The npm
+publish result and the caller GitHub Release result are independent: a caller release failure does
+not invalidate a successful npm publish.
 
-1. keep the npm package version as published;
-2. recreate the release from the existing signed tag;
-3. use the matching `CHANGELOG.md` section as the release body.
+If GitHub Release convergence fails after npm publish, keep the npm package version as published and
+rerun the workflow against the same signed tag. Do not delete or recreate the GitHub Release, move
+or recreate the signed tag, or use `--clobber` to replace assets. On rerun, the convergence step:
+
+1. accepts a complete matching published release read-only, with zero mutations;
+2. verifies a compatible draft's existing assets, uploads only missing assets, and publishes it;
+3. fails closed with zero mutations on any conflicting or unreadable state.
+
+A conflict includes an incomplete published release, metadata or asset-byte mismatches, and
+unexpected or duplicate assets. In that case, a maintainer inspects the conflicting release
+manually. The workflow does not overwrite, delete, or otherwise repair conflicting remote state.
 
 If npm publish succeeds with a serious release-blocking defect, follow npm and Windlass security
 policies for deprecation, advisory publication, or a follow-up patch release. Do not assume the
