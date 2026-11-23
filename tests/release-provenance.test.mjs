@@ -23,6 +23,35 @@ const bundleText = readFileSync(
     packageVersion: "0.1.3",
   };
 
+function writePoisonedBundle(directory) {
+  const poisoned = structuredClone(fixture);
+  poisoned.verificationMaterial.note = "PLACEHOLDER";
+  const bytes = Buffer.from(JSON.stringify(poisoned), "utf8"),
+    marker = bytes.indexOf("PLACEHOLDER");
+  expect(marker).toBeGreaterThan(-1);
+  bytes[marker] = 255;
+  writeFileSync(path.join(directory, "package.tgz.intoto.jsonl"), bytes);
+}
+
+function runCli(directory) {
+  return spawnSync(
+    process.execPath,
+    [fileURLToPath(new URL("../scripts/verify-release-provenance.mjs", import.meta.url))],
+    {
+      cwd: directory,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        EXPECTED_SHA256: expected.expectedSha256,
+        EXPECTED_SHA512: expected.expectedSha512,
+        PACKAGE_NAME: expected.packageName,
+        PACKAGE_VERSION: expected.packageVersion,
+        TARBALL_NAME: "package.tgz",
+      },
+    },
+  );
+}
+
 function verify(bundle) {
   return verifyReleaseProvenance({ ...expected, bundleText: JSON.stringify(bundle) });
 }
@@ -273,6 +302,20 @@ describe("handoff integrity (issue #80)", () => {
       if (matches) {
         expect(result.stdout.length).toBeGreaterThan(0);
       }
+    } finally {
+      rmSync(directory, { force: true, recursive: true });
+    }
+  });
+
+  it("CLI rejects malformed UTF-8 bytes in an unchecked bundle field", () => {
+    // The unchecked verificationMaterial member carries invalid UTF-8 bytes.
+    // The CLI must fail rather than accept a lossy U+FFFD replacement.
+    const directory = mkdtempSync(path.join(tmpdir(), "vers-provenance-"));
+    try {
+      writePoisonedBundle(directory);
+      const result = runCli(directory);
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain("bundle.utf8-invalid");
     } finally {
       rmSync(directory, { force: true, recursive: true });
     }

@@ -136,6 +136,18 @@ function verifyReleaseProvenance({
   );
 }
 
+// A plain "utf8" readFileSync would silently replace malformed bytes with U+FFFD.
+// Decode fatally instead, and preserve any BOM so the strict grammar rejects it.
+function readBundleText(tarballName) {
+  try {
+    return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(
+      readFileSync(`${tarballName}.intoto.jsonl`),
+    );
+  } catch (error) {
+    throw new ProvenanceError("bundle.utf8-invalid", error);
+  }
+}
+
 function main() {
   const { TARBALL_NAME, PACKAGE_NAME, PACKAGE_VERSION, EXPECTED_SHA256, EXPECTED_SHA512 } =
     process.env;
@@ -144,7 +156,7 @@ function main() {
     "expected.tarball-invalid",
   );
   verifyReleaseProvenance({
-    bundleText: readFileSync(`${TARBALL_NAME}.intoto.jsonl`, "utf8"),
+    bundleText: readBundleText(TARBALL_NAME),
     expectedSha256: EXPECTED_SHA256,
     expectedSha512: EXPECTED_SHA512,
     packageName: PACKAGE_NAME,

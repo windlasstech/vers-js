@@ -313,7 +313,7 @@ After an ambiguous mutation failure, convergence performs exactly one read-back.
 from a proven-compatible observed state and never retries a mutation whose effect is uncertain.
 
 Regression coverage lives in `tests/release-provenance.test.mjs` (89 tests) and
-`tests/github-release-convergence.test.mjs` (32 tests), with fixtures in `tests/fixtures/release/`.
+`tests/github-release-convergence.test.mjs` (37 tests), with fixtures in `tests/fixtures/release/`.
 Both test files run in the normal Vitest suite.
 
 ## Failure recovery
