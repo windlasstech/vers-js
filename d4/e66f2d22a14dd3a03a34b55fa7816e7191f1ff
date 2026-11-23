@@ -1,0 +1,132 @@
+scripts/converge-github-release.mjs
+  s_1c93d6a12ea395::t_d50589999ce1f6 192-193
+  s_1c93d6a12ea395::t_9f13a62e9af7fe 1-4,6-7,10-12,14-23,30-34,43-45,47,58-60,87-90,94,117-120,126-127,142-143,148-151,164,173,175-181,183,189-191,194,199-201,209,215,220-231,233-240,243,245-246,248-253,260-264
+  s_670e4eea596cf2::t_40ba7b0468523e 108,133,187
+  s_3be4e5ee7951c4::t_52927dae1efc2d 81
+  s_3be4e5ee7951c4::t_0096e1f1a8ddbf 79-80
+  s_1c93d6a12ea395::t_ba32ba07e36f43 5,8-9,13,46,48,63-67,75-77,82-86,144-145,241-242,244,256
+  s_670e4eea596cf2::t_1c213481c3fc20 40-42,61-62,91,140,168,172,174,182,186,202,204-205,210-211,216-217,219,232,247,255,258-259
+  s_670e4eea596cf2::t_a8d0f08e8d3ea2 24-29,35-39,49-57,97-107,111-116,121-125,134-135,138-139,141,152-160,184-185,188,195-198,203,218,254,257
+  s_1c93d6a12ea395::t_ed85aae625b603 92-93,146-147
+  s_3be4e5ee7951c4::t_44b652e49da01b 78
+  s_670e4eea596cf2::t_a14c4c264e2684 68-74,95-96,109-110,128-132,136-137,161-163,165-167,169-171,206-208,212-214
+scripts/strict-json.mjs
+  s_db015476ceacef::t_07609b37b0cb6c 47-48,68-70,73-84,88-91,101-102,121-124
+  s_db015476ceacef::t_fdf4209784103c 1-11,15-31,35-40,44-46,55-63,67,71-72,92-95,99-100,103-107,120,125,131-136,140-146,150-154,158-160,164-168
+  s_db015476ceacef::t_303e4c05efd163 12-14
+  s_d69f1ac0192d5e::t_020ca60fda1911 108,110-111,113-114,116-117,119
+  s_d69f1ac0192d5e::t_68762345ff220d 49-51,109,112,115,118,126-130
+  s_670e4eea596cf2::t_3bde891c709b07 32-34,41-43,52-54,64-66,85-87,96-98,137-139,147-149,155-157,161-163
+docs/release.md
+  s_1fea7b3a97bb2e::t_8b7e30f408c97b 246-261,287-291,297,300-317
+  s_3be4e5ee7951c4::t_c39392b28deeba 294
+  s_3be4e5ee7951c4::t_f91ac05fa01360 295-296
+  s_1fea7b3a97bb2e::t_ce3d4d66ddbf30 330,334-341,346-348,350-352
+  s_1fea7b3a97bb2e::t_baa19a5271ec49 213-215,342-344
+  s_1fea7b3a97bb2e::t_da53090a66b414 292-293,298-299
+  s_1fea7b3a97bb2e::t_cc8060b2a4d2f8 277-284
+  s_1fea7b3a97bb2e::t_5b0aafa484c6d1 209-212,216,232-236
+vitest.config.ts
+  s_3be4e5ee7951c4::t_210f2c64d716d3 24
+.github/workflows/publish.yml
+  s_3be4e5ee7951c4::t_80605644c22dd5 166-172,176,183,189
+  s_3be4e5ee7951c4::t_13c76e1c3403d7 192
+  s_3be4e5ee7951c4::t_78471526e270f7 221,242
+  s_3be4e5ee7951c4::t_7070ee1cb9a374 270
+  s_3be4e5ee7951c4::t_f08777a1d93d1f 263,267,273
+  s_3be4e5ee7951c4::t_85d26dd7401d2e 211,218
+scripts/verify-release-provenance.mjs
+  s_d69f1ac0192d5e::t_68762345ff220d 3,28-32,70-77,81-84,93,96-97,100,108-114,118-124,129-136,140-145
+  s_d69f1ac0192d5e::t_e3c4d5369159e1 15-17,48-50,56-59,156-158
+  s_db015476ceacef::t_97e426081d1f9a 45-46,55,60-66,85-92,94-95,98-99,101-103,106-107,117
+  s_d69f1ac0192d5e::t_020ca60fda1911 150-151
+  s_db015476ceacef::t_fdf4209784103c 1-2,4-14,18-27,33-44,47,51-54,67-69,78-80,104-105,115-116,125-128,137-139,146-149,152-155,159-160
+tests/release-provenance.test.mjs
+  s_db015476ceacef::t_770f489ffd8aac 199,231-233
+  s_db015476ceacef::t_97e426081d1f9a 144-146
+  s_670e4eea596cf2::t_3bde891c709b07 122,174-176
+  s_d69f1ac0192d5e::t_020ca60fda1911 14,22-23,57-58,85-86,200,223,262-264,273
+  s_db015476ceacef::t_303e4c05efd163 60,67,93,109,137,140,152,157,162,186,212,219,227,238,245
+  s_db015476ceacef::t_c6be66e682502b 1
+  s_d69f1ac0192d5e::t_68762345ff220d 7,9,13,15-16,37-43,52-56,59,61-62,68-69,71-84,87-92,94-95,110-111,125-126,128-133,139,141-143,147-151,153-154,158-161,163-164,167-172,178-184,187-188,191,196-198,201-202,206-211,217-218,222,224-225,228-229,234-237,239-240,243-244,252-261,265-267
+  s_d69f1ac0192d5e::t_e3c4d5369159e1 106-108,192-195,269-271
+  s_db015476ceacef::t_a7a2b26f21441f 2-6,8,10-12,17-21,24-36,44-51,63-66,70,96-105,112-121,123-124,127,134-136,138,155-156,165-166,173,177,185,189-190,203-205,213-216,220-221,226,230,241-242,246-251,268,272,274-276
+tests/github-release-convergence.test.mjs
+  s_1c93d6a12ea395::t_2dd2174377646c 4,6,10-11,29,47-48,53-56,64-66,92
+  s_670e4eea596cf2::t_1c213481c3fc20 27-28,33,37-38,102,107,116
+  s_1c93d6a12ea395::t_ed85aae625b603 67-68,71
+  s_1c93d6a12ea395::t_d50589999ce1f6 320-322
+  s_3be4e5ee7951c4::t_e3c6f778256329 197-198,201,208-209
+  s_670e4eea596cf2::t_a8d0f08e8d3ea2 5,7,15-25,32,34-36,39,43-46,76-78,99-101,103,115,140,154,156-157,159
+  s_670e4eea596cf2::t_a14c4c264e2684 49-52,57-63,73-75,81-83,88-90,94-96,106,117-139,142-152,155,158,160-196,202-207,230-234,236-246,249-253,257-270,297-319,323-332
+  s_1c93d6a12ea395::t_b3111fe131370b 247,296
+  s_1c93d6a12ea395::t_d2950fcf57fe9a 2-3,8-9,12-14,26,30-31,40-42,69-70,72,79-80,84-87,91,93,97-98,104-105,108-114,141,153,235,248
+  s_670e4eea596cf2::t_a448f0391fefb4 271-295
+  s_1c93d6a12ea395::t_2d416924200a59 1
+  s_3be4e5ee7951c4::t_f91ac05fa01360 199-200,210-229
+  s_670e4eea596cf2::t_3bde891c709b07 254-256
+tests/fixtures/release/statement-duplicate.json
+  s_db015476ceacef::t_a7a2b26f21441f 1-4,14-15
+  s_d69f1ac0192d5e::t_68762345ff220d 5-13
+tests/fixtures/release/sigstore-bundle-valid.json
+  s_db015476ceacef::t_a7a2b26f21441f 1-4,14-20
+  s_d69f1ac0192d5e::t_68762345ff220d 5-13
+.oxlintrc.json
+  s_3be4e5ee7951c4::t_febbb18bc1b4bb 111-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d4e66f2d22a14dd3a03a34b55fa7816e7191f1ff",
+  "prompts": {},
+  "sessions": {
+    "s_1c93d6a12ea395": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_df6ff5abdffdTIZCnGqUhv6By7",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_1fea7b3a97bb2e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_df6f45279ffeBrvG7qnmkSh7pU",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_3be4e5ee7951c4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e672fa32affeYgXw1TplxIYxCT",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_670e4eea596cf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_df6ff5abdffdTIZCnGqUhv6By7",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_d69f1ac0192d5e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_df6ffc8abffe3eV34YLhmQ6uTm",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    },
+    "s_db015476ceacef": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_df6ffc8abffe3eV34YLhmQ6uTm",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
