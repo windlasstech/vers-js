@@ -1,0 +1,28 @@
+scripts/verify-release-provenance.mjs
+  s_3be4e5ee7951c4::t_c3858279b309d2 139-140
+  s_3be4e5ee7951c4::t_c02114962033b3 141,143-144,149-150,159
+  s_3be4e5ee7951c4::t_9b72997e0ca740 142,145-148
+docs/release.md
+  s_3be4e5ee7951c4::t_dc7988d0ac3283 316
+tests/release-provenance.test.mjs
+  s_3be4e5ee7951c4::t_3cb5aac6303c10 26-31,33-54
+  s_3be4e5ee7951c4::t_60ecf16def7f51 309-310,313-314,317-322
+  s_3be4e5ee7951c4::t_51eb46c5e1de9c 311-312,315-316
+  s_3be4e5ee7951c4::t_4bc2ea6fd93f34 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "08bc4bcb255416a4c77f68668bd709e3c6a79869",
+  "prompts": {},
+  "sessions": {
+    "s_3be4e5ee7951c4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ses_e672fa32affeYgXw1TplxIYxCT",
+        "model": "unknown"
+      },
+      "human_author": "Yunseo Kim <git@yunseo.kim>"
+    }
+  }
+}
